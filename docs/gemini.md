@@ -128,6 +128,10 @@ Two details that make this work:
 | Setup command | `commands/chromeboost-setup.md` | `commands/chromeboost-setup.toml` |
 | Support prompt | `Stop` hook | no equivalent event, so it never fires |
 
+For Codex, see [Using Codex instead](../README.md#using-codex-instead) in the root
+README: it registers the server with `codex mcp add` rather than through a
+marketplace.
+
 The usage counter that drives the support prompt lives at
 `~/.chromeboost/usage.json`, shared across hosts, so a Gemini session still
 counts toward it even though the prompt only surfaces under Claude Code.

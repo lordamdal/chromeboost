@@ -149,6 +149,27 @@ tools to run without a confirmation each time, add it to `~/.gemini/settings.jso
 > For autonomy without the blanket switch, skip `trust` and use Gemini's policy
 > engine instead. See [`docs/gemini.md`](docs/gemini.md).
 
+### Using Codex instead?
+
+Codex registers a command to run rather than fetching a package, so it needs a local
+clone. This one paste does the whole thing, with no config file to hand-edit:
+
+```bash
+git clone https://github.com/lordamdal/chromeboost ~/.chromeboost/src \
+  && npm --prefix ~/.chromeboost/src install \
+  && npm --prefix ~/.chromeboost/src run build \
+  && codex mcp add chromeboost --env CHROMEBOOST_HOST=codex \
+       -- node ~/.chromeboost/src/packages/plugin/server/chromeboost.mjs
+```
+
+Restart Codex, then run `/chromeboost-setup` as above.
+
+To update later:
+
+```bash
+git -C ~/.chromeboost/src pull && npm --prefix ~/.chromeboost/src run build
+```
+
 ### If something goes wrong
 
 <details>

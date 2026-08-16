@@ -222,7 +222,7 @@ the extension are host-agnostic; only packaging differs.
 | | Claude Code | Codex | Gemini CLI |
 |---|---|---|---|
 | Manifest | `packages/plugin/.claude-plugin/plugin.json` | `.codex-plugin/plugin.json` | `gemini-extension.json` (repo root) |
-| Server wiring | `packages/plugin/.mcp.json` | `.mcp.codex.json` | `mcpServers` in the extension manifest |
+| Server wiring | `packages/plugin/.mcp.json` | `codex mcp add` (see below) | `mcpServers` in the extension manifest |
 | Agent guidance | `skills/chromeboost/SKILL.md` (canonical) | `skills-codex/` (generated) | `GEMINI.md` (generated) |
 | Setup command | `commands/chromeboost-setup.md` | — | `commands/chromeboost-setup.toml` |
 
@@ -232,6 +232,30 @@ the extension are host-agnostic; only packaging differs.
 bash packages/plugin/scripts/sync-skill.sh    # Codex variant
 bash packages/plugin/scripts/sync-gemini.sh   # GEMINI.md
 ```
+
+### Codex packaging is unverified
+
+`packages/plugin/.codex-plugin/` and `.mcp.codex.json` were inherited. The
+launcher there hunts `~/.codex/plugins/cache` and its error message tells users
+to run `codex plugin marketplace add`.
+
+Codex CLI does have that machinery — `codex-rs/cli/src/{plugin,marketplace}_cmd.rs`
+expose `codex plugin marketplace add` and `codex plugin install`, and
+`core-plugins/src/manifest.rs` accepts `.claude-plugin/plugin.json` as an
+alternate manifest with `.codex-plugin/plugin.json` as an overlay. So this repo
+may already be installable that way.
+
+What has NOT been verified is the marketplace manifest filename Codex expects at
+a repo root, and nobody has run the flow end to end. Until someone does, the
+documented Codex path is `codex mcp add`, whose argument shape IS confirmed from
+`codex-rs/cli/src/mcp_cmd.rs`:
+
+```
+codex mcp add <name> [--env KEY=VALUE ...] -- <command> [args...]
+```
+
+If you confirm the marketplace path works, collapse the Codex install to two
+commands like Claude Code and delete the clone step from the landing page.
 
 Host identity flows from an env var to the popup badge:
 `CHROMEBOOST_HOST` (set by the Codex and Gemini launchers) or

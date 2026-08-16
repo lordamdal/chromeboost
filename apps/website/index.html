@@ -1229,28 +1229,29 @@
 
           <div class="host-panel" data-host-panel="codex" role="tabpanel">
             <p>
-              Codex configures MCP servers in a file rather than through a marketplace, so clone
-              the repo and point at the bundled server.
+              One paste. It clones, builds, and registers the server with Codex, so there is no
+              config file to hand-edit and no path to fill in.
             </p>
             <div class="cmds">
               <div class="cmd">
-                <span class="cmd-text"><span class="k">git</span> clone https://github.com/lordamdal/chromeboost &amp;&amp; <span class="k">cd</span> chromeboost &amp;&amp; <span class="k">npm</span> install &amp;&amp; <span class="k">npm</span> run build</span>
-                <button class="cmd-copy" type="button" data-copy="git clone https://github.com/lordamdal/chromeboost &amp;&amp; cd chromeboost &amp;&amp; npm install &amp;&amp; npm run build">Copy</button>
+                <span class="cmd-text"><span class="k">git</span> clone https://github.com/lordamdal/chromeboost ~/.chromeboost/src \
+  &amp;&amp; <span class="k">npm</span> --prefix ~/.chromeboost/src install \
+  &amp;&amp; <span class="k">npm</span> --prefix ~/.chromeboost/src run build \
+  &amp;&amp; <span class="k">codex</span> mcp add chromeboost --env CHROMEBOOST_HOST=codex \
+       -- node ~/.chromeboost/src/packages/plugin/server/chromeboost.mjs</span>
+                <button class="cmd-copy" type="button" data-copy="git clone https://github.com/lordamdal/chromeboost ~/.chromeboost/src \
+  &amp;&amp; npm --prefix ~/.chromeboost/src install \
+  &amp;&amp; npm --prefix ~/.chromeboost/src run build \
+  &amp;&amp; codex mcp add chromeboost --env CHROMEBOOST_HOST=codex \
+       -- node ~/.chromeboost/src/packages/plugin/server/chromeboost.mjs">Copy</button>
               </div>
             </div>
-            <p style="margin-top:13px">Then add this to <code class="i">~/.codex/config.toml</code>, with the real path:</p>
-            <div class="cmds">
-              <div class="cmd">
-                <span class="cmd-text">[mcp_servers.chromeboost]
-command = <span class="s">"node"</span>
-args = [<span class="s">"/path/to/chromeboost/packages/plugin/server/chromeboost.mjs"</span>]
-env = { CHROMEBOOST_HOST = <span class="s">"codex"</span> }</span>
-                <button class="cmd-copy" type="button" data-copy='[mcp_servers.chromeboost]
-command = "node"
-args = ["/path/to/chromeboost/packages/plugin/server/chromeboost.mjs"]
-env = { CHROMEBOOST_HOST = "codex" }'>Copy</button>
-              </div>
-            </div>
+            <p style="margin-top:13px">Restart Codex so the MCP server starts.</p>
+            <p class="cmd-hint">
+              Codex needs the clone because it registers a command to run, not a package to fetch.
+              To update later: <code class="i">git -C ~/.chromeboost/src pull &amp;&amp; npm --prefix ~/.chromeboost/src run build</code>,
+              then reload the extension.
+            </p>
           </div>
         </div>
       </div>
