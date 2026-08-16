@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ChromeBoost — give Claude hands in your own browser</title>
-<meta name="description" content="ChromeBoost lets Claude Code drive your real Chrome — already logged in as you, moving like a person. Draft social replies, pull API keys into .env, fill long forms, document a flow. You approve anything that publishes.">
+<meta name="description" content="ChromeBoost lets Claude Code, Gemini CLI or Codex drive your real Chrome — already logged in as you, moving like a person. Draft social replies, pull API keys into .env, fill long forms, document a flow. You approve anything that publishes.">
 <meta name="theme-color" content="#f2ece0">
 <meta property="og:title" content="ChromeBoost — give Claude hands in your own browser">
 <meta property="og:description" content="Your Chrome. Your logins. Real human-shaped clicks, drags and keystrokes — and you approve anything that publishes.">
@@ -564,6 +564,31 @@
   .stackcard, .demo-card, .trouble-body, .table-wrap { min-width: 0; }
   ol.mini li { overflow-wrap: anywhere; }
 
+
+  /* ── Host switcher ────────────────────────────────────────
+     Three CLIs, one set of steps. Only step 1 differs, so the tabs live
+     inside it rather than forking the whole install section. */
+  .hosts { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 18px; }
+  .host-tab {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .07em;
+    padding: 9px 14px; cursor: pointer;
+    border: 3px solid var(--ink); background: var(--paper);
+    color: var(--ink); box-shadow: var(--hard-sm);
+    transition: transform .08s ease, box-shadow .08s ease;
+  }
+  .host-tab:hover { background: var(--paper-3); }
+  .host-tab.is-on {
+    background: var(--ink); color: var(--naples);
+    transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink);
+  }
+  .host-tab:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+
+  .host-panel { display: none; }
+  .host-panel.is-on { display: block; }
+  /* Multi-line command blocks (the Codex TOML) keep their line breaks. */
+  .cmd-text { tab-size: 2; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     html { scroll-behavior: auto; }
@@ -1077,7 +1102,7 @@
     <span class="sec-tag label">05 / The floating window</span>
     <h2>Your page, your corner</h2>
     <p class="lead">
-      While Claude drives, a small panel sits on the page so you always know a session is in
+      While your agent drives, a small panel sits on the page so you always know a session is in
       control and which one. Most tools weld that badge to the top-right corner — exactly where
       sites put their account menu and cart. <strong>This one you can move.</strong>
       Drag it by the header, double-click to collapse, × to dismiss. Try it:
@@ -1145,30 +1170,88 @@
 <section id="install">
   <div class="wrap">
     <span class="sec-tag label">06 / Install</span>
-    <h2>Two commands and a folder</h2>
+    <h2>One CLI, one folder</h2>
     <p class="lead">
-      ChromeBoost is a Chrome extension plus an MCP server. <strong>The plugin ships both</strong> —
-      there's nothing to clone, no <code class="i">npm install</code>, no build step. You need
-      Chrome and Claude Code.
+      ChromeBoost is a Chrome extension plus an MCP server, and it works with
+      <strong>Claude Code, Gemini CLI and Codex</strong>. On Claude and Gemini the install carries
+      both halves, so there's nothing to clone and no build step. All you need is Chrome.
     </p>
 
     <div class="steps">
       <div class="step">
         <div class="step-n">1</div>
         <div class="step-body glass">
-          <h3>Add the plugin</h3>
-          <p>In Claude Code, run these <strong>one at a time</strong> — not as a single paste.</p>
-          <div class="cmds">
-            <div class="cmd">
-              <span class="cmd-text"><span class="k">/plugin</span> marketplace add lordamdal/chromeboost</span>
-              <button class="cmd-copy" type="button" data-copy="/plugin marketplace add lordamdal/chromeboost">Copy</button>
+          <h3>Connect it to your CLI</h3>
+          <p>Pick the one you use. Step 2 is identical whichever you choose.</p>
+
+          <div class="hosts" role="tablist" aria-label="Choose your CLI">
+            <button class="host-tab is-on" role="tab" aria-selected="true" data-host="claude" type="button">Claude Code</button>
+            <button class="host-tab" role="tab" aria-selected="false" data-host="gemini" type="button">Gemini CLI</button>
+            <button class="host-tab" role="tab" aria-selected="false" data-host="codex" type="button">Codex</button>
+          </div>
+
+          <div class="host-panel is-on" data-host-panel="claude" role="tabpanel">
+            <p>Run these <strong>one at a time</strong>, not as a single paste.</p>
+            <div class="cmds">
+              <div class="cmd">
+                <span class="cmd-text"><span class="k">/plugin</span> marketplace add lordamdal/chromeboost</span>
+                <button class="cmd-copy" type="button" data-copy="/plugin marketplace add lordamdal/chromeboost">Copy</button>
+              </div>
+              <div class="cmd">
+                <span class="cmd-text"><span class="k">/plugin</span> install chromeboost@chromeboost</span>
+                <button class="cmd-copy" type="button" data-copy="/plugin install chromeboost@chromeboost">Copy</button>
+              </div>
             </div>
-            <div class="cmd">
-              <span class="cmd-text"><span class="k">/plugin</span> install chromeboost@chromeboost</span>
-              <button class="cmd-copy" type="button" data-copy="/plugin install chromeboost@chromeboost">Copy</button>
+            <p style="margin-top:13px">Then restart Claude Code so the MCP server starts.</p>
+          </div>
+
+          <div class="host-panel" data-host-panel="gemini" role="tabpanel">
+            <p>One command. The extension carries both the MCP server and the Chrome files.</p>
+            <div class="cmds">
+              <div class="cmd">
+                <span class="cmd-text"><span class="k">gemini</span> extensions install https://github.com/lordamdal/chromeboost</span>
+                <button class="cmd-copy" type="button" data-copy="gemini extensions install https://github.com/lordamdal/chromeboost">Copy</button>
+              </div>
+            </div>
+            <p style="margin-top:13px">Restart Gemini so the MCP server starts.</p>
+            <p class="cmd-hint">
+              <b>Optional.</b> Gemini confirms each tool call by default. To let it run unprompted,
+              add <code class="i">trust</code> in <code class="i">~/.gemini/settings.json</code>
+              (extension manifests are not permitted to set it):
+            </p>
+            <div class="cmds">
+              <div class="cmd">
+                <span class="cmd-text">{ "mcpServers": { "chromeboost": { <span class="s">"trust"</span>: true } } }</span>
+                <button class="cmd-copy" type="button" data-copy='{ "mcpServers": { "chromeboost": { "trust": true } } }'>Copy</button>
+              </div>
             </div>
           </div>
-          <p style="margin-top:13px">Then restart Claude Code so the MCP server starts.</p>
+
+          <div class="host-panel" data-host-panel="codex" role="tabpanel">
+            <p>
+              Codex configures MCP servers in a file rather than through a marketplace, so clone
+              the repo and point at the bundled server.
+            </p>
+            <div class="cmds">
+              <div class="cmd">
+                <span class="cmd-text"><span class="k">git</span> clone https://github.com/lordamdal/chromeboost &amp;&amp; <span class="k">cd</span> chromeboost &amp;&amp; <span class="k">npm</span> install &amp;&amp; <span class="k">npm</span> run build</span>
+                <button class="cmd-copy" type="button" data-copy="git clone https://github.com/lordamdal/chromeboost &amp;&amp; cd chromeboost &amp;&amp; npm install &amp;&amp; npm run build">Copy</button>
+              </div>
+            </div>
+            <p style="margin-top:13px">Then add this to <code class="i">~/.codex/config.toml</code>, with the real path:</p>
+            <div class="cmds">
+              <div class="cmd">
+                <span class="cmd-text">[mcp_servers.chromeboost]
+command = <span class="s">"node"</span>
+args = [<span class="s">"/path/to/chromeboost/packages/plugin/server/chromeboost.mjs"</span>]
+env = { CHROMEBOOST_HOST = <span class="s">"codex"</span> }</span>
+                <button class="cmd-copy" type="button" data-copy='[mcp_servers.chromeboost]
+command = "node"
+args = ["/path/to/chromeboost/packages/plugin/server/chromeboost.mjs"]
+env = { CHROMEBOOST_HOST = "codex" }'>Copy</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1279,9 +1362,9 @@
 
   <div class="wrap">
     <span class="sec-tag label">07 / Tool surface</span>
-    <h2>35 tools Claude can call</h2>
+    <h2>35 tools your agent can call</h2>
     <p class="lead">
-      You won't type any of these — Claude picks them. Listed so you know exactly what it's able to
+      You won't type any of these; your agent picks them. Listed so you know exactly what it's able to
       do on your machine.
     </p>
 
@@ -1390,6 +1473,40 @@
   console.log("%c★ Source:  https://github.com/lordamdal/chromeboost", link);
 })();
 
+
+
+// ─── Install host switcher ─────────────────────────────────────────────────
+// Remembers the choice, so someone who lands from a Gemini link and reloads
+// does not get bounced back to the Claude tab.
+(function () {
+  var tabs = [].slice.call(document.querySelectorAll('.host-tab'));
+  var panels = [].slice.call(document.querySelectorAll('[data-host-panel]'));
+  if (!tabs.length) return;
+
+  function select(host) {
+    tabs.forEach(function (t) {
+      var on = t.dataset.host === host;
+      t.classList.toggle('is-on', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panels.forEach(function (p) {
+      p.classList.toggle('is-on', p.dataset.hostPanel === host);
+    });
+    try { localStorage.setItem('cb-host', host); } catch (_) {}
+  }
+
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { select(t.dataset.host); });
+  });
+
+  // Deep link (?host=gemini) wins over the remembered choice.
+  var known = tabs.map(function (t) { return t.dataset.host; });
+  var param = new URLSearchParams(location.search).get('host');
+  var saved = null;
+  try { saved = localStorage.getItem('cb-host'); } catch (_) {}
+  var initial = [param, saved].filter(function (h) { return known.indexOf(h) !== -1; })[0];
+  if (initial) select(initial);
+})();
 
 // ─── Copy-to-clipboard for command rows ────────────────────────────────────
 // Delegated, so it covers every .cmd-copy without per-button wiring. Falls
