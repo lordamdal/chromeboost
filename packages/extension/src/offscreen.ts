@@ -12,7 +12,10 @@ const PORT_MAX = 7980;
 const RECONNECT_BASE_MS = 1000;
 const RECONNECT_MAX_MS = 5000;
 
-type Host = "claude" | "codex";
+// Keep in step with the same type in popup/index.ts. Neither file is a module,
+// so TypeScript treats both declarations as global and resolves them as one:
+// updating only one side silently gives the other the wrong union.
+type Host = "claude" | "codex" | "gemini";
 
 type Conn = {
   port: number;

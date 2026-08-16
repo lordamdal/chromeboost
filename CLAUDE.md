@@ -214,6 +214,39 @@ Do NOT add new content to this file. Repo-developer concerns only.
 - No `chromeboost_doctor` composite tool. Diagnostics attach to the
   tool whose response would already carry the relevant context.
 
+## Hosts
+
+ChromeBoost runs under Claude Code, Codex, and Gemini CLI. The MCP server and
+the extension are host-agnostic; only packaging differs.
+
+| | Claude Code | Codex | Gemini CLI |
+|---|---|---|---|
+| Manifest | `packages/plugin/.claude-plugin/plugin.json` | `.codex-plugin/plugin.json` | `gemini-extension.json` (repo root) |
+| Server wiring | `packages/plugin/.mcp.json` | `.mcp.codex.json` | `mcpServers` in the extension manifest |
+| Agent guidance | `skills/chromeboost/SKILL.md` (canonical) | `skills-codex/` (generated) | `GEMINI.md` (generated) |
+| Setup command | `commands/chromeboost-setup.md` | — | `commands/chromeboost-setup.toml` |
+
+`SKILL.md` is the single source of guidance. After editing it run BOTH:
+
+```
+bash packages/plugin/scripts/sync-skill.sh    # Codex variant
+bash packages/plugin/scripts/sync-gemini.sh   # GEMINI.md
+```
+
+Host identity flows from an env var to the popup badge:
+`CHROMEBOOST_HOST` (set by the Codex and Gemini launchers) or
+`CLAUDE_PLUGIN_ROOT` (set by Claude Code) is read in `ws-bridge.ts` and sent to
+the extension, and again in `index.ts` for the startup banner.
+
+Two traps when adding a host:
+
+- `type Host` is declared in **both** `offscreen.ts` and `popup/index.ts`.
+  Neither file is a module, so TypeScript merges them globally and updating one
+  side alone silently gives the other the wrong union.
+- The popup renders the badge via `hostBadgeFor()`, which falls back to a
+  text-only badge. Indexing `HOST_ICONS` directly used to crash the whole popup
+  render on an unrecognised host, and `host` is untrusted input off the socket.
+
 ## Distribution
 
 ChromeBoost is distributed as a Claude Code plugin marketplace from

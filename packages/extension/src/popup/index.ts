@@ -11,7 +11,7 @@
 const groupsEl = document.getElementById("groups")!;
 const statusPill = document.getElementById("status-pill")!;
 
-type Host = "claude" | "codex";
+type Host = "claude" | "codex" | "gemini";
 type PortInfo = { port: number; label?: string; host?: Host };
 
 type State = {
@@ -24,7 +24,24 @@ type State = {
 const HOST_ICONS: Record<Host, { src: string; label: string }> = {
   claude: { src: "icons/host-claude.png", label: "Claude" },
   codex: { src: "icons/host-codex.png", label: "Codex" },
+  gemini: { src: "icons/host-gemini.png", label: "Gemini" },
 };
+
+/**
+ * Resolve a host badge, tolerating hosts this build has never heard of.
+ *
+ * `host` arrives over the WebSocket from whatever spawned the MCP server, so it
+ * is untrusted input, not a value this file controls. Indexing HOST_ICONS
+ * directly meant an unrecognised host (anyone setting CHROMEBOOST_HOST to
+ * something new) hit `undefined.label` and took the entire popup render down
+ * with it. Unknown hosts now degrade to a text-only badge.
+ */
+function hostBadgeFor(host: string): { src: string | null; label: string } {
+  const known = (HOST_ICONS as Record<string, { src: string; label: string }>)[host];
+  if (known) return known;
+  const label = host.charAt(0).toUpperCase() + host.slice(1);
+  return { src: null, label };
+}
 
 const collapsedGroups = new Set<string>();
 
@@ -111,9 +128,12 @@ function renderInstanceCard(
     </div>
   `;
 
-  const hostBadge = host
-    ? `<div class="host-badge" title="${HOST_ICONS[host].label} session"><span class="host-label">${HOST_ICONS[host].label}</span><img class="host-icon" src="${HOST_ICONS[host].src}" alt="" /></div>`
-    : "";
+  let hostBadge = "";
+  if (host) {
+    const h = hostBadgeFor(host);
+    const icon = h.src ? `<img class="host-icon" src="${h.src}" alt="" />` : "";
+    hostBadge = `<div class="host-badge" title="${escapeHtml(h.label)} session"><span class="host-label">${escapeHtml(h.label)}</span>${icon}</div>`;
+  }
 
   return `
     <div class="${cardClass.join(" ")}" style="view-transition-name: card-${port}">

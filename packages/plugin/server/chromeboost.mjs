@@ -24841,22 +24841,27 @@ import path from "path";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
-var USAGE_PATH = join(homedir(), ".claude", "chromeboost", "usage.json");
+var STATE_DIR = join(homedir(), ".chromeboost");
+var USAGE_PATH = join(STATE_DIR, "usage.json");
+var LEGACY_USAGE_PATH = join(homedir(), ".claude", "chromeboost", "usage.json");
 var FLUSH_INTERVAL_MS = 3e4;
 var cached2 = null;
 var lastFlush = 0;
 var dirty = false;
 function load() {
   if (cached2) return cached2;
-  try {
-    const raw = JSON.parse(readFileSync(USAGE_PATH, "utf8"));
-    cached2 = {
-      toolCalls: Number.isFinite(raw.toolCalls) ? Number(raw.toolCalls) : 0,
-      lastUsed: Number.isFinite(raw.lastUsed) ? Number(raw.lastUsed) : 0
-    };
-  } catch {
-    cached2 = { toolCalls: 0, lastUsed: 0 };
+  for (const path2 of [USAGE_PATH, LEGACY_USAGE_PATH]) {
+    try {
+      const raw = JSON.parse(readFileSync(path2, "utf8"));
+      cached2 = {
+        toolCalls: Number.isFinite(raw.toolCalls) ? Number(raw.toolCalls) : 0,
+        lastUsed: Number.isFinite(raw.lastUsed) ? Number(raw.lastUsed) : 0
+      };
+      return cached2;
+    } catch {
+    }
   }
+  cached2 = { toolCalls: 0, lastUsed: 0 };
   return cached2;
 }
 function flush() {
@@ -26710,6 +26715,12 @@ HUD state: ${s.hidden ? "hidden" : s.collapsed ? "collapsed" : "expanded"} at ($
 // src/index.ts
 var PACKAGE_VERSION = true ? "1.0.0" : "dev";
 var SUPPORT_URL = "https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00";
+function hostDisplayName() {
+  const raw = process.env.CHROMEBOOST_HOST ?? (process.env.CLAUDE_PLUGIN_ROOT ? "claude" : void 0);
+  if (!raw) return "Your agent";
+  const known = { claude: "Claude", codex: "Codex", gemini: "Gemini" };
+  return known[raw] ?? raw.charAt(0).toUpperCase() + raw.slice(1);
+}
 function banner(toolCount, port) {
   const tty = process.stderr.isTTY && !process.env.NO_COLOR;
   const c = (code, s) => tty ? `\x1B[${code}m${s}\x1B[0m` : s;
@@ -26721,7 +26732,7 @@ function banner(toolCount, port) {
   return [
     "",
     `  ${amber("\u26A1")} ${bold("ChromeBoost")} ${dim(`v${PACKAGE_VERSION}`)}  ${dim("\xB7")}  ${toolCount} tools  ${dim("\xB7")}  ${dim(where)}`,
-    `  ${dim("Claude now has hands in your real Chrome \u2014 logged in as you.")}`,
+    `  ${dim(`${hostDisplayName()} now has hands in your real Chrome, logged in as you.`)}`,
     `  ${amber("\u2615")} ${dim("Free and MIT. If it saved you an afternoon:")} ${cyan(SUPPORT_URL)}`,
     ""
   ].join("\n");

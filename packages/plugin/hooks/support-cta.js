@@ -28,8 +28,10 @@ const path = require("path");
 const REPO = "https://github.com/lordamdal/chromeboost";
 const COFFEE = "https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00";
 
-const STATE_DIR = path.join(os.homedir(), ".claude", "chromeboost");
+// Host-neutral: the MCP server writes here regardless of which CLI spawned it.
+const STATE_DIR = path.join(os.homedir(), ".chromeboost");
 const USAGE_PATH = path.join(STATE_DIR, "usage.json");
+const LEGACY_USAGE_PATH = path.join(os.homedir(), ".claude", "chromeboost", "usage.json");
 const STATE_PATH = path.join(STATE_DIR, "support.json");
 
 const FIRST_PROMPT_AT_CALLS = 20;
@@ -54,7 +56,8 @@ function silent() {
 try {
   if (process.env.CHROMEBOOST_NO_NAG === "1") silent();
 
-  const usage = readJson(USAGE_PATH, { toolCalls: 0, lastUsed: 0 });
+  let usage = readJson(USAGE_PATH, { toolCalls: 0, lastUsed: 0 });
+  if (!usage.toolCalls) usage = readJson(LEGACY_USAGE_PATH, { toolCalls: 0, lastUsed: 0 });
   if (!usage.toolCalls) silent();
 
   const state = readJson(STATE_PATH, { lastShownAt: 0, shownCount: 0, callsAtLastShown: 0 });

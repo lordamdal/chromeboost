@@ -14,7 +14,19 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
-export const USAGE_PATH = join(homedir(), ".claude", "chromeboost", "usage.json");
+/**
+ * Host-neutral state directory.
+ *
+ * This used to live under `~/.claude/`, which was wrong the moment ChromeBoost
+ * ran under anything but Claude Code: a Gemini or Codex session would count
+ * into a directory named after a host it never touched, and two hosts would
+ * keep separate tallies of the same user. `~/.chromeboost/` belongs to the
+ * tool, not to whoever spawned it.
+ */
+export const STATE_DIR = join(homedir(), ".chromeboost");
+export const USAGE_PATH = join(STATE_DIR, "usage.json");
+/** Pre-1.1 location, read once so existing counts are not lost. */
+const LEGACY_USAGE_PATH = join(homedir(), ".claude", "chromeboost", "usage.json");
 
 const FLUSH_INTERVAL_MS = 30_000;
 
@@ -26,15 +38,19 @@ let dirty = false;
 
 function load(): Usage {
   if (cached) return cached;
-  try {
-    const raw = JSON.parse(readFileSync(USAGE_PATH, "utf8")) as Partial<Usage>;
-    cached = {
-      toolCalls: Number.isFinite(raw.toolCalls) ? Number(raw.toolCalls) : 0,
-      lastUsed: Number.isFinite(raw.lastUsed) ? Number(raw.lastUsed) : 0,
-    };
-  } catch {
-    cached = { toolCalls: 0, lastUsed: 0 };
+  for (const path of [USAGE_PATH, LEGACY_USAGE_PATH]) {
+    try {
+      const raw = JSON.parse(readFileSync(path, "utf8")) as Partial<Usage>;
+      cached = {
+        toolCalls: Number.isFinite(raw.toolCalls) ? Number(raw.toolCalls) : 0,
+        lastUsed: Number.isFinite(raw.lastUsed) ? Number(raw.lastUsed) : 0,
+      };
+      return cached;
+    } catch {
+      /* try the next location */
+    }
   }
+  cached = { toolCalls: 0, lastUsed: 0 };
   return cached;
 }
 

@@ -16,6 +16,22 @@ const PACKAGE_VERSION: string =
 export const SUPPORT_URL = "https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00";
 
 /**
+ * Which CLI spawned us, for display only.
+ *
+ * Claude Code sets CLAUDE_PLUGIN_ROOT on the spawned process. Codex and Gemini
+ * do not forward anything host-specific, so their launchers set
+ * CHROMEBOOST_HOST explicitly. Mirrors the detection in ws-bridge.ts, which
+ * sends the same value to the extension popup for its host badge.
+ */
+function hostDisplayName(): string {
+  const raw = process.env.CHROMEBOOST_HOST
+    ?? (process.env.CLAUDE_PLUGIN_ROOT ? "claude" : undefined);
+  if (!raw) return "Your agent";
+  const known: Record<string, string> = { claude: "Claude", codex: "Codex", gemini: "Gemini" };
+  return known[raw] ?? raw.charAt(0).toUpperCase() + raw.slice(1);
+}
+
+/**
  * Startup banner on stderr — the one surface every user sees every session.
  *
  * Kept to four lines and printed once at boot: a support ask that scrolls past
@@ -35,7 +51,7 @@ function banner(toolCount: number, port: number | null): string {
   return [
     "",
     `  ${amber("⚡")} ${bold("ChromeBoost")} ${dim(`v${PACKAGE_VERSION}`)}  ${dim("·")}  ${toolCount} tools  ${dim("·")}  ${dim(where)}`,
-    `  ${dim("Claude now has hands in your real Chrome — logged in as you.")}`,
+    `  ${dim(`${hostDisplayName()} now has hands in your real Chrome, logged in as you.`)}`,
     `  ${amber("☕")} ${dim("Free and MIT. If it saved you an afternoon:")} ${cyan(SUPPORT_URL)}`,
     "",
   ].join("\n");

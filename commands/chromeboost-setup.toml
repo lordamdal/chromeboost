@@ -1,0 +1,81 @@
+description = "Finish ChromeBoost setup: copy the Chrome extension somewhere reachable and walk through loading it."
+
+prompt = """
+# Finish ChromeBoost setup
+
+The MCP server half of ChromeBoost is already running (that is this extension).
+What is left is loading the Chrome extension, the half that touches the browser.
+The extension ships inside this extension directory, so there is nothing to
+clone or build.
+
+Work through this now, without asking the user whether to proceed.
+
+## 1. Copy the extension somewhere reachable
+
+Run:
+
+```bash
+node "$(dirname "$(gemini extensions path chromeboost 2>/dev/null || echo .)")/chromeboost/packages/plugin/scripts/install-extension.mjs"
+```
+
+If that path does not resolve, find the extension directory under
+`~/.gemini/extensions/chromeboost` and run:
+
+```bash
+node ~/.gemini/extensions/chromeboost/packages/plugin/scripts/install-extension.mjs
+```
+
+This copies the extension to `~/Downloads/ChromeBoost-Extension` and prints the
+full path. It goes to Downloads on purpose: the extension directory is buried
+and its path changes on every update, which makes it painful to select in
+Chrome's folder picker. Downloads is one click in any file picker's sidebar.
+
+The script's last line is `CHROMEBOOST_EXTENSION_PATH=<path>`. Use that value
+verbatim rather than reconstructing the path.
+
+## 2. Open the folder for them
+
+Reveal it so they can drag it straight onto Chrome's extensions page:
+
+- macOS: `open -R "<path>"`
+- Windows: `explorer "<path>"`
+- Linux: `xdg-open "<path>"`
+
+Skip this if the command is unavailable. It is a convenience, not a requirement.
+
+## 3. Walk them through loading it
+
+Give these steps with the real path substituted in:
+
+1. Open `chrome://extensions` by pasting it into the address bar. `chrome://`
+   links cannot be clicked from a page.
+2. Turn on **Developer mode**, top right.
+3. Click **Load unpacked**.
+4. Select the `ChromeBoost-Extension` folder, or drag it onto the page.
+5. Pin ChromeBoost to the toolbar so the popup is one click away.
+
+Mention once that Chrome flags developer-mode extensions, which is expected
+here since ChromeBoost is not on the Web Store and runs from local files. Also
+tell them not to delete the folder: Chrome reads it on every launch, and
+removing it breaks the extension.
+
+## 4. Connect a window
+
+Tell them to click the ChromeBoost toolbar icon. This session should appear with
+a green dot and a **Gemini** badge, on a port in the 7970-7980 range. They click
+**Use this window** to bind the Chrome window they want driven.
+
+## 5. Verify it actually works
+
+Once they say it is loaded, confirm the link yourself rather than taking it on
+trust: call `list_tabs`. If it returns their open tabs, setup is done. Say so
+plainly and suggest a first prompt, for example "open news.ycombinator.com and
+give me the top 5 stories".
+
+If `list_tabs` errors or times out, the extension is loaded but not connected.
+Have them reload it at `chrome://extensions` using the circular arrow on the
+ChromeBoost card, then try `list_tabs` again.
+
+Keep it short and sequential. Do not skip step 5: an install that looks finished
+but is not connected is the most common failure here.
+"""

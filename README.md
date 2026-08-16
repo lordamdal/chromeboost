@@ -118,6 +118,37 @@ window** to bind the Chrome window you want driven. Then try:
 open news.ycombinator.com and give me the top 5 stories
 ```
 
+### Using Gemini CLI instead?
+
+ChromeBoost ships as a Gemini CLI extension too. The Chrome half is identical;
+only the packaging differs.
+
+```
+gemini extensions install https://github.com/lordamdal/chromeboost
+```
+
+Restart Gemini, then run `/chromeboost-setup` exactly as above.
+
+Gemini extension manifests cannot set `trust`, so if you want ChromeBoost's
+tools to run without a confirmation each time, add it to `~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "chromeboost": { "trust": true }
+  }
+}
+```
+
+> **Worth understanding before you set that.** `trust: true` runs every
+> ChromeBoost tool unprompted, including `execute_script`, which is arbitrary
+> JavaScript in whatever authenticated tab is active. `trust: false` (the
+> default) prompts instead, but in headless runs (`gemini -p`, piped stdin) a
+> prompt is treated as a **denial**, so long autonomous tasks fail partway.
+>
+> For autonomy without the blanket switch, skip `trust` and use Gemini's policy
+> engine instead. See [`docs/gemini.md`](docs/gemini.md).
+
 ### If something goes wrong
 
 <details>
