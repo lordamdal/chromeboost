@@ -11,7 +11,7 @@
       "displayName": "ChromeBoost",
       "source": "./packages/plugin",
       "description": "Drive your real Chrome from Claude Code — hit-tests before clicking so scrims, backdrops and sticky bars can't swallow the click, plus hover, drag, and a HUD you can move or hide.",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": "lordamdal",
         "url": "https://github.com/lordamdal"

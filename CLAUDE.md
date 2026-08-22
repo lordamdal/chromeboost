@@ -100,10 +100,23 @@ not tsc). New errors should still be fixed.
 
 ## Release process
 
-1. Bump version in three files:
-   - `packages/mcp-server/package.json`
+1. Bump version in SEVEN files. Missing any one of them is not cosmetic:
+   `.claude-plugin/marketplace.json` is what decides whether
+   `/plugin update` refetches at all, so a bump that skips it leaves every
+   installed copy on the old build with no way to notice.
+   - `.claude-plugin/marketplace.json`        (gates `/plugin update`)
    - `packages/plugin/.claude-plugin/plugin.json`
+   - `packages/plugin/.codex-plugin/plugin.json`
+   - `gemini-extension.json`
    - `packages/extension/manifest.json`
+   - `packages/extension/package.json`
+   - `packages/mcp-server/package.json`
+
+   Check with:
+   ```
+   grep -rn '"version"' --include='*.json' . | grep -v node_modules \
+     | grep -v package-lock | grep -v '/dist/' | grep -v 'plugin/extension/'
+   ```
 2. Rebuild extension and bundle: `node packages/extension/build.mjs &&
    bash packages/plugin/scripts/build-server.sh && node
    packages/extension/pack.mjs`.
