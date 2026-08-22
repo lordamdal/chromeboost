@@ -149,12 +149,12 @@ Use the absolute path for `envPath` (Claude Code working dir + `/.env`).
 | Read | `get_page_text`, `find_text`, `get_form_fields`, `get_page_html` |
 | Wait | `wait_for(selector=… OR text=… OR change_in=…)` |
 | Scroll | `scroll_to_element("label or selector")` |
-| Iframes / shadow DOM | `list_frames`, plus all main tools pierce shadow |
+| Iframes / shadow DOM | `list_frames`; same-origin frames AND shadow roots are pierced by every main tool automatically. `frame` disambiguates. |
 | Files | `set_file_input(hint, file_path)`, `download_file`, `read_attachment` |
 | Network | `fetch_url(url, ...)` — privileged context, real cookies, no page CSP |
 | Tabs | `list_tabs`, `switch_to_tab`, `close_tab`, `close_other_tabs` |
 | Visual handoff | `highlight_region(selector, msg)`, `wait_for_click()` |
-| Coordinate clicks (cross-origin iframes) | `click_at_coordinates(x, y)` |
+| Cross-origin iframe | `click_at_coordinates(frame="…", x, y)`, `execute_script(frame="…")`, `fetch_url(src)` |
 | **Hover-only UI** | `hover(selector OR text OR x+y, settle_ms?)` |
 | **Sliders, canvas, drag-and-drop** | `drag(from_… , to_…)` |
 | **"Click worked but nothing happened"** | `probe_point(x, y)` |
@@ -283,6 +283,12 @@ References live alongside this skill at `references/<topic>.md`:
   `phase_timed_out`, `stuck_spinner`, "Frame removed", "Another debugger
   attached", debugging the wrong field match, what to retry vs. when to
   hand off to a human gesture.
+- **`references/iframes.md`** — Frames. Same-origin frames are searched
+  automatically and coordinates are translated for you, so a button inside
+  a builder frame just works; cross-origin frames are a hard wall for DOM
+  tools and need `click_at_coordinates(frame=...)`, `execute_script(frame=
+  ...)`, or `fetch_url(src)`. Read this whenever a selector misses something
+  you can plainly see, or a page full of UI reads as almost no text.
 - **`references/discovery.md`** — Finding things on a page: `find_text` vs.
   `get_page_text` vs. `get_form_fields` vs. `list_frames`, `whole_word`
   matching, `visible_only`, `scope_selector`, `in_dialog` / `dialog_query`.
@@ -308,6 +314,16 @@ fill_input(selector="input[name=email]", value="x@y")
 ```
 The selector path routes through the React-aware native value setter and
 pierces closed shadow DOM.
+
+**Element inside an iframe (GoHighLevel builders, embedded kanban):**
+```
+click_element("Save")                      # same-origin frames are searched already
+```
+The response says which document answered: `Clicked "Save" [in iframe
+iframe#shell >>> iframe#builder]`. Read it — two frames can both hold a
+"Save". If the element is not found, run `list_frames()`: a cross-origin
+frame will never match a selector, so switch to
+`click_at_coordinates(frame="…", x, y)`. See `references/iframes.md`.
 
 **ProseMirror / TipTap editor:**
 ```

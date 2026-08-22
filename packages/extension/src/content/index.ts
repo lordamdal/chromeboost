@@ -30,6 +30,17 @@ import { readElementValue } from "./capture.js";
 import { fillInput } from "./fill.js";
 import { clickElement, prepareClickTarget, postClickInspect, scrollSmartIntoView, reactFiberClickByHint, findTopmostDialog, findDialogByQuery, pointerChainOnTagged } from "./click.js";
 import { collectShadowHosts, countShadowHosts, extractTextDeep, queryAllDeep } from "./shadow.js";
+import {
+  FRAME_PATH_SEP,
+  framePathOf,
+  isCrossOrigin,
+  isInFrame,
+  reachableFrames,
+  resolveFrame,
+  uniqueSelectorIn,
+  viewportRect,
+  type FrameNode,
+} from "./frames.js";
 import { enumerateFormFields } from "./forms.js";
 import { findText, findInputs, waitForText } from "./find.js";
 import { markerIds } from "../markers.js";
@@ -42,45 +53,70 @@ type IncomingMessage = {
 };
 
 /**
- * Resolve a `frame` selector to its iframe's contentDocument. Returns the
- * top-level document when no frame is given, and null when the frame
- * selector matched nothing or the iframe is cross-origin.
+ * Resolve a `frame` argument to the document it names. Returns the top-level
+ * document when no frame is given, and null when the frame could not be
+ * reached (missing, cross-origin, or not yet loaded).
+ *
+ * The old resolver was a bare `document.querySelector(frame).contentDocument`,
+ * which only ever saw frames that were direct light-DOM children of the top
+ * document. Three common layouts defeated it outright: a frame inside a web
+ * component's shadow root, a frame nested inside another frame, and a frame
+ * whose only stable identifier is its src. `resolveFrame` handles all three
+ * and additionally accepts a plain substring, so `frame: "funnel"` addresses
+ * a builder frame without anyone having to read its generated class list.
  */
 function resolveFrameDocument(frame: string | undefined): Document | null {
   if (!frame) return document;
-  const iframe = document.querySelector<HTMLIFrameElement>(frame);
-  if (!iframe) return null;
-  try {
-    return iframe.contentDocument ?? null;
-  } catch {
-    return null;
-  }
+  const res = resolveFrame(frame);
+  return res.ok ? res.node.doc : null;
 }
 
 /**
  * Build an actionable error for a frame that couldn't be read. A cross-origin
  * iframe (e.g. a cloudfront.net component viewer) can't be reached by in-page
- * DOM tools at all, but its HTML IS retrievable via fetch_url, which runs in
- * the extension's privileged context with cookies. Point the agent there
+ * DOM tools at all, but it IS reachable three other ways: `click_at_coordinates`
+ * resolves at the renderer and so delivers real input into it, `execute_script`
+ * can target it by frame, and `fetch_url` retrieves its HTML from the
+ * extension's privileged context with cookies. Point the agent at those
  * instead of leaving it stuck.
  */
 function frameErrorHint(frame: string | undefined): string {
   if (!frame) return "No frame specified.";
-  const iframe = document.querySelector<HTMLIFrameElement>(frame);
-  if (!iframe) return `Iframe "${frame}" not found.`;
-  let crossOrigin = false;
-  try {
-    crossOrigin = !iframe.contentDocument;
-  } catch {
-    crossOrigin = true;
+  const res = resolveFrame(frame);
+  if (res.ok) return "";
+
+  if (res.reason === "cross-origin" && res.crossOriginEl) {
+    const el = res.crossOriginEl;
+    const src = el.getAttribute("src") ?? "";
+    const r = viewportRect(el);
+    const box = `It is on screen at (${Math.round(r.left)}, ${Math.round(r.top)}) ${Math.round(r.width)}x${Math.round(r.height)}`;
+    return (
+      `Iframe "${frame}" is cross-origin, so no DOM tool can read or query it. Three routes that do work:\n` +
+      `  1. click_at_coordinates(frame: "${frame}", x: <offset inside the frame>, y: <offset>) — CDP input resolves at the renderer and reaches cross-origin frames.\n` +
+      `  2. execute_script(frame: "${frame}", code: "...") — runs in the frame's own context.\n` +
+      (src ? `  3. fetch_url("${src}") for its HTML, or take_screenshot for its visual content.\n` : `  3. take_screenshot for its visual content (the frame has no readable src).\n`) +
+      box
+    );
   }
-  const src = iframe.getAttribute("src") ?? "";
-  if (crossOrigin) {
-    return src
-      ? `Iframe "${frame}" is cross-origin — in-page DOM tools can't read it. Retrieve its HTML with fetch_url("${src}") (privileged context, cookies included), or use take_screenshot for visual content.`
-      : `Iframe "${frame}" is cross-origin and has no readable src — use take_screenshot for its visual content.`;
+
+  // Not found. List what IS addressable so the caller can correct in one step
+  // rather than guessing at a selector that may never have existed.
+  const nodes = reachableFrames(false);
+  const crossOrigin = queryAllDeep<Element>(document, "iframe, frame").filter((el) => isCrossOrigin(el));
+  if (nodes.length === 0 && crossOrigin.length === 0) {
+    return `Iframe "${frame}" not found — this page has no frames at all. Call list_frames() to confirm.`;
   }
-  return `Iframe "${frame}" contentDocument unavailable (it may not have loaded yet — retry, or wait_for a selector inside it).`;
+  const reachable = nodes.map((n) => `  ${n.path}${n.el?.getAttribute("src") ? ` (src: ${n.el.getAttribute("src")})` : ""}`);
+  const blocked = crossOrigin.map((el) => {
+    const parentPath = isInFrame(el) ? framePathOf(el) : "";
+    const own = uniqueSelectorIn(el.ownerDocument, el);
+    return `  ${parentPath ? `${parentPath} ${FRAME_PATH_SEP} ${own}` : own} [cross-origin]`;
+  });
+  return (
+    `Iframe "${frame}" not found. Frames on this page:\n` +
+    [...reachable, ...blocked].join("\n") +
+    `\nCall list_frames() for their positions and origins.`
+  );
 }
 
 chrome.runtime.onMessage.addListener(
@@ -118,10 +154,19 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
       // selectors targeting shadow DOM elements (Outlier panels,
       // Reddit faceplate-*, Radix portals) resolve correctly.
       if (msg.selector) {
-        const el = queryAllDeep<HTMLElement>(document, msg.selector as string)[0] ?? null;
+        const scopeDoc = resolveFrameDocument(msg.frame as string | undefined);
+        if (scopeDoc === null) {
+          return { type: "action_done", requestId: msg.requestId, message: frameErrorHint(msg.frame as string | undefined) };
+        }
+        const el = queryAllDeep<HTMLElement>(scopeDoc, msg.selector as string)[0] ?? null;
         if (el) {
           el.scrollIntoView({ behavior: "smooth", block: "center" });
-          const rect = el.getBoundingClientRect();
+          // The overlay is drawn in the top document, so a frame-hosted target
+          // has to be expressed in top-viewport coordinates or the box lands
+          // somewhere else entirely. This is the handoff path for anything the
+          // agent cannot click itself, so drawing it in the wrong place is
+          // worse than not drawing it.
+          const rect = viewportRect(el);
           x = Math.round(rect.left);
           y = Math.round(rect.top);
           width = Math.round(rect.width);
@@ -177,6 +222,7 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
         msg.selector as string | undefined,
         msg.in_dialog as boolean | undefined,
         msg.dialog_query as string | undefined,
+        msg.frame as string | undefined,
       );
       return { type: "action_done", requestId: msg.requestId, ...result };
     }
@@ -200,8 +246,15 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
       // doc.querySelector from MAIN world wouldn't find them.
       const sel = msg.selector as string;
       const tagId = msg.tagId as string;
+      // Scope to the named frame when one is given. Without this the tag would
+      // land on whichever document matched first, which after frame descent is
+      // usually the parent page rather than the frame the caller named.
+      const tagDoc = resolveFrameDocument(msg.frame as string | undefined);
+      if (tagDoc === null) {
+        return { type: "action_done", requestId: msg.requestId, tagged: false, in_shadow: false };
+      }
       try {
-        const matches = queryAllDeep<Element>(document, sel);
+        const matches = queryAllDeep<Element>(tagDoc, sel);
         const el = matches[0];
         if (!el) {
           return { type: "action_done", requestId: msg.requestId, tagged: false, in_shadow: false };
@@ -231,6 +284,7 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
         msg.near_text as string | undefined,
         msg.in_dialog as boolean | undefined,
         msg.dialog_query as string | undefined,
+        msg.frame as string | undefined,
       );
       return { type: "action_done", requestId: msg.requestId, ...result };
     }
@@ -346,6 +400,15 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
       const selector = msg.selector as string | undefined;
       const startIndex = (msg.startIndex as number | undefined) ?? 0;
       const chunkSize = 10000;
+      const textDoc = resolveFrameDocument(msg.frame as string | undefined);
+      if (textDoc === null) {
+        return {
+          type: "page_text_response",
+          requestId: msg.requestId,
+          text: "",
+          frame_error: frameErrorHint(msg.frame as string | undefined),
+        };
+      }
       let root: Element;
       let selectorMissed = false;
       let selectorInShadow = false;
@@ -354,21 +417,21 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
         // shadow-piercing — Radix portals and similar host content inside
         // closed shadow roots that find_text reports selectors for, but
         // document.querySelector can't reach.
-        let el = document.querySelector(selector);
+        let el = textDoc.querySelector(selector);
         if (!el) {
-          const deep = queryAllDeep(document, selector)[0];
+          const deep = queryAllDeep(textDoc, selector)[0];
           if (deep) {
             el = deep;
             selectorInShadow = true;
           }
         }
         if (!el) selectorMissed = true;
-        root = el ?? document.body;
+        root = el ?? textDoc.body;
       } else {
-        const main = document.querySelector("main, [role='main']");
+        const main = textDoc.querySelector("main, [role='main']");
         // Fall back to body if main has insufficient text (e.g. React SPAs where
         // main is a near-empty shell and content is rendered in child components).
-        root = (main && (main.textContent ?? "").trim().length > 80) ? main : document.body;
+        root = (main && (main.textContent ?? "").trim().length > 80) ? main : textDoc.body;
       }
       const clone = root.cloneNode(true) as Element;
       ["nav", "header", "footer", "script", "style", "noscript"].forEach((tag) => {
@@ -402,6 +465,33 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
       }
       if (selectorMissed) {
         text = `[Warning: selector "${selector}" not found — returning full page text]\n\n` + text;
+      }
+      // Whole-page reads append the text of substantial same-origin frames.
+      // Apps whose entire UI is frame-hosted (GoHighLevel's builders are the
+      // reference case) otherwise return a near-empty shell and read as a
+      // blank page. The size gate keeps ad, pixel, and analytics frames out:
+      // those are tiny or zero-sized, and their text is never what was asked
+      // for. Each block is labelled with an addressable frame path so the
+      // caller can scope the next call rather than paging through everything.
+      const frameSections: string[] = [];
+      if (!selector && !msg.frame && msg.include_frames !== false) {
+        const viewportArea = Math.max(1, window.innerWidth * window.innerHeight);
+        for (const node of reachableFrames(false)) {
+          const area = Math.max(0, node.clip.width) * Math.max(0, node.clip.height);
+          const substantial = area / viewportArea >= 0.15;
+          if (!substantial) continue;
+          const body = node.doc.body;
+          if (!body) continue;
+          const ftext = extractTextDeep(body, new Set(["NAV", "HEADER", "FOOTER"]))
+            .replace(/[ \t]+/g, " ")
+            .replace(/\n\s*\n+/g, "\n\n")
+            .trim();
+          if (ftext.length < 20) continue;
+          frameSections.push(`\n\n--- iframe ${node.path} (${node.doc.location?.href ?? "about:blank"}) ---\n${ftext}`);
+        }
+      }
+      if (frameSections.length > 0) {
+        text += frameSections.join("");
       }
       // Shadow-host census so the agent can recognise pages where
       // execute_script returns an empty document (Radix portals, Stencil/Lit
@@ -450,23 +540,34 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
     case "get_page_html": {
       const selector = msg.selector as string | undefined;
       const maxChars = (msg.max_chars as number | undefined) ?? 50000;
+      const htmlDoc = resolveFrameDocument(msg.frame as string | undefined);
+      if (htmlDoc === null) {
+        return {
+          type: "page_html_response",
+          requestId: msg.requestId,
+          html: "",
+          total_chars: 0,
+          truncated: false,
+          frame_error: frameErrorHint(msg.frame as string | undefined),
+        };
+      }
       let root: Element;
       let selectorMissed = false;
       let selectorInShadow = false;
       if (selector) {
-        let el = document.querySelector(selector);
+        let el = htmlDoc.querySelector(selector);
         if (!el) {
-          const deep = queryAllDeep(document, selector)[0];
+          const deep = queryAllDeep(htmlDoc, selector)[0];
           if (deep) {
             el = deep;
             selectorInShadow = true;
           }
         }
         if (!el) selectorMissed = true;
-        root = el ?? document.body;
+        root = el ?? htmlDoc.body;
       } else {
-        const main = document.querySelector("main, [role='main']");
-        root = (main && (main.textContent ?? "").trim().length > 80) ? main : document.body;
+        const main = htmlDoc.querySelector("main, [role='main']");
+        root = (main && (main.textContent ?? "").trim().length > 80) ? main : htmlDoc.body;
       }
       // outerHTML on the live element. Caller is responsible for paginating /
       // truncating large pages via max_chars. We strip <script> and <style>
@@ -494,8 +595,15 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
       const SELECTORS = 'input:not([type=hidden]), textarea, select, button, a[href], [role=button], [role=link], [role=menuitem], [role=option], [role=tab], [onclick], [tabindex]';
       const results: Array<{ index: number; type: string; label: string; value: string; x: number; y: number; width: number; height: number }> = [];
       let idx = 0;
-      for (const el of Array.from(document.querySelectorAll<HTMLElement>(SELECTORS))) {
-        const rect = el.getBoundingClientRect();
+      const elementsDoc = resolveFrameDocument(msg.frame as string | undefined);
+      if (elementsDoc === null) {
+        return { type: "elements_response", requestId: msg.requestId, elements: [], frame_error: frameErrorHint(msg.frame as string | undefined) };
+      }
+      // queryAllDeep rather than querySelectorAll: this inventory is what an
+      // agent reads to decide where to click, and it was blind to both closed
+      // shadow roots and same-origin frames.
+      for (const el of queryAllDeep<HTMLElement>(elementsDoc, SELECTORS)) {
+        const rect = viewportRect(el);
         if (rect.width === 0 || rect.height === 0) continue;
         // No viewport filter — include off-screen elements so Claude can see the full page
         const s = getComputedStyle(el);
@@ -505,7 +613,7 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
         if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement) {
           label = el.placeholder || el.getAttribute("aria-label") || el.getAttribute("name") || "";
           if (!label && el.id) {
-            const lbl = document.querySelector<HTMLLabelElement>(`label[for="${el.id}"]`);
+            const lbl = (el.ownerDocument ?? document).querySelector<HTMLLabelElement>(`label[for="${CSS.escape(el.id)}"]`);
             if (lbl) label = (lbl.textContent ?? "").trim();
           }
         } else {
@@ -533,8 +641,9 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
           type,
           label: label.replace(/\s+/g, " ").trim(),
           value: currentValue,
-          x: Math.round(rect.x),
-          y: Math.round(rect.y),
+          ...(isInFrame(el) ? { frame: framePathOf(el) } : {}),
+          x: Math.round(rect.left),
+          y: Math.round(rect.top),
           width: Math.round(rect.width),
           height: Math.round(rect.height),
         });
@@ -544,7 +653,23 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
     }
 
     case "get_form_fields": {
-      const { fields, hiddenFieldCount, captcha, oauthIndicators } = enumerateFormFields(document);
+      // Inventory mode used to ignore `frame` entirely while the tool still
+      // advertised the parameter, so `get_form_fields(frame: "iframe.builder")`
+      // silently returned the TOP document's fields labelled as the frame's.
+      // A wrong answer delivered confidently is the worst failure this tool
+      // surface can have, so the frame is honoured here and a bad frame is an
+      // explicit error rather than a quiet fallback.
+      const fieldDoc = resolveFrameDocument(msg.frame as string | undefined);
+      if (fieldDoc === null) {
+        return {
+          type: "form_fields_response",
+          requestId: msg.requestId,
+          fields: [],
+          warning: "",
+          frame_error: frameErrorHint(msg.frame as string | undefined),
+        };
+      }
+      const { fields, hiddenFieldCount, captcha, oauthIndicators } = enumerateFormFields(fieldDoc);
       const onlyEmpty = msg.only_empty === true;
 
       let warning = "";
@@ -680,18 +805,22 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
       const query = (msg.query as string).toLowerCase();
       let target: Element | null = null;
       let matchedText = "";
+      const scrollDoc = resolveFrameDocument(msg.frame as string | undefined);
+      if (scrollDoc === null) {
+        return { type: "action_done", requestId: msg.requestId, message: frameErrorHint(msg.frame as string | undefined) };
+      }
 
       // Try as CSS selector first — pierce shadow roots so selectors returned
       // by find_text (which walks closed shadow trees) resolve correctly.
       try {
-        target = queryAllDeep(document, msg.query as string)[0] ?? null;
+        target = queryAllDeep(scrollDoc, msg.query as string)[0] ?? null;
         if (target) matchedText = msg.query as string;
       } catch { /* invalid selector */ }
 
       // Otherwise search by label/text. Pierce shadow roots so labels and
       // headings inside Radix portals are reachable.
       if (!target) {
-        for (const el of queryAllDeep<HTMLElement>(document, "input, textarea, select, button, [role=button], label, h1, h2, h3, h4, h5, h6")) {
+        for (const el of queryAllDeep<HTMLElement>(scrollDoc, "input, textarea, select, button, [role=button], label, h1, h2, h3, h4, h5, h6")) {
           const text = (el.textContent ?? el.getAttribute("aria-label") ?? el.getAttribute("placeholder") ?? "").toLowerCase();
           if (text.includes(query)) {
             target = el;
@@ -704,7 +833,13 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
       if (!target) return { type: "action_done", requestId: msg.requestId, message: `No element found matching "${msg.query}"` };
       // Capture stable document y BEFORE scrolling — getBoundingClientRect after smooth scroll
       // returns a mid-animation value which is inconsistent and confusing.
-      const docY = Math.round(target.getBoundingClientRect().top + window.scrollY);
+      // Document y within the target's OWN document: that is the number a
+      // caller can act on, since scrolling a frame-hosted element means
+      // scrolling that frame. The frame path is reported alongside so the two
+      // numbers are never read against the wrong document.
+      const ownView = target.ownerDocument?.defaultView ?? window;
+      const docY = Math.round(target.getBoundingClientRect().top + ownView.scrollY);
+      const scrollFrame = isInFrame(target) ? framePathOf(target) : "";
       // scrollSmartIntoView walks overflow:auto/scroll ancestors so inner
       // scroll panes (SPAs where the outer document is tiny but the inner
       // pane scrolls 15000+px) actually move. Plain scrollIntoView only
@@ -714,7 +849,7 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
       return {
         type: "action_done",
         requestId: msg.requestId,
-        message: `Scrolled to "${matchedText}" (document y: ${docY})`,
+        message: `Scrolled to "${matchedText}"${scrollFrame ? ` in iframe ${scrollFrame}` : ""} (document y: ${docY}${scrollFrame ? ", within that frame" : ""})`,
       };
     }
 
@@ -1064,9 +1199,18 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
       // background can drive a real CDP mouseMoved to it.
       const selector = msg.selector as string | undefined;
       const text = msg.text as string | undefined;
+      const hoverDoc = resolveFrameDocument(msg.frame as string | undefined);
+      if (hoverDoc === null) {
+        return {
+          type: "hover_prepare_response",
+          requestId: msg.requestId,
+          success: false,
+          message: frameErrorHint(msg.frame as string | undefined),
+        };
+      }
       let el: Element | null = null;
-      if (selector) el = queryAllDeep(document, selector)[0] ?? null;
-      else if (text) el = findElementByText(text);
+      if (selector) el = queryAllDeep(hoverDoc, selector)[0] ?? null;
+      else if (text) el = findElementByText(text, hoverDoc);
       if (!el) {
         return {
           type: "hover_prepare_response",
@@ -1077,7 +1221,13 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
       }
       await scrollSmartIntoView(el);
       const res = findClearPoint(el);
-      const rect = el.getBoundingClientRect();
+      // Top-viewport coordinates: hover drives a CDP mouseMoved, which knows
+      // nothing about frames. Hover-only menus and row actions are a large
+      // share of what lives inside dashboard iframes, so this translation is
+      // the difference between the menu opening and the cursor parking over
+      // an unrelated part of the parent page.
+      const rect = viewportRect(el);
+      const hoverFrame = isInFrame(el) ? framePathOf(el) : "";
       return {
         type: "hover_prepare_response",
         requestId: msg.requestId,
@@ -1085,31 +1235,56 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
         x: res.x ?? Math.round(rect.left + rect.width / 2),
         y: res.y ?? Math.round(rect.top + rect.height / 2),
         label: describeSelector(el),
+        frame: hoverFrame,
         occluded: res.occluded,
         occluder: res.occluder,
         message: res.found
-          ? `Hover point resolved on ${describeSelector(el)}`
-          : `${describeSelector(el)} is covered by ${res.occluder?.selector ?? "an overlay"}`,
+          ? `Hover point resolved on ${describeSelector(el)}${hoverFrame ? ` in iframe ${hoverFrame}` : ""}`
+          : `${describeSelector(el)}${hoverFrame ? ` in iframe ${hoverFrame}` : ""} is covered by ${res.occluder?.selector ?? "an overlay"}`,
       };
     }
 
     case "resolve_drag_points": {
       // Resolve from/to coordinates for a drag. Either end may be given as a
       // selector or as raw viewport coordinates.
+      const dragDoc = resolveFrameDocument(msg.frame as string | undefined);
+      if (dragDoc === null) {
+        return {
+          type: "resolve_drag_points_response",
+          requestId: msg.requestId,
+          success: false,
+          message: frameErrorHint(msg.frame as string | undefined),
+        };
+      }
+      // Raw coordinates are interpreted relative to the frame's content box
+      // when a frame is named, so a caller reading positions off a
+      // frame-hosted kanban board can pass what it sees without doing the
+      // offset arithmetic itself.
+      const dragOrigin = msg.frame
+        ? (() => {
+            const r = resolveFrame(msg.frame as string);
+            return r.ok ? { x: r.node.offsetX, y: r.node.offsetY } : { x: 0, y: 0 };
+          })()
+        : { x: 0, y: 0 };
       const resolveEnd = (sel: string | undefined, x: unknown, y: unknown) => {
         if (sel) {
-          const el = queryAllDeep(document, sel)[0] ?? null;
+          const el = queryAllDeep(dragDoc, sel)[0] ?? null;
           if (!el) return null;
           const r = findClearPoint(el);
-          const rect = el.getBoundingClientRect();
+          // Top-viewport coordinates. Drag is how kanban reordering, sliders,
+          // and canvas panning are driven, and all three commonly sit inside
+          // an application frame.
+          const rect = viewportRect(el);
           return {
             x: r.x ?? Math.round(rect.left + rect.width / 2),
             y: r.y ?? Math.round(rect.top + rect.height / 2),
-            label: describeSelector(el),
+            label: describeSelector(el) + (isInFrame(el) ? ` (in iframe ${framePathOf(el)})` : ""),
           };
         }
         if (typeof x === "number" && typeof y === "number") {
-          return { x: Math.round(x), y: Math.round(y), label: `(${Math.round(x)}, ${Math.round(y)})` };
+          const ax = Math.round(x + dragOrigin.x);
+          const ay = Math.round(y + dragOrigin.y);
+          return { x: ax, y: ay, label: `(${ax}, ${ay})` };
         }
         return null;
       };
@@ -1181,13 +1356,96 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
       };
     }
 
+    case "frame_identity": {
+      // What URL does the named frame carry? The background pairs this with a
+      // per-frame injection probe to turn a CSS selector into a chrome.scripting
+      // frame id, which is how execute_script reaches CROSS-ORIGIN frames.
+      // Frame ids are not visible from page context, so the answer has to be
+      // assembled from both sides.
+      const wanted = msg.frame as string;
+      const res = resolveFrame(wanted);
+      if (res.ok) {
+        return {
+          type: "frame_identity_response",
+          requestId: msg.requestId,
+          found: true,
+          src: res.node.el?.getAttribute("src") ?? "",
+          url: res.node.doc.location?.href ?? "",
+          cross_origin: false,
+        };
+      }
+      if (res.reason === "cross-origin" && res.crossOriginEl) {
+        return {
+          type: "frame_identity_response",
+          requestId: msg.requestId,
+          found: true,
+          src: res.crossOriginEl.getAttribute("src") ?? "",
+          url: "",
+          cross_origin: true,
+        };
+      }
+      return {
+        type: "frame_identity_response",
+        requestId: msg.requestId,
+        found: false,
+        message: frameErrorHint(wanted),
+      };
+    }
+
+    case "frame_origin": {
+      // Where a frame's content box starts, in TOP viewport pixels, plus its
+      // size. click_at_coordinates uses this to accept frame-relative
+      // coordinates — including for cross-origin frames, which no DOM tool
+      // can read but whose position in the parent is plainly measurable.
+      const res = resolveFrame(msg.frame as string);
+      if (res.ok) {
+        return {
+          type: "frame_origin_response",
+          requestId: msg.requestId,
+          found: true,
+          x: Math.round(res.node.offsetX),
+          y: Math.round(res.node.offsetY),
+          width: Math.round(Math.max(0, res.node.clip.width)),
+          height: Math.round(Math.max(0, res.node.clip.height)),
+          cross_origin: false,
+        };
+      }
+      if (res.reason === "cross-origin" && res.crossOriginEl) {
+        const r = viewportRect(res.crossOriginEl);
+        return {
+          type: "frame_origin_response",
+          requestId: msg.requestId,
+          found: true,
+          x: Math.round(r.left),
+          y: Math.round(r.top),
+          width: Math.round(r.width),
+          height: Math.round(r.height),
+          cross_origin: true,
+        };
+      }
+      return {
+        type: "frame_origin_response",
+        requestId: msg.requestId,
+        found: false,
+        message: frameErrorHint(msg.frame as string | undefined),
+      };
+    }
+
     case "list_frames": {
-      // Pierce shadow DOMs (open + closed) so iframes nested inside web
-      // components (e.g. Reddit's chat composer inside a shadow-hosted host)
-      // are discoverable. The previous behavior queried only the light DOM.
-      const iframes = queryAllDeep<HTMLIFrameElement | HTMLFrameElement>(document, "iframe, frame");
-      const frames = iframes.map((el, index) => {
-        const src = el.getAttribute("src") ?? "";
+      // The whole reachable tree, not just the top level. Nested frames were
+      // previously invisible and explicitly documented as unsupported, which
+      // made any app that wraps a builder frame inside a shell frame
+      // unaddressable: the inner frame did not appear, and the selector shown
+      // for the outer one could not reach into it. Each node now carries a
+      // `>>>`-joined path that other tools accept verbatim as `frame:`.
+      const nodes = reachableFrames(false);
+      const frames: Array<Record<string, unknown>> = [];
+      const seenEls = new Set<Element>();
+
+      for (const node of nodes) {
+        if (node.el) seenEls.add(node.el);
+        const el = node.el;
+        const src = el?.getAttribute("src") ?? "";
         let origin = "";
         try {
           origin = src ? new URL(src, location.href).origin : "";
@@ -1195,49 +1453,77 @@ async function handleMessage(msg: IncomingMessage): Promise<unknown> {
           // src may be a `javascript:` scheme or otherwise unparseable.
           origin = "";
         }
-        let accessible = false;
-        try {
-          accessible = !!(el as HTMLIFrameElement).contentDocument;
-        } catch {
-          accessible = false;
-        }
-        const rect = el.getBoundingClientRect();
-        // Build a usable CSS selector — prefer #id, fall back to class chain
-        // bounded by the tag, fall back to nth-of-type. The selector is
-        // intended to be passed back into find_text/find_input via frame=.
-        let selector: string;
-        if (el.id) {
-          selector = `#${CSS.escape(el.id)}`;
-        } else if (el.className && typeof el.className === "string" && el.className.trim()) {
-          const cls = el.className.trim().split(/\s+/).map((c) => `.${CSS.escape(c)}`).join("");
-          selector = `${el.tagName.toLowerCase()}${cls}`;
-        } else {
-          // nth-of-type among siblings sharing the same tag (iframe/frame).
-          const tag = el.tagName.toLowerCase();
-          const sameTagSiblings = Array.from(document.querySelectorAll(tag));
-          const idx = sameTagSiblings.indexOf(el) + 1;
-          selector = `${tag}:nth-of-type(${idx})`;
-        }
-        // Cross-origin = has a real http(s) src we can't read in-page. Surface
-        // the fetch_url escape hatch so the agent doesn't dead-end on it.
-        const crossOrigin = !accessible && !!origin && origin !== location.origin;
-        return {
-          index: index + 1,
-          selector,
+        frames.push({
+          index: frames.length + 1,
+          selector: node.path,
+          depth: node.depth,
           src,
-          origin,
-          title: el.getAttribute("title") ?? "",
-          accessible,
-          cross_origin: crossOrigin,
-          hint: crossOrigin && src
-            ? `cross-origin: read its HTML with fetch_url("${src}") or capture it with take_screenshot`
-            : undefined,
-          x: Math.round(rect.x),
-          y: Math.round(rect.y),
-          width: Math.round(rect.width),
-          height: Math.round(rect.height),
-        };
-      });
+          origin: origin || (node.doc.location?.origin ?? ""),
+          title: el?.getAttribute("title") ?? "",
+          accessible: true,
+          cross_origin: false,
+          url: node.doc.location?.href ?? "",
+          // Position of the frame's content origin in TOP viewport pixels, so
+          // click_at_coordinates(frame.x + dx, frame.y + dy) lands correctly
+          // even for a frame nested three levels deep.
+          x: Math.round(node.clip.left),
+          y: Math.round(node.clip.top),
+          width: Math.round(Math.max(0, node.clip.width)),
+          height: Math.round(Math.max(0, node.clip.height)),
+          content_origin_x: Math.round(node.offsetX),
+          content_origin_y: Math.round(node.offsetY),
+        });
+      }
+
+      // Cross-origin frames: unreadable, but still addressable by coordinate
+      // and by execute_script, so they belong in the listing with the routes
+      // that do work rather than being silently omitted.
+      const searchDocs: Document[] = [document, ...nodes.map((n) => n.doc)];
+      for (const doc of searchDocs) {
+        let els: Element[] = [];
+        try {
+          els = queryAllDeep<Element>(doc, "iframe, frame", { frames: false });
+        } catch {
+          continue;
+        }
+        for (const el of els) {
+          if (seenEls.has(el) || !isCrossOrigin(el)) continue;
+          seenEls.add(el);
+          const src = el.getAttribute("src") ?? "";
+          let origin = "";
+          try {
+            origin = src ? new URL(src, location.href).origin : "";
+          } catch {
+            origin = "";
+          }
+          const parentPath = isInFrame(el) ? framePathOf(el) : "";
+          const own = uniqueSelectorIn(el.ownerDocument, el);
+          const path = parentPath ? `${parentPath} ${FRAME_PATH_SEP} ${own}` : own;
+          const r = viewportRect(el);
+          frames.push({
+            index: frames.length + 1,
+            selector: path,
+            depth: path.split(FRAME_PATH_SEP).length,
+            src,
+            origin,
+            title: el.getAttribute("title") ?? "",
+            accessible: false,
+            cross_origin: true,
+            hint:
+              `cross-origin: DOM tools cannot read it. click_at_coordinates(frame: "${path}", x, y) delivers real input into it, ` +
+              `execute_script(frame: "${path}") runs inside it` +
+              (src ? `, fetch_url("${src}") returns its HTML` : "") +
+              `, take_screenshot captures it visually.`,
+            x: Math.round(r.left),
+            y: Math.round(r.top),
+            width: Math.round(r.width),
+            height: Math.round(r.height),
+            content_origin_x: Math.round(r.left),
+            content_origin_y: Math.round(r.top),
+          });
+        }
+      }
+
       // Augment with shadow-host inventory so the agent can spot pages whose
       // visible content is rendered inside closed shadow roots (Radix portals,
       // Stencil/Lit web components). When the agent

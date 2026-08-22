@@ -1674,6 +1674,99 @@ async function forwardToContentScript(
   return sendToContentScript(tabId, msg);
 }
 
+/**
+ * Resolve a `frame` argument to a `chrome.scripting` frame id.
+ *
+ * This is the one frame path that works for CROSS-ORIGIN frames. Everything
+ * else in chromeboost reaches into a frame through the parent document, which
+ * the same-origin policy stops dead; `chrome.scripting` injects per frame
+ * under the extension's own host permissions, so it does not care about the
+ * boundary at all.
+ *
+ * Frame ids are not observable from page context, so the match runs in two
+ * steps: ask the content script what URL the named frame carries, then run a
+ * one-line probe in every frame and pair the answers up. Ambiguity is reported
+ * rather than guessed at — two frames with the same src is a real layout, and
+ * picking one at random would produce a script that ran somewhere the caller
+ * did not intend.
+ */
+async function resolveScriptingFrameId(
+  tab: chrome.tabs.Tab,
+  frameSelector: string,
+  requestId: string,
+): Promise<{ frameId?: number; url?: string; error?: string }> {
+  const tabId = tab.id!;
+  let info: { found?: boolean; src?: string; url?: string; cross_origin?: boolean; message?: string };
+  try {
+    info = await forwardToContentScript(tab, {
+      type: "frame_identity",
+      requestId: `${requestId}-frameid`,
+      frame: frameSelector,
+    }) as typeof info;
+  } catch (e) {
+    return { error: `Could not inspect frames on this page: ${(e as Error).message}` };
+  }
+  if (!info.found) {
+    return { error: info.message ?? `Frame "${frameSelector}" not found. Call list_frames() to see what is addressable.` };
+  }
+
+  let probes: chrome.scripting.InjectionResult<string>[] = [];
+  try {
+    probes = await chrome.scripting.executeScript({
+      target: { tabId, allFrames: true },
+      func: () => location.href,
+    }) as chrome.scripting.InjectionResult<string>[];
+  } catch (e) {
+    return { error: `Could not enumerate frames for injection: ${(e as Error).message}` };
+  }
+
+  const normalize = (u: string): string => {
+    try {
+      return new URL(u, tab.url ?? location.href).href;
+    } catch {
+      return u;
+    }
+  };
+  const wantUrl = info.url ? normalize(info.url) : "";
+  const wantSrc = info.src ? normalize(info.src) : "";
+
+  const candidates = probes.filter((p) => p.frameId !== 0 && typeof p.result === "string");
+  const exact = candidates.filter((p) => {
+    const href = normalize(p.result as string);
+    return (wantUrl && href === wantUrl) || (wantSrc && href === wantSrc);
+  });
+  if (exact.length === 1) return { frameId: exact[0].frameId, url: exact[0].result as string };
+  if (exact.length > 1) {
+    return {
+      error:
+        `Frame "${frameSelector}" is ambiguous for scripting: ${exact.length} frames on this page load the same URL (${wantUrl || wantSrc}). ` +
+        `Frame ids: ${exact.map((p) => p.frameId).join(", ")}. Narrow the page down, or drive the frame with click_at_coordinates(frame: "${frameSelector}", x, y) instead.`,
+    };
+  }
+
+  // The frame may have navigated since it was written into the DOM, so its
+  // current href no longer matches its src attribute. Fall back to an origin
+  // match, which is still specific enough to be useful and is reported.
+  if (wantSrc) {
+    let wantOrigin = "";
+    try { wantOrigin = new URL(wantSrc).origin; } catch { /* unparseable src */ }
+    if (wantOrigin) {
+      const sameOrigin = candidates.filter((p) => {
+        try { return new URL(p.result as string).origin === wantOrigin; } catch { return false; }
+      });
+      if (sameOrigin.length === 1) return { frameId: sameOrigin[0].frameId, url: sameOrigin[0].result as string };
+    }
+  }
+
+  const listing = candidates.map((p) => `  frameId ${p.frameId}: ${p.result}`).join("\n");
+  return {
+    error:
+      `Frame "${frameSelector}" exists in the DOM but no injectable frame matched it` +
+      `${wantSrc || wantUrl ? ` (looking for ${wantUrl || wantSrc})` : ""}. ` +
+      `Injectable frames:\n${listing || "  (none)"}`,
+  };
+}
+
 /** Resolves with the new URL when the tab finishes navigating, or null on timeout. */
 function waitForNavigation(tabId: number, timeoutMs: number): Promise<string | null> {
   return new Promise((resolve) => {
@@ -2515,6 +2608,26 @@ async function handleMcpMessage(msg: {
       let reauthorized = false;
       const beforeUrl = tab.url ?? "";
 
+      // Frame targeting. chrome.scripting injects per frame under the
+      // extension's own host permissions, so unlike every in-page route this
+      // one reaches CROSS-ORIGIN frames as well as same-origin ones.
+      let scriptFrameId: number | undefined;
+      let scriptFrameNote = "";
+      if (msg.frame) {
+        const resolved = await resolveScriptingFrameId(tab, msg.frame as string, msg.requestId as string);
+        if (resolved.error) {
+          return {
+            type: "script_response",
+            requestId: msg.requestId,
+            result: `Error: ${resolved.error}`,
+            alert: null,
+            context: "main" as const,
+          };
+        }
+        scriptFrameId = resolved.frameId;
+        scriptFrameNote = ` [ran in iframe ${msg.frame}${resolved.url ? ` — ${resolved.url}` : ""}]`;
+      }
+
       // Race a chrome.scripting / chrome.debugger call against a tab-navigation
       // listener. If the page navigates away mid-script, the chrome APIs can
       // hang indefinitely (sync `location.href` = ... followed by `await` is
@@ -2613,7 +2726,7 @@ async function handleMcpMessage(msg: {
       `;
 
       const runInjection = () => chrome.scripting.executeScript({
-        target: { tabId },
+        target: scriptFrameId === undefined ? { tabId } : { tabId, frameIds: [scriptFrameId] },
         world: "MAIN",
         func: async (code: string, usesAwait: boolean, shadowHelpers: string) => {
           let result: unknown;
@@ -2755,6 +2868,22 @@ async function handleMcpMessage(msg: {
       // from locking the debugger indefinitely ("Another debugger is already
       // attached" on every subsequent call until the tab is refreshed).
       const scriptTimeoutMs = (msg.timeout_ms as number | undefined) ?? 30000;
+      if (cspBlocked && scriptFrameId !== undefined) {
+        // The CDP fallback below evaluates in the tab's top execution context.
+        // Running it for a frame-targeted call would execute the code in the
+        // wrong document and report it as a success, so refuse instead.
+        return {
+          type: "script_response",
+          requestId: msg.requestId,
+          result:
+            `Error: the page's Content-Security-Policy blocked eval inside iframe "${msg.frame}", and chromeboost's CDP fallback ` +
+            `can only evaluate in the top frame. Reach this frame another way: click_at_coordinates(frame: "${msg.frame}", x, y) ` +
+            `for input, or read it with get_page_text(frame: "${msg.frame}") / get_page_html(frame: "${msg.frame}") if it is same-origin.`,
+          alert: null,
+          context: "main" as const,
+          frame: msg.frame as string,
+        };
+      }
       if (cspBlocked) {
         try {
           await raceWithNavigation(withDebugger(tabId, async () => {
@@ -2841,9 +2970,10 @@ async function handleMcpMessage(msg: {
       return {
         type: "script_response",
         requestId: msg.requestId,
-        result,
+        result: scriptFrameNote ? `${result}${scriptFrameNote}` : result,
         alert: alertMsg,
         context: "main" as const,
+        frame: (msg.frame as string | undefined) || undefined,
         reauthorized: reauthorized || undefined,
       };
     }
@@ -2859,6 +2989,8 @@ async function handleMcpMessage(msg: {
       // a React re-render and a single attempt fails; a short retry loop
       // turns those into successful clicks instead of 30s timeouts.
       type PrepResult = {
+        /** Same-origin iframe the target resolved inside, if any. */
+        frame?: string;
         success: boolean;
         message: string;
         x?: number;
@@ -2928,6 +3060,7 @@ async function handleMcpMessage(msg: {
           near_text: msg.near_text,
           in_dialog: msg.in_dialog,
           dialog_query: msg.dialog_query,
+          frame: msg.frame,
         }) as PrepResult;
         if (prep.success) break;
         // Don't retry when the scope itself was missing — it won't appear on a 500ms delay.
@@ -2973,6 +3106,7 @@ async function handleMcpMessage(msg: {
             near_text: msg.near_text,
             in_dialog: msg.in_dialog,
             dialog_query: msg.dialog_query,
+            frame: msg.frame,
           }) as PrepResult;
           if (reprep.success && !reprep.target_disabled) {
             prep = reprep;
@@ -3025,6 +3159,7 @@ async function handleMcpMessage(msg: {
             near_text: msg.near_text,
             in_dialog: msg.in_dialog,
             dialog_query: msg.dialog_query,
+            frame: msg.frame,
           }) as PrepResult;
           if (reprep.success && reprep.width !== 0 && reprep.height !== 0) {
             // Replace prep so the rest of the flow uses the visible candidate.
@@ -3982,11 +4117,16 @@ async function handleMcpMessage(msg: {
       }
 
       let message: string;
+      // Which document answered. Two frames on one dashboard can each hold a
+      // "Save", so a click that reports plain success without saying where it
+      // landed is not actually verifiable by the caller.
+      const frameNote = prep.frame ? ` [in iframe ${prep.frame}]` : "";
+
       if (untilResult) {
         // The until-clause is the authoritative signal — a successful click
         // is the one whose post-click condition was met. Failure is reported
         // as success:false so callers can branch on it.
-        message = `${result.message}${untilResult.ok ? "" : "\n"}${untilResult.ok ? ` — ${untilResult.reason}` : `\n⚠ ${untilResult.reason}`}`;
+        message = `${result.message}${frameNote}${untilResult.ok ? "" : "\n"}${untilResult.ok ? ` — ${untilResult.reason}` : `\n⚠ ${untilResult.reason}`}`;
         if (alertMessage) {
           message += `\n\nPAGE ALERT: "${alertMessage}" — the page showed a dialog with this message. Read it and act on it before proceeding (e.g. fill a missing field, uncheck a checkbox).`;
         }
@@ -3998,6 +4138,7 @@ async function handleMcpMessage(msg: {
           after_url,
           navigated,
           focused_after: probe.focused_after,
+          ...(prep.frame ? { frame: prep.frame } : {}),
           ...(recoveredVia ? { recovered_via: recoveredVia } : {}),
           ...(untilResult.request_in_flight ? { request_in_flight: true } : {}),
           ...(untilResult.dialog ? { dialog_opened: untilResult.dialog } : {}),
@@ -4005,14 +4146,14 @@ async function handleMcpMessage(msg: {
       }
 
       message = navigationResult
-        ? `Clicked and navigated to ${navigationResult}`
-        : result.message;
+        ? `Clicked and navigated to ${navigationResult}${frameNote}`
+        : `${result.message}${frameNote}`;
 
       if (alertMessage) {
         message += `\n\nPAGE ALERT: "${alertMessage}" — the page showed a dialog with this message. Read it and act on it before proceeding (e.g. fill a missing field, uncheck a checkbox).`;
       }
 
-      return { type: "click_element_response", success: true, message, before_url, after_url, navigated, focused_after: probe.focused_after, ...(recoveredVia ? { recovered_via: recoveredVia } : {}) };
+      return { type: "click_element_response", success: true, message, before_url, after_url, navigated, focused_after: probe.focused_after, ...(prep.frame ? { frame: prep.frame } : {}), ...(recoveredVia ? { recovered_via: recoveredVia } : {}) };
       }; // end runClickFlow
 
       // Wrap the entire post-prep flow in an outer withDebugger when CDP is
@@ -4036,8 +4177,8 @@ async function handleMcpMessage(msg: {
       const tab = await getActiveTab(port);
       const tabId = tab.id!;
       const before_url = tab.url ?? "";
-      const x = Math.round(msg.x as number);
-      const y = Math.round(msg.y as number);
+      let x = Math.round(msg.x as number);
+      let y = Math.round(msg.y as number);
       const button = (msg.button as "left" | "right" | "middle" | undefined) ?? "left";
       const double = msg.double === true;
 
@@ -4051,6 +4192,58 @@ async function handleMcpMessage(msg: {
           after_url: before_url,
           navigated: false,
         };
+      }
+
+      // Frame-relative coordinates. This is the one route that reaches a
+      // CROSS-ORIGIN frame — CDP input resolves at the renderer, so the event
+      // lands in the child frame the way an OS-level click does — and doing
+      // the arithmetic here removes the step most likely to be got wrong by
+      // hand. Offsets come from the frame's on-screen box, so a frame nested
+      // several levels deep works the same as a top-level one.
+      let frameNote = "";
+      if (msg.frame) {
+        const off = await forwardToContentScript(tab, {
+          type: "frame_origin",
+          requestId: msg.requestId + "-frameorigin",
+          frame: msg.frame,
+        }) as { found?: boolean; x?: number; y?: number; width?: number; height?: number; message?: string };
+        if (!off.found || off.x === undefined || off.y === undefined) {
+          return {
+            type: "click_at_coordinates_response",
+            requestId: msg.requestId,
+            success: false,
+            message: off.message ?? `Frame "${msg.frame}" not found — call list_frames() to see what is addressable.`,
+            before_url,
+            after_url: before_url,
+            navigated: false,
+          };
+        }
+        const absX = x + off.x;
+        const absY = y + off.y;
+        // Refuse a point outside the frame it was supposed to be inside.
+        // Silently clicking the parent page instead is exactly the class of
+        // "reported success, nothing happened" failure this codebase exists
+        // to eliminate.
+        if (
+          off.width !== undefined && off.height !== undefined &&
+          (x < 0 || y < 0 || x > off.width || y > off.height)
+        ) {
+          return {
+            type: "click_at_coordinates_response",
+            requestId: msg.requestId,
+            success: false,
+            message:
+              `(${x}, ${y}) is outside frame "${msg.frame}", which is ${Math.round(off.width)}x${Math.round(off.height)}. ` +
+              `With frame set, coordinates are relative to the frame's own top-left corner, not the page's. ` +
+              `Drop the frame argument to click at absolute (${absX}, ${absY}) instead.`,
+            before_url,
+            after_url: before_url,
+            navigated: false,
+          };
+        }
+        frameNote = ` in iframe ${msg.frame} (frame-relative ${x}, ${y})`;
+        x = Math.round(absX);
+        y = Math.round(absY);
       }
       // Cheap viewport sanity check: a click at (-50, 5000) is almost
       // certainly a coordinate-space mix-up. We don't know the actual viewport
@@ -4152,7 +4345,7 @@ async function handleMcpMessage(msg: {
           requestId: msg.requestId,
           success: true,
           message:
-            `Clicked at (${x}, ${y})${hit ? ` on <${hit.tag}> ${hit.selector}` : ""} via synthetic fallback — ` +
+            `Clicked at (${x}, ${y})${frameNote}${hit ? ` on <${hit.tag}> ${hit.selector}` : ""} via synthetic fallback — ` +
             `CDP dispatch exceeded its budget (${err.phase ?? "cdp_click_at"}), which usually means the page's ` +
             `main thread is saturated. NOTE: synthetic events are isTrusted=false, so if the target gates on ` +
             `isTrusted this click will not be honoured.${au !== before_url ? ` — navigated to ${au}` : ""}`,
@@ -4189,7 +4382,7 @@ async function handleMcpMessage(msg: {
         type: "click_at_coordinates_response",
         requestId: msg.requestId,
         success: true,
-        message: `Clicked at (${x}, ${y})${hitNote}${double ? " double-click" : ""}${button !== "left" ? ` button=${button}` : ""}${coordPiercedNote}${dispatchNote}${after_url !== before_url ? ` — navigated to ${after_url}` : ""}${scrimWarning}`,
+        message: `Clicked at (${x}, ${y})${frameNote}${hitNote}${double ? " double-click" : ""}${button !== "left" ? ` button=${button}` : ""}${coordPiercedNote}${dispatchNote}${after_url !== before_url ? ` — navigated to ${after_url}` : ""}${scrimWarning}`,
         before_url,
         after_url,
         navigated: after_url !== before_url,
@@ -4215,7 +4408,8 @@ async function handleMcpMessage(msg: {
           requestId: msg.requestId + "-prep",
           selector: msg.selector,
           text: msg.text,
-        }) as { success?: boolean; x?: number; y?: number; label?: string; message?: string; occluder?: OccluderInfo };
+          frame: msg.frame,
+        }) as { success?: boolean; x?: number; y?: number; label?: string; message?: string; occluder?: OccluderInfo; frame?: string };
         if (prep.x === undefined || prep.y === undefined) {
           return { type: "hover_response", requestId: msg.requestId, success: false, message: prep.message ?? "Could not resolve a hover target." };
         }
@@ -4223,6 +4417,7 @@ async function handleMcpMessage(msg: {
         hy = prep.y;
         label = prep.label ?? label;
         occluder = prep.occluder;
+        if (prep.frame) label += ` (in iframe ${prep.frame})`;
       }
 
       try {
@@ -4255,6 +4450,7 @@ async function handleMcpMessage(msg: {
         to_selector: msg.to_selector,
         to_x: msg.to_x,
         to_y: msg.to_y,
+        frame: msg.frame,
       }) as {
         success?: boolean;
         message?: string;
@@ -4290,7 +4486,7 @@ async function handleMcpMessage(msg: {
     case "probe_point": {
       const tab = await getActiveTab(port);
       if (!isScriptableUrl(tab.url)) {
-        return { type: "probe_point_response", requestId: msg.requestId, stack: [], in_iframe: false, x: msg.x as number, y: msg.y as number };
+        return { type: "probe_point_response", requestId: msg.requestId, stack: [], in_iframe: false, frame: "", x: msg.x as number, y: msg.y as number };
       }
       return await forwardToContentScript(tab, {
         type: "probe_point",
@@ -4471,26 +4667,41 @@ async function handleMcpMessage(msg: {
       // the CDP keys land on the outer document and are silently dropped.
       // Only works for same-origin iframes (contentDocument access requires it).
       let frameFocusOk: boolean | null = null;
+      let typeFrameId: number | undefined;
       if (frameSelector) {
+        // Inject INTO the frame rather than reaching into it from the parent.
+        // The old approach was `document.querySelector(sel).contentDocument`
+        // run in the top frame, which meant a nested frame, a frame inside a
+        // shadow root, and every cross-origin frame were all unreachable. With
+        // a frame-targeted injection the script's own `document` IS the
+        // frame's document, so none of those cases are special — and the
+        // keystrokes that follow are dispatched at the tab, landing on
+        // whatever now holds focus regardless of which document that is.
+        const resolvedFrame = await resolveScriptingFrameId(tab, frameSelector, msg.requestId as string);
+        if (resolvedFrame.error) {
+          return {
+            type: "action_done",
+            requestId: msg.requestId,
+            success: false,
+            message: resolvedFrame.error,
+          };
+        }
+        typeFrameId = resolvedFrame.frameId;
         try {
           const r = await chrome.scripting.executeScript({
-            target: { tabId },
+            target: { tabId, frameIds: [typeFrameId!] },
             world: "MAIN",
-            func: (sel: string) => {
-              const iframe = document.querySelector(sel);
-              if (!(iframe instanceof HTMLIFrameElement)) return "no-iframe";
-              let doc: Document | null = null;
-              try { doc = iframe.contentDocument; } catch { doc = null; }
-              if (!doc) return "cross-origin";
-              const editable = doc.querySelector<HTMLElement>(
-                '[contenteditable="true"], [contenteditable=""], textarea, input:not([type=hidden])'
-              );
-              if (!editable) return "no-editable-in-frame";
+            func: (innerSel: string | null) => {
+              const editable = (innerSel ? document.querySelector<HTMLElement>(innerSel) : null)
+                ?? document.querySelector<HTMLElement>(
+                  '[contenteditable="true"], [contenteditable=""], textarea, input:not([type=hidden])'
+                );
+              if (!editable) return innerSel ? "into-selector-not-found-in-frame" : "no-editable-in-frame";
               editable.focus();
               // Place caret at the end so typing appends rather than overwriting selection
               if (editable.isContentEditable) {
-                const sel = doc.getSelection();
-                const range = doc.createRange();
+                const sel = document.getSelection();
+                const range = document.createRange();
                 range.selectNodeContents(editable);
                 range.collapse(false);
                 sel?.removeAllRanges();
@@ -4501,7 +4712,7 @@ async function handleMcpMessage(msg: {
               }
               return "ok";
             },
-            args: [frameSelector],
+            args: [(msg.into_selector as string | undefined) ?? null],
           });
           frameFocusOk = r[0]?.result === "ok";
           if (!frameFocusOk) {
@@ -4509,7 +4720,7 @@ async function handleMcpMessage(msg: {
               type: "action_done",
               requestId: msg.requestId,
               success: false,
-              message: `Could not focus an editable element inside iframe "${frameSelector}" (${r[0]?.result ?? "unknown"}). The iframe may be cross-origin or empty.`,
+              message: `Could not focus an editable element inside iframe "${frameSelector}" (${r[0]?.result ?? "unknown"}). The frame may be empty, or into_selector may not match anything inside it.`,
             };
           }
         } catch (e) {
@@ -4686,18 +4897,13 @@ async function handleMcpMessage(msg: {
       // top-level frame's execution context, so events dispatched there don't
       // reach the iframe's React tree.
       let frameVerify = "";
-      if (frameSelector) {
+      if (frameSelector && typeFrameId !== undefined) {
         try {
           const r = await chrome.scripting.executeScript({
-            target: { tabId },
+            target: { tabId, frameIds: [typeFrameId] },
             world: "MAIN",
-            func: (sel: string) => {
-              const iframe = document.querySelector(sel);
-              if (!(iframe instanceof HTMLIFrameElement)) return "";
-              let doc: Document | null = null;
-              try { doc = iframe.contentDocument; } catch { doc = null; }
-              if (!doc) return "";
-              const active = doc.activeElement;
+            func: () => {
+              const active = document.activeElement;
               if (active instanceof HTMLElement) {
                 active.dispatchEvent(new Event("input", { bubbles: true }));
                 active.dispatchEvent(new Event("change", { bubbles: true }));
@@ -4708,7 +4914,6 @@ async function handleMcpMessage(msg: {
               }
               return "";
             },
-            args: [frameSelector],
           });
           frameVerify = (r[0]?.result as string) ?? "";
         } catch { /* best-effort verification */ }
@@ -4869,48 +5074,49 @@ async function handleMcpMessage(msg: {
       const value = msg.value as string;
       const frameSelector = msg.frame as string | undefined;
 
-      // Tag the element in the content script first (queryAllDeep pierces
-      // open AND closed shadow roots). The MAIN-world script then reads by
-      // tag attribute. Top-frame only — same-origin iframe access is still
-      // routed through doc.querySelector below since the content script
-      // doesn't run inside iframe documents.
+      // Tag the element in the content script first (queryAllDeep pierces open
+      // AND closed shadow roots, and now same-origin frames too). The
+      // MAIN-world script then reads by tag attribute. Tagging is skipped only
+      // when it cannot help: a cross-origin frame, where no content script
+      // reaches the element and the injected script has to fall back to a
+      // plain querySelector in the frame's own document.
       const tagId = `chromeboost-react-target-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
       let taggedInShadow = false;
-      if (!frameSelector) {
-        try {
-          const tagResult = await forwardToContentScript(tab, {
-            type: "tag_for_react",
-            requestId: msg.requestId + "-tag",
-            selector,
-            tagId,
-          }) as { tagged: boolean; in_shadow: boolean };
-          if (tagResult?.tagged) {
-            taggedInShadow = !!tagResult.in_shadow;
-          }
-        } catch {
-          // Tagging is best-effort; fall back to plain doc.querySelector below
-          // if it failed (e.g. content script not loaded on this page).
+      try {
+        const tagResult = await forwardToContentScript(tab, {
+          type: "tag_for_react",
+          requestId: msg.requestId + "-tag",
+          selector,
+          tagId,
+          frame: frameSelector,
+        }) as { tagged: boolean; in_shadow: boolean };
+        if (tagResult?.tagged) {
+          taggedInShadow = !!tagResult.in_shadow;
         }
+      } catch {
+        // Tagging is best-effort; fall back to plain doc.querySelector below
+        // if it failed (e.g. content script not loaded on this page).
+      }
+
+      // Frame targeting. Injecting INTO the frame makes its document the
+      // script's own `document`, which removes the parent-side contentDocument
+      // walk entirely — and with it the same-origin restriction, the
+      // top-level-frames-only restriction, and the shadow-root blind spot the
+      // walk had.
+      let setFrameId: number | undefined;
+      if (frameSelector) {
+        const resolvedFrame = await resolveScriptingFrameId(tab, frameSelector, msg.requestId as string);
+        if (resolvedFrame.error) {
+          return { type: "action_done", requestId: msg.requestId, success: false, message: resolvedFrame.error };
+        }
+        setFrameId = resolvedFrame.frameId;
       }
 
       const r = await chrome.scripting.executeScript({
-        target: { tabId },
+        target: setFrameId === undefined ? { tabId } : { tabId, frameIds: [setFrameId] },
         world: "MAIN",
-        func: (sel: string, val: string, frameSel: string | undefined, tag: string) => {
-          // Resolve the input — top-frame document by default, contentDocument
-          // when frameSel is given (same-origin iframes only).
-          let doc: Document = document;
-          if (frameSel) {
-            const iframe = document.querySelector(frameSel);
-            if (!(iframe instanceof HTMLIFrameElement)) return { ok: false, reason: `iframe "${frameSel}" not found` };
-            try {
-              const fdoc = iframe.contentDocument;
-              if (!fdoc) return { ok: false, reason: `iframe "${frameSel}" is cross-origin` };
-              doc = fdoc;
-            } catch {
-              return { ok: false, reason: `iframe "${frameSel}" is cross-origin` };
-            }
-          }
+        func: (sel: string, val: string, _frameSel: string | undefined, tag: string) => {
+          const doc: Document = document;
           // Prefer the tag-based lookup when the content script tagged
           // something for us (closed-shadow-root reachable). Fall through to
           // plain querySelector when no tag was placed (iframe path, or
@@ -4936,7 +5142,7 @@ async function handleMcpMessage(msg: {
             el = findTagged(doc);
           }
           if (!el) el = doc.querySelector(sel);
-          if (!el) return { ok: false, reason: `selector "${sel}" not found${frameSel ? ` inside iframe "${frameSel}"` : ""}` };
+          if (!el) return { ok: false, reason: `selector "${sel}" not found${_frameSel ? ` inside iframe "${_frameSel}"` : ""}` };
 
           // Use the prototype FROM THE INSTANCE so the setter is callable on
           // the input directly. Inputs hosted inside an iframe have their own
@@ -5024,36 +5230,34 @@ async function handleMcpMessage(msg: {
       const frameSelector = msg.frame as string | undefined;
 
       // Tag-from-content-script + read-from-main-world so closed shadow root
-      // selectors work. Iframe path skips tagging since the content script
-      // runs against the top frame only.
+      // selectors work. The tag now reaches into same-origin frames as well,
+      // and the injection itself is aimed at the frame, so the previous
+      // "skip tagging when a frame is named" carve-out is gone.
       const tagId = `chromeboost-react-target-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
-      if (!frameSelector) {
-        try {
-          await forwardToContentScript(tab, {
-            type: "tag_for_react",
-            requestId: msg.requestId + "-tag",
-            selector,
-            tagId,
-          });
-        } catch { /* best-effort */ }
+      try {
+        await forwardToContentScript(tab, {
+          type: "tag_for_react",
+          requestId: msg.requestId + "-tag",
+          selector,
+          tagId,
+          frame: frameSelector,
+        });
+      } catch { /* best-effort */ }
+
+      let callFrameId: number | undefined;
+      if (frameSelector) {
+        const resolvedFrame = await resolveScriptingFrameId(tab, frameSelector, msg.requestId as string);
+        if (resolvedFrame.error) {
+          return { type: "action_done", requestId: msg.requestId, success: false, message: resolvedFrame.error };
+        }
+        callFrameId = resolvedFrame.frameId;
       }
 
       const r = await chrome.scripting.executeScript({
-        target: { tabId },
+        target: callFrameId === undefined ? { tabId } : { tabId, frameIds: [callFrameId] },
         world: "MAIN",
         func: async (sel: string, pName: string, callArgs: unknown[], depth: number, frameSel: string | undefined, tag: string) => {
-          let doc: Document = document;
-          if (frameSel) {
-            const iframe = document.querySelector(frameSel);
-            if (!(iframe instanceof HTMLIFrameElement)) return { ok: false, reason: `iframe "${frameSel}" not found` };
-            try {
-              const fdoc = iframe.contentDocument;
-              if (!fdoc) return { ok: false, reason: `iframe "${frameSel}" is cross-origin` };
-              doc = fdoc;
-            } catch {
-              return { ok: false, reason: `iframe "${frameSel}" is cross-origin` };
-            }
-          }
+          const doc: Document = document;
           let el: Element | null = null;
           if (tag) {
             const findTagged = (root: ParentNode): Element | null => {

@@ -9,6 +9,7 @@
  */
 
 import { queryAllDeep, walkTextNodesDeep } from "./shadow.js";
+import { framePathOf, isInFrame, viewportRect } from "./frames.js";
 import { deriveInputLabel, getNearestHeading } from "./forms.js";
 
 // ─── findText ──────────────────────────────────────────────────────────────
@@ -21,6 +22,13 @@ export interface FindTextMatch {
   role: string | null;
   clickable: boolean;
   position: { x: number; y: number; width: number; height: number } | null;
+  /**
+   * Addressable path of the same-origin iframe this match lives in, absent
+   * for a top-frame match. Present so a result set spanning several documents
+   * is still unambiguous: two frames on a dashboard can each contain "Save",
+   * and `position` alone cannot tell them apart.
+   */
+  frame?: string;
 }
 
 export interface FindTextResult {
@@ -133,6 +141,7 @@ export function findText(
       role: anchor.getAttribute("role"),
       clickable: isClickable(anchor),
       position: getPosition(anchor),
+      ...(isInFrame(anchor) ? { frame: framePathOf(anchor) } : {}),
     });
   }
 
@@ -180,6 +189,8 @@ export interface FoundInput {
   type: string;
   value: string;
   under?: string;
+  /** Addressable path of the same-origin iframe hosting this field, if any. */
+  frame?: string;
   position: { x: number; y: number; width: number; height: number } | null;
   match_kind: InputMatchKind;
 }
@@ -677,7 +688,10 @@ function isVisible(el: Element, doc: Document): boolean {
 function getPosition(
   el: Element
 ): { x: number; y: number; width: number; height: number } | null {
-  const rect = el.getBoundingClientRect();
+  // Top-level viewport coordinates. These positions are routinely fed straight
+  // into click_at_coordinates, so reporting a frame-local rect would hand the
+  // caller a coordinate that aims at the wrong part of the page.
+  const rect = viewportRect(el);
   if (rect.width === 0 && rect.height === 0) return null;
   return {
     x: Math.round(rect.left),
@@ -789,7 +803,7 @@ function enrichInput(el: AnyInput, kind: InputMatchKind, doc: Document): FoundIn
   }
 
   const under = getNearestHeading(el, doc);
-  const rect = el.getBoundingClientRect();
+  const rect = viewportRect(el);
   const position =
     rect.width === 0 && rect.height === 0
       ? null
@@ -809,6 +823,7 @@ function enrichInput(el: AnyInput, kind: InputMatchKind, doc: Document): FoundIn
     type,
     value: value.slice(0, 60),
     ...(under ? { under } : {}),
+    ...(isInFrame(el) ? { frame: framePathOf(el) } : {}),
     position,
     match_kind: kind,
   };

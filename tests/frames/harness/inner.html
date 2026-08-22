@@ -1,0 +1,28 @@
+<!doctype html><meta charset=utf-8><title>inner</title>
+<style>
+ body{font:14px system-ui;margin:0;padding:12px;background:#eef6ff}
+ .card{background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:10px;margin:8px 0;cursor:grab}
+ .col{display:inline-block;vertical-align:top;width:44%;min-height:180px;background:#f8fafc;border:1px dashed #94a3b8;padding:6px;margin-right:6px}
+ button{padding:8px 14px;font-size:14px}
+ #log{font:12px monospace;color:#065f46}
+ .sticky{position:sticky;top:0;background:#fde68a;padding:6px}
+</style>
+<div class=sticky>inner sticky bar</div>
+<h3>Inner frame (nested, depth 2)</h3>
+<label>Email <input id="inner-email" placeholder="you@example.com" required></label>
+<p><button id="inner-save">Save</button> <span id="log"></span></p>
+<div class=col id="todo"><b>Todo</b><div class=card id="card1" draggable="true">Card One</div></div>
+<div class=col id="done"><b>Done</b></div>
+<script>
+ document.getElementById('inner-save').addEventListener('click', e => {
+   document.getElementById('log').textContent = 'inner-save clicked isTrusted=' + e.isTrusted;
+ });
+ let dragged=null;
+ document.querySelectorAll('.card').forEach(c=>{
+   c.addEventListener('pointerdown',()=>{dragged=c;});
+ });
+ document.getElementById('done').addEventListener('pointerup',()=>{
+   if(dragged){document.getElementById('done').appendChild(dragged);
+   document.getElementById('log').textContent='card dropped into Done';dragged=null;}
+ });
+</script>

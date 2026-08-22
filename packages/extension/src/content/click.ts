@@ -1,6 +1,7 @@
 import { queryAllDeep } from "./shadow.js";
 import { markerIds } from "../markers.js";
 import { findClearPoint, scrollClearOfPinned, type OccluderInfo } from "./hittest.js";
+import { framePathOf, isInFrame, resolveFrame, viewportRect } from "./frames.js";
 
 /**
  * Phase 1 of the CDP click flow. Find the clickable element, scroll it into
@@ -23,6 +24,7 @@ export async function prepareClickTarget(
   selector?: string,
   in_dialog?: boolean,
   dialog_query?: string,
+  frame?: string,
 ): Promise<{
   success: boolean;
   message: string;
@@ -42,6 +44,14 @@ export async function prepareClickTarget(
   hit_via?: "target" | "descendant" | "ancestor";
   /** Set when the page was scrolled to get the target out from under a pinned bar. */
   scrolled_clear?: boolean;
+  /**
+   * Addressable path of the same-origin iframe the target resolved inside,
+   * absent for a top-frame target. Surfaced because "the button I clicked was
+   * not the one you were looking at" is otherwise invisible: two frames on a
+   * dashboard can both contain a "Save", and the caller deserves to know
+   * which document answered.
+   */
+  frame?: string;
   target_disabled?: boolean;
   disabled_state?: {
     disabled: boolean;
@@ -63,7 +73,25 @@ export async function prepareClickTarget(
     el.removeAttribute(markerIds.preDimensionsAttr());
   }
 
+  // Frame scoping. Without a frame argument the search still reaches into
+  // same-origin frames (queryAllDeep descends), ranking top-frame matches
+  // first; naming a frame narrows it to that document, which is what you want
+  // when two frames on a dashboard both contain a "Save".
   let scope: Document | Element = document;
+  if (frame) {
+    const res = resolveFrame(frame);
+    if (!res.ok) {
+      return {
+        success: false,
+        scope_missed: true,
+        message:
+          res.reason === "cross-origin"
+            ? `Frame "${frame}" is cross-origin — click_element cannot resolve elements inside it. Use click_at_coordinates(frame: "${frame}", x, y), which dispatches at the renderer and does reach cross-origin frames. list_frames() reports the frame's size.`
+            : `Frame "${frame}" not found. Call list_frames() to see which frames exist and how to address them.`,
+      };
+    }
+    scope = res.node.doc;
+  }
   if (dialog_query) {
     const d = findDialogByQuery(dialog_query);
     if (!d) {
@@ -81,7 +109,7 @@ export async function prepareClickTarget(
     // closed shadow trees via chrome.dom.openOrClosedShadowRoot) is usable as
     // a click scope. Plain document.querySelector misses elements inside
     // Radix portals / Stencil components / Lit web components.
-    const scoped = queryAllDeep(document, within_selector)[0] ?? null;
+    const scoped = queryAllDeep(scope, within_selector)[0] ?? null;
     if (!scoped) {
       return { success: false, message: `within_selector "${within_selector}" did not match any element`, scope_missed: true };
     }
@@ -153,7 +181,8 @@ export async function prepareClickTarget(
       el.getAttribute("aria-label") ||
       textHint ||
       descriptor;
-    return { success: true, skipClick: true, message: `"${label}" — radio already checked, click skipped`, label };
+    const inFrame = isInFrame(el) ? framePathOf(el) : "";
+    return { success: true, skipClick: true, message: `"${label}" — radio already checked, click skipped`, label, frame: inFrame || undefined };
   }
 
   await scrollSmartIntoView(el);
@@ -180,7 +209,11 @@ export async function prepareClickTarget(
     }
   }
 
-  let rect = el.getBoundingClientRect();
+  // Top-level viewport coordinates: everything downstream of here feeds CDP
+  // Input.dispatchMouseEvent, which has no notion of frames. viewportRect is
+  // the identity for a top-frame element and adds the frame-chain offset for
+  // anything inside a same-origin iframe.
+  let rect = viewportRect(el);
 
   // ChromeBoost: occlusion-aware coordinate resolution.
   //
@@ -198,7 +231,7 @@ export async function prepareClickTarget(
     if (scrollClearOfPinned(el, clear.occluder)) {
       scrolledClear = true;
       clear = findClearPoint(el);
-      rect = el.getBoundingClientRect();
+      rect = viewportRect(el);
     }
   }
 
@@ -229,9 +262,11 @@ export async function prepareClickTarget(
       `${clear.occluder.pinned ? " (pinned)" : ""}`
     : "";
 
+  const framePath = isInFrame(el) ? framePathOf(el) : "";
+
   return {
     success: true,
-    message: `Target prepared: "${label}"${scrolledClear ? " (scrolled clear of a pinned bar)" : ""}${occludedNote}`,
+    message: `Target prepared: "${label}"${framePath ? ` in iframe ${framePath}` : ""}${scrolledClear ? " (scrolled clear of a pinned bar)" : ""}${occludedNote}`,
     x,
     y,
     width: rect.width,
@@ -244,6 +279,7 @@ export async function prepareClickTarget(
     scrolled_clear: scrolledClear || undefined,
     target_disabled: targetDisabled || undefined,
     disabled_state: targetDisabled ? disabledState : undefined,
+    frame: framePath || undefined,
   };
 }
 
@@ -281,7 +317,7 @@ function readDisabledState(el: Element): {
  * visible peer existed. Format: `"Save" button at (1180, 740, 54×40)`.
  */
 function describeCandidate(el: Element, hint: string): string {
-  const rect = el.getBoundingClientRect();
+  const rect = viewportRect(el);
   const tag = el.tagName.toLowerCase();
   const text =
     ((el as HTMLElement).innerText || el.textContent || el.getAttribute("aria-label") || hint)
@@ -425,7 +461,10 @@ function firePointerChain(el: Element) {
   const baseOpts = {
     bubbles: true,
     cancelable: true,
-    view: window,
+    // The element's own window. A frame-hosted target given the top window
+    // here produces events whose view does not match their target, which
+    // React's synthetic event system and several UI kits reject outright.
+    view: el.ownerDocument?.defaultView ?? window,
     clientX: cx,
     clientY: cy,
     button: 0,
@@ -583,8 +622,26 @@ export function reactFiberClickByHint(
   near_text?: string,
   in_dialog?: boolean,
   dialog_query?: string,
+  frame?: string,
 ): { success: boolean; message: string; fired: boolean; component?: string; label?: string } {
+  // Same frame scoping as prepareClickTarget: this is the fiber-level retry
+  // for a click the page silently rejected, so it has to re-find the very
+  // same element, in the very same document.
   let scope: Document | Element = document;
+  if (frame) {
+    const res = resolveFrame(frame);
+    if (!res.ok) {
+      return {
+        success: false,
+        fired: false,
+        message:
+          res.reason === "cross-origin"
+            ? `Frame "${frame}" is cross-origin — no DOM tool can reach into it. Use click_at_coordinates(frame: "${frame}", x, y).`
+            : `Frame "${frame}" not found. Call list_frames() to see which frames exist.`,
+      };
+    }
+    scope = res.node.doc;
+  }
   if (dialog_query) {
     const d = findDialogByQuery(dialog_query);
     if (!d) return { success: false, message: `dialog_query "${dialog_query}" did not match`, fired: false };
@@ -594,7 +651,7 @@ export function reactFiberClickByHint(
     if (!d) return { success: false, message: `in_dialog=true but no open dialog`, fired: false };
     scope = d;
   } else if (within_selector) {
-    const scoped = queryAllDeep(document, within_selector)[0] ?? null;
+    const scoped = queryAllDeep(scope, within_selector)[0] ?? null;
     if (!scoped) {
       return { success: false, message: `within_selector "${within_selector}" did not match`, fired: false };
     }
@@ -732,7 +789,8 @@ export async function scrollSmartIntoView(el: Element): Promise<void> {
   el.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
   let parent = el.parentElement;
-  while (parent && parent !== document.documentElement) {
+  const ownRoot = el.ownerDocument?.documentElement ?? document.documentElement;
+  while (parent && parent !== ownRoot) {
     const style = getComputedStyle(parent);
     const oy = style.overflowY;
     if (
@@ -844,8 +902,11 @@ function findClickableAll(lower: string, scope: Document | Element = document): 
       const lb = b.textContent?.length ?? 0;
       if (la !== lb) return la - lb;
     }
-    const ra = a.getBoundingClientRect();
-    const rb = b.getBoundingClientRect();
+    // Top-viewport coordinates so candidates from different frames sort by
+    // where they actually appear on screen, not by their position within
+    // whichever document happens to host them.
+    const ra = viewportRect(a);
+    const rb = viewportRect(b);
     // Round y to 10px buckets so sub-pixel wobble doesn't flip the order.
     const ya = Math.round(ra.top / 10) * 10;
     const yb = Math.round(rb.top / 10) * 10;
@@ -1026,7 +1087,7 @@ function dispatchHumanClickEvents(el: Element) {
     const mkEvent = (type: string, x: number, y: number) => new MouseEvent(type, {
       bubbles: true,
       cancelable: true,
-      view: window,
+      view: el.ownerDocument?.defaultView ?? window,
       clientX: Math.round(x),
       clientY: Math.round(y),
       button: 0,

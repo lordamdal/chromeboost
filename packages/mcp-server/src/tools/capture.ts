@@ -21,7 +21,7 @@ Works on React-controlled inputs, contenteditable (Stripe, Notion), and CodeMirr
       value: z.string().describe("Value to fill"),
       nth: z.number().int().min(1).optional().describe("Which match to fill when multiple inputs share the same label (1 = first, default 1). textHint mode only."),
       exact: z.boolean().optional().describe("Refuse fuzzy text-walk and *-includes matches. textHint mode only. Default false."),
-      frame: z.string().optional().describe("Same-origin iframe CSS selector for selector-mode targeting of inputs inside an iframe."),
+      frame: z.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Selector mode only. Works for CROSS-ORIGIN frames too: the value is set by a script injected into the frame itself rather than reached into from the parent."),
     },
     async ({ textHint, selector, value, nth, exact, frame }) => {
       if (!textHint && !selector) {
@@ -69,7 +69,9 @@ Works on React-controlled inputs, contenteditable (Stripe, Notion), and CodeMirr
 Use this instead of take_screenshot whenever you need to read what's on the page — errors, build status, form labels, confirmation messages, etc.
 Returns up to 10,000 characters per call (~3k tokens). If the response ends with "... (N more characters)", call again with startIndex to read the next chunk.
 Use the selector parameter to scope extraction to a specific section and avoid pulling unnecessary content.
-Never use take_screenshot just to read page content — paginate with startIndex instead.`,
+Never use take_screenshot just to read page content — paginate with startIndex instead.
+
+Whole-page reads append the text of substantial same-origin iframes, each under a \`--- iframe <path> ---\` header, so an app whose UI lives entirely inside a frame does not read as a blank page. Small ad/analytics frames are excluded by size. Pass \`frame\` to read one frame only, or \`include_frames: false\` to suppress the sections.`,
     {
       selector: z
         .string()
@@ -77,6 +79,8 @@ Never use take_screenshot just to read page content — paginate with startIndex
         .describe(
           "CSS selector to scope the extraction (e.g. 'main', '.error-toast', '[data-testid=\"status\"]'). Omit to auto-extract from the main content area."
         ),
+      frame: z.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Returns only that frame's text."),
+      include_frames: z.boolean().optional().describe("Set false to suppress the appended same-origin frame sections on a whole-page read. Default true."),
       startIndex: z
         .number()
         .optional()
@@ -84,8 +88,8 @@ Never use take_screenshot just to read page content — paginate with startIndex
           "Character offset to start from. Use this to read past the first 20,000 characters — the response will tell you the next startIndex when more content exists."
         ),
     },
-    async ({ selector, startIndex }) => {
-      const response = await bridge.request({ type: "get_page_text", selector, startIndex });
+    async ({ selector, startIndex, frame, include_frames }) => {
+      const response = await bridge.request({ type: "get_page_text", selector, startIndex, frame, include_frames });
       if (response.type !== "page_text_response") throw new Error("Unexpected response");
       const r = response as {
         text: string;
@@ -145,9 +149,10 @@ When the goal is "is X on this page?" or "find clickable Y", use \`find_text\` i
         .min(1000)
         .optional()
         .describe("Truncate after this many chars (default 50000). The response includes total_chars so you know if you missed anything."),
+      frame: z.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Returns only that frame's HTML."),
     },
-    async ({ selector, max_chars }) => {
-      const response = await bridge.request({ type: "get_page_html", selector, max_chars });
+    async ({ selector, max_chars, frame }) => {
+      const response = await bridge.request({ type: "get_page_html", selector, max_chars, frame });
       if (response.type !== "page_html_response") throw new Error("Unexpected response");
       const r = response as {
         html: string;

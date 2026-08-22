@@ -1,0 +1,13 @@
+<!doctype html><meta charset=utf-8><title>ChromeBoost iframe harness</title>
+<style>body{font:15px system-ui;margin:0;padding:16px}
+ iframe#shell{width:92%;height:520px;border:2px solid #334155}
+ iframe#ad{width:120px;height:60px;border:1px solid #ddd}
+ .spacer{height:220px;background:linear-gradient(#fff,#e2e8f0)}
+ button{padding:8px 14px}</style>
+<h2>Top document</h2>
+<button id="top-save">Save</button>
+<label>Email <input id="top-email" placeholder="top@example.com"></label>
+<div class=spacer>scroll spacer, pushes the frame down so offsets are non-trivial</div>
+<iframe id="shell" title="app shell" src="shell.html"></iframe>
+<p>small ad-sized frame below (should be excluded from page text):</p>
+<iframe id="ad" src="data:text/html,<body style='font:11px sans-serif'>tiny ad frame noise text</body>"></iframe>

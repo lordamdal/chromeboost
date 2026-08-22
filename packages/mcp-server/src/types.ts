@@ -22,6 +22,7 @@ export type ServerMessage =
       height?: number;
       message: string;
       valueToType?: string;
+      frame?: string;
     }
   | { type: "read_element"; requestId: string; textHint: string }
   | { type: "clear"; requestId: string }
@@ -50,6 +51,7 @@ export type ServerMessage =
       dialog_query?: string;
       wait_until_enabled_ms?: number;
       pierce_overlays?: boolean;
+      frame?: string;
     }
   | {
       type: "click_at_coordinates";
@@ -60,6 +62,7 @@ export type ServerMessage =
       double?: boolean;
       pierce?: boolean;
       pierce_layers?: number;
+      frame?: string;
     }
   // ChromeBoost cursor + HUD control
   | {
@@ -70,6 +73,7 @@ export type ServerMessage =
       x?: number;
       y?: number;
       settle_ms?: number;
+      frame?: string;
     }
   | {
       type: "drag";
@@ -82,6 +86,7 @@ export type ServerMessage =
       to_y?: number;
       steps?: number;
       hold_ms?: number;
+      frame?: string;
     }
   | { type: "probe_point"; requestId: string; x: number; y: number }
   | {
@@ -96,14 +101,14 @@ export type ServerMessage =
   | { type: "prepare_click_target"; requestId: string; textHint?: string; selector?: string; nth?: number; within_selector?: string; near_text?: string; in_dialog?: boolean; dialog_query?: string }
   | { type: "post_click_inspect"; requestId: string }
   | { type: "scroll_page"; requestId: string; direction: "down" | "up"; amount: number }
-  | { type: "get_page_text"; requestId: string; selector?: string; startIndex?: number }
-  | { type: "get_page_html"; requestId: string; selector?: string; max_chars?: number }
+  | { type: "get_page_text"; requestId: string; selector?: string; startIndex?: number ; frame?: string; include_frames?: boolean }
+  | { type: "get_page_html"; requestId: string; selector?: string; max_chars?: number; frame?: string }
   | { type: "wait_for_selector"; requestId: string; selector: string; timeout: number; refresh?: number; shadow_root?: boolean }
   | { type: "wait_for_change"; requestId: string; selector: string; timeout: number; settle?: number }
-  | { type: "execute_script"; requestId: string; code: string; tab_query?: string; pierce_shadow?: boolean; timeout_ms?: number }
-  | { type: "get_elements"; requestId: string }
-  | { type: "get_form_fields"; requestId: string; only_empty?: boolean }
-  | { type: "scroll_to_element"; requestId: string; query: string }
+  | { type: "execute_script"; requestId: string; code: string; tab_query?: string; pierce_shadow?: boolean; timeout_ms?: number; frame?: string }
+  | { type: "get_elements"; requestId: string; frame?: string }
+  | { type: "get_form_fields"; requestId: string; only_empty?: boolean; frame?: string }
+  | { type: "scroll_to_element"; requestId: string; query: string; frame?: string }
   | { type: "save_page_state"; requestId: string }
   | { type: "restore_page_state"; requestId: string; state: PageFieldState[] }
   | { type: "list_tabs"; requestId: string }
@@ -180,7 +185,9 @@ export type ServerMessage =
       format?: string;
       max_chars?: number;
     }
-  | { type: "list_frames"; requestId: string };
+  | { type: "list_frames"; requestId: string }
+  | { type: "frame_origin"; requestId: string; frame: string }
+  | { type: "frame_identity"; requestId: string; frame: string };
 
 /**
  * ChromeBoost: description of an element that is covering a click target, or
@@ -312,6 +319,8 @@ export type ClientMessage =
       stack: Array<{ tag: string; selector: string; text: string; z_index: string; position: string }>;
       top?: OccluderInfo;
       in_iframe: boolean;
+      /** Addressable path of the frame the hit lives in, or "" for the top frame. */
+      frame?: string;
     }
   | {
       type: "hud_control_response";
@@ -437,14 +446,45 @@ export type ClientMessage =
       requestId: string;
       frames: Array<{
         index: number;
+        /** Addressable path; `a >>> b` for a nested frame. Accepted verbatim as any tool's `frame`. */
         selector: string;
+        /** 1 for a top-level frame, 2 for a frame inside a frame, and so on. */
+        depth?: number;
         src: string;
         origin: string;
         title: string;
         accessible: boolean;
+        cross_origin?: boolean;
+        /** Current document URL, for same-origin frames whose src has since navigated. */
+        url?: string;
+        hint?: string;
         x: number;
         y: number;
         width: number;
         height: number;
+        /** Frame content-box origin in top-viewport pixels; the base for frame-relative coordinates. */
+        content_origin_x?: number;
+        content_origin_y?: number;
       }>;
+      shadow_hosts?: Array<{ selector: string; open: boolean; depth: number }>;
+    }
+  | {
+      type: "frame_origin_response";
+      requestId: string;
+      found: boolean;
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+      cross_origin?: boolean;
+      message?: string;
+    }
+  | {
+      type: "frame_identity_response";
+      requestId: string;
+      found: boolean;
+      src?: string;
+      url?: string;
+      cross_origin?: boolean;
+      message?: string;
     };

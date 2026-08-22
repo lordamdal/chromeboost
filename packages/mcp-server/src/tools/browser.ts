@@ -354,7 +354,9 @@ The saved file path can be passed directly to set_file_input(hint, file_path) to
 
   server.tool(
     "get_form_fields",
-    `Inventory form fields on the active page (inputs, textareas, selects, CodeMirror editors). Sorted top-to-bottom by y-position; includes fields below the fold.
+    `Inventory form fields on the active page (inputs, textareas, selects, CodeMirror editors). Sorted top-to-bottom by on-screen position; includes fields below the fold.
+
+Fields inside same-origin iframes are included and carry a \`frame\` value naming the frame that holds them — pass it back as fill_input's \`frame\`. Pass \`frame\` here to inventory one frame only.
 
 Pass \`query\` to filter+rank by label/placeholder/aria-label/name/id (the old find_input behavior — match strength reported as aria-eq / placeholder-eq / label-text-eq / name-eq / id-eq / *-includes / fuzzy-text-walk). Pass \`exact: true\` to refuse fuzzy text-walk matches.
 
@@ -364,7 +366,7 @@ Pass \`only_empty: true\` to filter the inventory to required-but-empty fields. 
       max: z.number().int().min(1).optional().describe("Maximum fields to return when query is set (default 5). Ignored without query (full inventory)."),
       type_filter: z.string().optional().describe('Restrict to a specific input type (e.g. "email", "checkbox", "file"). Only with query.'),
       exact: z.boolean().optional().describe("Refuse fuzzy text-walk and *-includes matches. Only with query."),
-      frame: z.string().optional().describe("Same-origin iframe CSS selector to search inside. Cross-origin iframes are not supported."),
+      frame: z.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Honoured in BOTH inventory and query mode."),
       only_empty: z.boolean().optional().describe("Filter inventory to required-but-empty fields only. Use as a Submit-disabled diagnostic. Ignored when query is set."),
     },
     async ({ query, max, type_filter, exact, frame, only_empty }) => {
@@ -384,15 +386,20 @@ Pass \`only_empty: true\` to filter the inventory to required-but-empty fields. 
         });
         return { content: [{ type: "text", text: `${header}\n${lines.join("\n")}\n\nTo fill: fill_input("${r.fields[0].label}", "<value>")` }] };
       }
-      // Inventory mode.
-      const response = await bridge.request({ type: "get_form_fields", only_empty });
+      // Inventory mode. `frame` used to be dropped here while the tool still
+      // advertised the parameter, so get_form_fields(frame: "...") with no
+      // query returned the TOP document's fields as though they were the
+      // frame's — a confidently wrong answer, which is worse than an error.
+      const response = await bridge.request({ type: "get_form_fields", only_empty, frame });
       if (response.type !== "form_fields_response") throw new Error("Unexpected response");
       const r = response as {
-        fields: Array<{ index: number; type: string; label: string; value: string; y: number; selector: string; context?: string; required?: boolean; empty?: boolean }>;
+        fields: Array<{ index: number; type: string; label: string; value: string; y: number; selector: string; frame?: string; context?: string; required?: boolean; empty?: boolean }>;
         warning?: string;
+        frame_error?: string;
         captcha?: { kind: string; sitekey: string | null } | null;
         oauthIndicators?: string[];
       };
+      if (r.frame_error) return { content: [{ type: "text", text: r.frame_error }] };
       const fields = r.fields;
       const captchaLine = r.captcha
         ? `\n\n⚠ CAPTCHA detected: ${r.captcha.kind}${r.captcha.sitekey ? ` (sitekey: ${r.captcha.sitekey})` : ""}. Synthetic submits will be silently rejected. Pre-fill, then highlight the submit button and call wait_for_click.`
@@ -410,7 +417,10 @@ Pass \`only_empty: true\` to filter the inventory to required-but-empty fields. 
         const val = f.value ? ` [currently: "${f.value}"]` : "";
         const ctx = f.context ? ` [under: "${f.context}"]` : "";
         const req = f.required ? " *required" : "";
-        return `${f.index}. [${f.type}] "${f.label}"${req}${val}${ctx} — y:${f.y}`;
+        // Naming the frame matters for the next call, not just for orientation:
+        // fill_input needs it to reach the field at all.
+        const fr = f.frame ? ` [in iframe: ${f.frame}]` : "";
+        return `${f.index}. [${f.type}] "${f.label}"${req}${val}${ctx}${fr} — y:${f.y}`;
       });
       const header = only_empty
         ? `Required-but-empty fields (${fields.length}):`
@@ -421,7 +431,7 @@ Pass \`only_empty: true\` to filter the inventory to required-but-empty fields. 
 
   server.tool(
     "type_text",
-    `Type text into the currently focused element via CDP keystrokes (produces isTrusted=true events). Use when fill_input fails because the page validates isTrusted (CodeMirror/Monaco/Ace editors, shadow DOM inputs, isTrusted-gated forms). Pass \`into_selector\` to focus the target before typing (shadow-piercing CSS) — combined with \`clear_first: true\`, this collapses the old "wait_for_click → execute_script selectAll → type_text" pattern into a single call. Pass \`frame: "iframe.selector"\` to type into a same-origin iframe's first editable element.
+    `Type text into the currently focused element via CDP keystrokes (produces isTrusted=true events). Use when fill_input fails because the page validates isTrusted (CodeMirror/Monaco/Ace editors, shadow DOM inputs, isTrusted-gated forms). Pass \`into_selector\` to focus the target before typing (shadow-piercing CSS) — combined with \`clear_first: true\`, this collapses the old "wait_for_click → execute_script selectAll → type_text" pattern into a single call. Pass \`frame\` to type into a frame — including a CROSS-ORIGIN one, since focus is set by a script injected into the frame itself and the keystrokes then follow focus wherever it landed. Combine with \`into_selector\` to pick a specific element inside that frame.
 
 **TipTap / ProseMirror auto-recovery**: when \`into_selector\` targets a contenteditable inside a \`.tiptap\` / \`.ProseMirror\` / \`[data-tiptap-editor]\` ancestor, type_text verifies post-type that the text actually landed. If tiptap's internal state machine silently dropped the CDP keystrokes (a known failure mode where the editor reverts to placeholder a few seconds later), type_text automatically re-fills via \`document.execCommand('insertText', ...)\` which tiptap accepts. The response message records "TipTap/ProseMirror silently dropped..., recovered via execCommand insertText" when this fired.`,
     {
@@ -442,7 +452,7 @@ Pass \`only_empty: true\` to filter the inventory to required-but-empty fields. 
         .string()
         .optional()
         .describe(
-          "CSS selector for an iframe whose contents you want to type into (e.g. 'iframe.se-rte-frame__summary'). Same-origin only. Before typing, the first contenteditable/input inside the iframe is focused; after typing, input/change events are dispatched in the iframe's context."
+          "Frame to type into. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a substring of the frame's src / title / id. Works for cross-origin frames. Before typing, into_selector (or the first contenteditable/input) inside the frame is focused; after typing, input/change events are dispatched in the frame's own context."
         ),
     },
     async ({ text, frame, into_selector, clear_first }) => {
@@ -547,9 +557,10 @@ When the page navigates mid-script, the response carries \`navigated: true\` and
         .min(1000)
         .optional()
         .describe('Script execution timeout in milliseconds (default 30000). When the script exceeds this limit, execution is terminated via CDP Runtime.terminateExecution and the debugger is released cleanly. Without this, a hung script locks the debugger session indefinitely and every subsequent tool call fails with "Another debugger is already attached." Increase for large DOM traversals inside shadow roots; decrease when you want fast failure on scripts that might hang.'),
+      frame: z.string().optional().describe("Address a frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id. Unlike every other frame parameter this one works for CROSS-ORIGIN frames as well: the script is injected into the frame under the extension's own host permissions rather than reached into from the parent, so the script's `document` IS the frame's document. Ambiguity (two frames loading the same URL) is reported, never guessed at."),
     },
-    async ({ code, tab_query, timeout_ms }) => {
-      const response = await bridge.request({ type: "execute_script", code, tab_query, timeout_ms });
+    async ({ code, tab_query, timeout_ms, frame }) => {
+      const response = await bridge.request({ type: "execute_script", code, tab_query, timeout_ms, frame });
       if (response.type !== "script_response") throw new Error("Unexpected response");
       const { result, alert, navigated, reauthorized } = response as { result: string; alert?: string | null; navigated?: boolean; reauthorized?: boolean };
       let text = `Result: ${result}`;

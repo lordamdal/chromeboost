@@ -1,4 +1,5 @@
 import { markerIds } from "../markers.js";
+import { viewportRect } from "./frames.js";
 
 const CALLOUT_HEIGHT = 52;
 const CALLOUT_OFFSET = 8;
@@ -81,7 +82,11 @@ export function getHighlightedViewportRect(): {
   if (tracked.length === 0) return null;
   const h = tracked[0];
   if (h.element) {
-    const r = h.element.getBoundingClientRect();
+    // Overlays are appended to the TOP document, so a frame-hosted element's
+    // frame-local rect would draw the highlight over the wrong part of the
+    // page. That matters most in the one place highlights exist for: handing
+    // a CAPTCHA-gated or otherwise agent-blocked click back to the user.
+    const r = viewportRect(h.element);
     return { left: r.left, top: r.top, width: r.width, height: r.height };
   }
   return {
@@ -95,7 +100,7 @@ export function getHighlightedViewportRect(): {
 /** Find an element whose visible text contains the given string.
  *  Pierces open shadow roots so chat / form widgets (Radix UI, Stencil,
  *  Lit, other web components) are searchable too. */
-export function findElementByText(text: string): Element | null {
+export function findElementByText(text: string, root: Document = document): Element | null {
   const lower = text.toLowerCase().trim();
 
   let best: Element | null = null;
@@ -123,11 +128,21 @@ export function findElementByText(text: string): Element | null {
       if (tag === "SCRIPT" || tag === "STYLE" || tag === "NOSCRIPT") return;
       const sr = (node as Element & { shadowRoot?: ShadowRoot | null }).shadowRoot;
       if (sr) walk(sr);
+      // Same-origin frames: hover targets and highlight targets live inside
+      // application frames as often as anywhere else, and a text search that
+      // stops at the frame boundary reports "not found" for something plainly
+      // on screen.
+      if (tag === "IFRAME" || tag === "FRAME") {
+        try {
+          const fdoc = (node as HTMLIFrameElement).contentDocument;
+          if (fdoc?.body) walk(fdoc.body);
+        } catch { /* cross-origin */ }
+      }
     }
     for (const c of Array.from(node.childNodes)) walk(c);
   }
 
-  walk(document.body);
+  walk(root.body);
 
   if (!best) return null;
 
@@ -145,7 +160,7 @@ function positionElements(h: TrackedHighlight) {
   let vpLeft: number, vpTop: number, w: number, ht: number;
 
   if (h.element) {
-    const rect = h.element.getBoundingClientRect();
+    const rect = viewportRect(h.element);
     vpLeft = rect.left;
     vpTop = rect.top;
     w = rect.width;

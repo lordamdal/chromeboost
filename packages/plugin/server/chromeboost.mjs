@@ -37,9 +37,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// ../../node_modules/ajv/dist/compile/codegen/code.js
+// node_modules/ajv/dist/compile/codegen/code.js
 var require_code = __commonJS({
-  "../../node_modules/ajv/dist/compile/codegen/code.js"(exports) {
+  "node_modules/ajv/dist/compile/codegen/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.regexpCode = exports.getEsmExportName = exports.getProperty = exports.safeStringify = exports.stringify = exports.strConcat = exports.addCodeArg = exports.str = exports._ = exports.nil = exports._Code = exports.Name = exports.IDENTIFIER = exports._CodeOrName = void 0;
@@ -191,9 +191,9 @@ var require_code = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/codegen/scope.js
+// node_modules/ajv/dist/compile/codegen/scope.js
 var require_scope = __commonJS({
-  "../../node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
+  "node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ValueScope = exports.ValueScopeName = exports.Scope = exports.varKinds = exports.UsedValueState = void 0;
@@ -336,9 +336,9 @@ var require_scope = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/codegen/index.js
+// node_modules/ajv/dist/compile/codegen/index.js
 var require_codegen = __commonJS({
-  "../../node_modules/ajv/dist/compile/codegen/index.js"(exports) {
+  "node_modules/ajv/dist/compile/codegen/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.or = exports.and = exports.not = exports.CodeGen = exports.operators = exports.varKinds = exports.ValueScopeName = exports.ValueScope = exports.Scope = exports.Name = exports.regexpCode = exports.stringify = exports.getProperty = exports.nil = exports.strConcat = exports.str = exports._ = void 0;
@@ -1056,9 +1056,9 @@ var require_codegen = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/util.js
+// node_modules/ajv/dist/compile/util.js
 var require_util = __commonJS({
-  "../../node_modules/ajv/dist/compile/util.js"(exports) {
+  "node_modules/ajv/dist/compile/util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.checkStrictMode = exports.getErrorPath = exports.Type = exports.useFunc = exports.setEvaluated = exports.evaluatedPropsToName = exports.mergeEvaluated = exports.eachItem = exports.unescapeJsonPointer = exports.escapeJsonPointer = exports.escapeFragment = exports.unescapeFragment = exports.schemaRefOrVal = exports.schemaHasRulesButRef = exports.schemaHasRules = exports.checkUnknownRules = exports.alwaysValidSchema = exports.toHash = void 0;
@@ -1223,9 +1223,9 @@ var require_util = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/names.js
+// node_modules/ajv/dist/compile/names.js
 var require_names = __commonJS({
-  "../../node_modules/ajv/dist/compile/names.js"(exports) {
+  "node_modules/ajv/dist/compile/names.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -1262,9 +1262,9 @@ var require_names = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/errors.js
+// node_modules/ajv/dist/compile/errors.js
 var require_errors = __commonJS({
-  "../../node_modules/ajv/dist/compile/errors.js"(exports) {
+  "node_modules/ajv/dist/compile/errors.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendErrors = exports.resetErrorsCount = exports.reportExtraError = exports.reportError = exports.keyword$DataError = exports.keywordError = void 0;
@@ -1384,9 +1384,9 @@ var require_errors = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/validate/boolSchema.js
+// node_modules/ajv/dist/compile/validate/boolSchema.js
 var require_boolSchema = __commonJS({
-  "../../node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
+  "node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.boolOrEmptySchema = exports.topBoolOrEmptySchema = void 0;
@@ -1435,9 +1435,9 @@ var require_boolSchema = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/rules.js
+// node_modules/ajv/dist/compile/rules.js
 var require_rules = __commonJS({
-  "../../node_modules/ajv/dist/compile/rules.js"(exports) {
+  "node_modules/ajv/dist/compile/rules.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getRules = exports.isJSONType = void 0;
@@ -1466,9 +1466,9 @@ var require_rules = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/validate/applicability.js
+// node_modules/ajv/dist/compile/validate/applicability.js
 var require_applicability = __commonJS({
-  "../../node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
+  "node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.shouldUseRule = exports.shouldUseGroup = exports.schemaHasRulesForType = void 0;
@@ -1489,9 +1489,9 @@ var require_applicability = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/validate/dataType.js
+// node_modules/ajv/dist/compile/validate/dataType.js
 var require_dataType = __commonJS({
-  "../../node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
+  "node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.reportTypeError = exports.checkDataTypes = exports.checkDataType = exports.coerceAndCheckDataType = exports.getJSONTypes = exports.getSchemaTypes = exports.DataType = void 0;
@@ -1673,9 +1673,9 @@ var require_dataType = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/validate/defaults.js
+// node_modules/ajv/dist/compile/validate/defaults.js
 var require_defaults = __commonJS({
-  "../../node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
+  "node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.assignDefaults = void 0;
@@ -1710,9 +1710,9 @@ var require_defaults = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/code.js
+// node_modules/ajv/dist/vocabularies/code.js
 var require_code2 = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/code.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateUnion = exports.validateArray = exports.usePattern = exports.callValidateCode = exports.schemaProperties = exports.allSchemaProperties = exports.noPropertyInData = exports.propertyInData = exports.isOwnProperty = exports.hasPropFunc = exports.reportMissingProp = exports.checkMissingProp = exports.checkReportMissingProp = void 0;
@@ -1843,9 +1843,9 @@ var require_code2 = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/validate/keyword.js
+// node_modules/ajv/dist/compile/validate/keyword.js
 var require_keyword = __commonJS({
-  "../../node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
+  "node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateKeywordUsage = exports.validSchemaType = exports.funcKeywordCode = exports.macroKeywordCode = void 0;
@@ -1961,9 +1961,9 @@ var require_keyword = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/validate/subschema.js
+// node_modules/ajv/dist/compile/validate/subschema.js
 var require_subschema = __commonJS({
-  "../../node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
+  "node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendSubschemaMode = exports.extendSubschemaData = exports.getSubschema = void 0;
@@ -2044,9 +2044,9 @@ var require_subschema = __commonJS({
   }
 });
 
-// ../../node_modules/fast-deep-equal/index.js
+// node_modules/fast-deep-equal/index.js
 var require_fast_deep_equal = __commonJS({
-  "../../node_modules/fast-deep-equal/index.js"(exports, module) {
+  "node_modules/fast-deep-equal/index.js"(exports, module) {
     "use strict";
     module.exports = function equal(a, b) {
       if (a === b) return true;
@@ -2079,9 +2079,9 @@ var require_fast_deep_equal = __commonJS({
   }
 });
 
-// ../../node_modules/json-schema-traverse/index.js
+// node_modules/json-schema-traverse/index.js
 var require_json_schema_traverse = __commonJS({
-  "../../node_modules/json-schema-traverse/index.js"(exports, module) {
+  "node_modules/json-schema-traverse/index.js"(exports, module) {
     "use strict";
     var traverse = module.exports = function(schema, opts, cb) {
       if (typeof opts == "function") {
@@ -2167,9 +2167,9 @@ var require_json_schema_traverse = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/resolve.js
+// node_modules/ajv/dist/compile/resolve.js
 var require_resolve = __commonJS({
-  "../../node_modules/ajv/dist/compile/resolve.js"(exports) {
+  "node_modules/ajv/dist/compile/resolve.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSchemaRefs = exports.resolveUrl = exports.normalizeId = exports._getFullPath = exports.getFullPath = exports.inlineRef = void 0;
@@ -2323,9 +2323,9 @@ var require_resolve = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/validate/index.js
+// node_modules/ajv/dist/compile/validate/index.js
 var require_validate = __commonJS({
-  "../../node_modules/ajv/dist/compile/validate/index.js"(exports) {
+  "node_modules/ajv/dist/compile/validate/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getData = exports.KeywordCxt = exports.validateFunctionCode = void 0;
@@ -2831,9 +2831,9 @@ var require_validate = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/runtime/validation_error.js
+// node_modules/ajv/dist/runtime/validation_error.js
 var require_validation_error = __commonJS({
-  "../../node_modules/ajv/dist/runtime/validation_error.js"(exports) {
+  "node_modules/ajv/dist/runtime/validation_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ValidationError = class extends Error {
@@ -2847,9 +2847,9 @@ var require_validation_error = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/ref_error.js
+// node_modules/ajv/dist/compile/ref_error.js
 var require_ref_error = __commonJS({
-  "../../node_modules/ajv/dist/compile/ref_error.js"(exports) {
+  "node_modules/ajv/dist/compile/ref_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var resolve_1 = require_resolve();
@@ -2864,9 +2864,9 @@ var require_ref_error = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/compile/index.js
+// node_modules/ajv/dist/compile/index.js
 var require_compile = __commonJS({
-  "../../node_modules/ajv/dist/compile/index.js"(exports) {
+  "node_modules/ajv/dist/compile/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveSchema = exports.getCompilingSchema = exports.resolveRef = exports.compileSchema = exports.SchemaEnv = void 0;
@@ -3088,9 +3088,9 @@ var require_compile = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/refs/data.json
+// node_modules/ajv/dist/refs/data.json
 var require_data = __commonJS({
-  "../../node_modules/ajv/dist/refs/data.json"(exports, module) {
+  "node_modules/ajv/dist/refs/data.json"(exports, module) {
     module.exports = {
       $id: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
       description: "Meta-schema for $data reference (JSON AnySchema extension proposal)",
@@ -3107,9 +3107,9 @@ var require_data = __commonJS({
   }
 });
 
-// ../../node_modules/fast-uri/lib/utils.js
+// node_modules/fast-uri/lib/utils.js
 var require_utils = __commonJS({
-  "../../node_modules/fast-uri/lib/utils.js"(exports, module) {
+  "node_modules/fast-uri/lib/utils.js"(exports, module) {
     "use strict";
     var isUUID = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu);
     var isIPv4 = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u);
@@ -3420,9 +3420,9 @@ var require_utils = __commonJS({
   }
 });
 
-// ../../node_modules/fast-uri/lib/schemes.js
+// node_modules/fast-uri/lib/schemes.js
 var require_schemes = __commonJS({
-  "../../node_modules/fast-uri/lib/schemes.js"(exports, module) {
+  "node_modules/fast-uri/lib/schemes.js"(exports, module) {
     "use strict";
     var { isUUID } = require_utils();
     var URN_REG = /([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-.:;=@]|%[\da-f]{2})+)/iu;
@@ -3630,9 +3630,9 @@ var require_schemes = __commonJS({
   }
 });
 
-// ../../node_modules/fast-uri/index.js
+// node_modules/fast-uri/index.js
 var require_fast_uri = __commonJS({
-  "../../node_modules/fast-uri/index.js"(exports, module) {
+  "node_modules/fast-uri/index.js"(exports, module) {
     "use strict";
     var { normalizeIPv6, removeDotSegments, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, escapePreservingEscapes, reescapeHostDelimiters, isIPv4, nonSimpleDomain } = require_utils();
     var { SCHEMES, getSchemeHandler } = require_schemes();
@@ -3942,9 +3942,9 @@ var require_fast_uri = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/runtime/uri.js
+// node_modules/ajv/dist/runtime/uri.js
 var require_uri = __commonJS({
-  "../../node_modules/ajv/dist/runtime/uri.js"(exports) {
+  "node_modules/ajv/dist/runtime/uri.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var uri = require_fast_uri();
@@ -3953,9 +3953,9 @@ var require_uri = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/core.js
+// node_modules/ajv/dist/core.js
 var require_core = __commonJS({
-  "../../node_modules/ajv/dist/core.js"(exports) {
+  "node_modules/ajv/dist/core.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = void 0;
@@ -4564,9 +4564,9 @@ var require_core = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/core/id.js
+// node_modules/ajv/dist/vocabularies/core/id.js
 var require_id = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var def = {
@@ -4579,9 +4579,9 @@ var require_id = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/core/ref.js
+// node_modules/ajv/dist/vocabularies/core/ref.js
 var require_ref = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.callRef = exports.getValidate = void 0;
@@ -4701,9 +4701,9 @@ var require_ref = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/core/index.js
+// node_modules/ajv/dist/vocabularies/core/index.js
 var require_core2 = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var id_1 = require_id();
@@ -4722,9 +4722,9 @@ var require_core2 = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/validation/limitNumber.js
+// node_modules/ajv/dist/vocabularies/validation/limitNumber.js
 var require_limitNumber = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -4754,9 +4754,9 @@ var require_limitNumber = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/validation/multipleOf.js
+// node_modules/ajv/dist/vocabularies/validation/multipleOf.js
 var require_multipleOf = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -4782,9 +4782,9 @@ var require_multipleOf = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/runtime/ucs2length.js
+// node_modules/ajv/dist/runtime/ucs2length.js
 var require_ucs2length = __commonJS({
-  "../../node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
+  "node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function ucs2length(str) {
@@ -4808,9 +4808,9 @@ var require_ucs2length = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/validation/limitLength.js
+// node_modules/ajv/dist/vocabularies/validation/limitLength.js
 var require_limitLength = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -4840,9 +4840,9 @@ var require_limitLength = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/validation/pattern.js
+// node_modules/ajv/dist/vocabularies/validation/pattern.js
 var require_pattern = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -4877,9 +4877,9 @@ var require_pattern = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/validation/limitProperties.js
+// node_modules/ajv/dist/vocabularies/validation/limitProperties.js
 var require_limitProperties = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -4906,9 +4906,9 @@ var require_limitProperties = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/validation/required.js
+// node_modules/ajv/dist/vocabularies/validation/required.js
 var require_required = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -4988,9 +4988,9 @@ var require_required = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/validation/limitItems.js
+// node_modules/ajv/dist/vocabularies/validation/limitItems.js
 var require_limitItems = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5017,9 +5017,9 @@ var require_limitItems = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/runtime/equal.js
+// node_modules/ajv/dist/runtime/equal.js
 var require_equal = __commonJS({
-  "../../node_modules/ajv/dist/runtime/equal.js"(exports) {
+  "node_modules/ajv/dist/runtime/equal.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var equal = require_fast_deep_equal();
@@ -5028,9 +5028,9 @@ var require_equal = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
+// node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
 var require_uniqueItems = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dataType_1 = require_dataType();
@@ -5095,9 +5095,9 @@ var require_uniqueItems = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/validation/const.js
+// node_modules/ajv/dist/vocabularies/validation/const.js
 var require_const = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5124,9 +5124,9 @@ var require_const = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/validation/enum.js
+// node_modules/ajv/dist/vocabularies/validation/enum.js
 var require_enum = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5173,9 +5173,9 @@ var require_enum = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/validation/index.js
+// node_modules/ajv/dist/vocabularies/validation/index.js
 var require_validation = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var limitNumber_1 = require_limitNumber();
@@ -5211,9 +5211,9 @@ var require_validation = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
+// node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
 var require_additionalItems = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateAdditionalItems = void 0;
@@ -5264,9 +5264,9 @@ var require_additionalItems = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/items.js
+// node_modules/ajv/dist/vocabularies/applicator/items.js
 var require_items = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateTuple = void 0;
@@ -5321,9 +5321,9 @@ var require_items = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
+// node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
 var require_prefixItems = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var items_1 = require_items();
@@ -5338,9 +5338,9 @@ var require_prefixItems = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/items2020.js
+// node_modules/ajv/dist/vocabularies/applicator/items2020.js
 var require_items2020 = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5373,9 +5373,9 @@ var require_items2020 = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/contains.js
+// node_modules/ajv/dist/vocabularies/applicator/contains.js
 var require_contains = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5467,9 +5467,9 @@ var require_contains = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/dependencies.js
+// node_modules/ajv/dist/vocabularies/applicator/dependencies.js
 var require_dependencies = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateSchemaDeps = exports.validatePropertyDeps = exports.error = void 0;
@@ -5561,9 +5561,9 @@ var require_dependencies = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
+// node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
 var require_propertyNames = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5604,9 +5604,9 @@ var require_propertyNames = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
+// node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
 var require_additionalProperties = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -5710,9 +5710,9 @@ var require_additionalProperties = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/properties.js
+// node_modules/ajv/dist/vocabularies/applicator/properties.js
 var require_properties = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var validate_1 = require_validate();
@@ -5768,9 +5768,9 @@ var require_properties = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
+// node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
 var require_patternProperties = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -5842,9 +5842,9 @@ var require_patternProperties = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/not.js
+// node_modules/ajv/dist/vocabularies/applicator/not.js
 var require_not = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -5873,9 +5873,9 @@ var require_not = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/anyOf.js
+// node_modules/ajv/dist/vocabularies/applicator/anyOf.js
 var require_anyOf = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -5890,9 +5890,9 @@ var require_anyOf = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/oneOf.js
+// node_modules/ajv/dist/vocabularies/applicator/oneOf.js
 var require_oneOf = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5948,9 +5948,9 @@ var require_oneOf = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/allOf.js
+// node_modules/ajv/dist/vocabularies/applicator/allOf.js
 var require_allOf = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -5975,9 +5975,9 @@ var require_allOf = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/if.js
+// node_modules/ajv/dist/vocabularies/applicator/if.js
 var require_if = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6044,9 +6044,9 @@ var require_if = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/thenElse.js
+// node_modules/ajv/dist/vocabularies/applicator/thenElse.js
 var require_thenElse = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -6062,9 +6062,9 @@ var require_thenElse = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/applicator/index.js
+// node_modules/ajv/dist/vocabularies/applicator/index.js
 var require_applicator = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var additionalItems_1 = require_additionalItems();
@@ -6110,9 +6110,9 @@ var require_applicator = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/format/format.js
+// node_modules/ajv/dist/vocabularies/format/format.js
 var require_format = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6200,9 +6200,9 @@ var require_format = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/format/index.js
+// node_modules/ajv/dist/vocabularies/format/index.js
 var require_format2 = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var format_1 = require_format();
@@ -6211,9 +6211,9 @@ var require_format2 = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/metadata.js
+// node_modules/ajv/dist/vocabularies/metadata.js
 var require_metadata = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.contentVocabulary = exports.metadataVocabulary = void 0;
@@ -6234,9 +6234,9 @@ var require_metadata = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/draft7.js
+// node_modules/ajv/dist/vocabularies/draft7.js
 var require_draft7 = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/draft7.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/draft7.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var core_1 = require_core2();
@@ -6256,9 +6256,9 @@ var require_draft7 = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/discriminator/types.js
+// node_modules/ajv/dist/vocabularies/discriminator/types.js
 var require_types = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DiscrError = void 0;
@@ -6270,9 +6270,9 @@ var require_types = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/vocabularies/discriminator/index.js
+// node_modules/ajv/dist/vocabularies/discriminator/index.js
 var require_discriminator = __commonJS({
-  "../../node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
+  "node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6375,9 +6375,9 @@ var require_discriminator = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/refs/json-schema-draft-07.json
+// node_modules/ajv/dist/refs/json-schema-draft-07.json
 var require_json_schema_draft_07 = __commonJS({
-  "../../node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports, module) {
+  "node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports, module) {
     module.exports = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "http://json-schema.org/draft-07/schema#",
@@ -6532,9 +6532,9 @@ var require_json_schema_draft_07 = __commonJS({
   }
 });
 
-// ../../node_modules/ajv/dist/ajv.js
+// node_modules/ajv/dist/ajv.js
 var require_ajv = __commonJS({
-  "../../node_modules/ajv/dist/ajv.js"(exports, module) {
+  "node_modules/ajv/dist/ajv.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.MissingRefError = exports.ValidationError = exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = exports.Ajv = void 0;
@@ -6602,9 +6602,9 @@ var require_ajv = __commonJS({
   }
 });
 
-// ../../node_modules/ajv-formats/dist/formats.js
+// node_modules/ajv-formats/dist/formats.js
 var require_formats = __commonJS({
-  "../../node_modules/ajv-formats/dist/formats.js"(exports) {
+  "node_modules/ajv-formats/dist/formats.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.formatNames = exports.fastFormats = exports.fullFormats = void 0;
@@ -6805,9 +6805,9 @@ var require_formats = __commonJS({
   }
 });
 
-// ../../node_modules/ajv-formats/dist/limit.js
+// node_modules/ajv-formats/dist/limit.js
 var require_limit = __commonJS({
-  "../../node_modules/ajv-formats/dist/limit.js"(exports) {
+  "node_modules/ajv-formats/dist/limit.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.formatLimitDefinition = void 0;
@@ -6877,9 +6877,9 @@ var require_limit = __commonJS({
   }
 });
 
-// ../../node_modules/ajv-formats/dist/index.js
+// node_modules/ajv-formats/dist/index.js
 var require_dist = __commonJS({
-  "../../node_modules/ajv-formats/dist/index.js"(exports, module) {
+  "node_modules/ajv-formats/dist/index.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var formats_1 = require_formats();
@@ -6919,9 +6919,9 @@ var require_dist = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/constants.js
+// node_modules/ws/lib/constants.js
 var require_constants = __commonJS({
-  "../../node_modules/ws/lib/constants.js"(exports, module) {
+  "node_modules/ws/lib/constants.js"(exports, module) {
     "use strict";
     var BINARY_TYPES = ["nodebuffer", "arraybuffer", "fragments"];
     var hasBlob = typeof Blob !== "undefined";
@@ -6942,9 +6942,9 @@ var require_constants = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/buffer-util.js
+// node_modules/ws/lib/buffer-util.js
 var require_buffer_util = __commonJS({
-  "../../node_modules/ws/lib/buffer-util.js"(exports, module) {
+  "node_modules/ws/lib/buffer-util.js"(exports, module) {
     "use strict";
     var { EMPTY_BUFFER } = require_constants();
     var FastBuffer = Buffer[Symbol.species];
@@ -7017,9 +7017,9 @@ var require_buffer_util = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/limiter.js
+// node_modules/ws/lib/limiter.js
 var require_limiter = __commonJS({
-  "../../node_modules/ws/lib/limiter.js"(exports, module) {
+  "node_modules/ws/lib/limiter.js"(exports, module) {
     "use strict";
     var kDone = Symbol("kDone");
     var kRun = Symbol("kRun");
@@ -7067,9 +7067,9 @@ var require_limiter = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/permessage-deflate.js
+// node_modules/ws/lib/permessage-deflate.js
 var require_permessage_deflate = __commonJS({
-  "../../node_modules/ws/lib/permessage-deflate.js"(exports, module) {
+  "node_modules/ws/lib/permessage-deflate.js"(exports, module) {
     "use strict";
     var zlib = __require("zlib");
     var bufferUtil = require_buffer_util();
@@ -7450,9 +7450,9 @@ var require_permessage_deflate = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/validation.js
+// node_modules/ws/lib/validation.js
 var require_validation2 = __commonJS({
-  "../../node_modules/ws/lib/validation.js"(exports, module) {
+  "node_modules/ws/lib/validation.js"(exports, module) {
     "use strict";
     var { isUtf8 } = __require("buffer");
     var { hasBlob } = require_constants();
@@ -7651,9 +7651,9 @@ var require_validation2 = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/receiver.js
+// node_modules/ws/lib/receiver.js
 var require_receiver = __commonJS({
-  "../../node_modules/ws/lib/receiver.js"(exports, module) {
+  "node_modules/ws/lib/receiver.js"(exports, module) {
     "use strict";
     var { Writable } = __require("stream");
     var PerMessageDeflate2 = require_permessage_deflate();
@@ -8274,9 +8274,9 @@ var require_receiver = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/sender.js
+// node_modules/ws/lib/sender.js
 var require_sender = __commonJS({
-  "../../node_modules/ws/lib/sender.js"(exports, module) {
+  "node_modules/ws/lib/sender.js"(exports, module) {
     "use strict";
     var { Duplex } = __require("stream");
     var { randomFillSync } = __require("crypto");
@@ -8767,9 +8767,9 @@ var require_sender = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/event-target.js
+// node_modules/ws/lib/event-target.js
 var require_event_target = __commonJS({
-  "../../node_modules/ws/lib/event-target.js"(exports, module) {
+  "node_modules/ws/lib/event-target.js"(exports, module) {
     "use strict";
     var { kForOnEventAttribute, kListener } = require_constants();
     var kCode = Symbol("kCode");
@@ -8996,9 +8996,9 @@ var require_event_target = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/extension.js
+// node_modules/ws/lib/extension.js
 var require_extension = __commonJS({
-  "../../node_modules/ws/lib/extension.js"(exports, module) {
+  "node_modules/ws/lib/extension.js"(exports, module) {
     "use strict";
     var { tokenChars } = require_validation2();
     function push(dest, name, elem) {
@@ -9149,9 +9149,9 @@ var require_extension = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/websocket.js
+// node_modules/ws/lib/websocket.js
 var require_websocket = __commonJS({
-  "../../node_modules/ws/lib/websocket.js"(exports, module) {
+  "node_modules/ws/lib/websocket.js"(exports, module) {
     "use strict";
     var EventEmitter = __require("events");
     var https = __require("https");
@@ -10045,9 +10045,9 @@ var require_websocket = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/stream.js
+// node_modules/ws/lib/stream.js
 var require_stream = __commonJS({
-  "../../node_modules/ws/lib/stream.js"(exports, module) {
+  "node_modules/ws/lib/stream.js"(exports, module) {
     "use strict";
     var WebSocket2 = require_websocket();
     var { Duplex } = __require("stream");
@@ -10143,9 +10143,9 @@ var require_stream = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/subprotocol.js
+// node_modules/ws/lib/subprotocol.js
 var require_subprotocol = __commonJS({
-  "../../node_modules/ws/lib/subprotocol.js"(exports, module) {
+  "node_modules/ws/lib/subprotocol.js"(exports, module) {
     "use strict";
     var { tokenChars } = require_validation2();
     function parse3(header) {
@@ -10188,9 +10188,9 @@ var require_subprotocol = __commonJS({
   }
 });
 
-// ../../node_modules/ws/lib/websocket-server.js
+// node_modules/ws/lib/websocket-server.js
 var require_websocket_server = __commonJS({
-  "../../node_modules/ws/lib/websocket-server.js"(exports, module) {
+  "node_modules/ws/lib/websocket-server.js"(exports, module) {
     "use strict";
     var EventEmitter = __require("events");
     var http = __require("http");
@@ -10589,7 +10589,7 @@ var require_websocket_server = __commonJS({
   }
 });
 
-// ../../node_modules/zod/v3/external.js
+// node_modules/zod/v3/external.js
 var external_exports = {};
 __export(external_exports, {
   BRAND: () => BRAND,
@@ -10701,7 +10701,7 @@ __export(external_exports, {
   void: () => voidType
 });
 
-// ../../node_modules/zod/v3/helpers/util.js
+// node_modules/zod/v3/helpers/util.js
 var util;
 (function(util2) {
   util2.assertEqual = (_) => {
@@ -10835,7 +10835,7 @@ var getParsedType = (data) => {
   }
 };
 
-// ../../node_modules/zod/v3/ZodError.js
+// node_modules/zod/v3/ZodError.js
 var ZodIssueCode = util.arrayToEnum([
   "invalid_type",
   "invalid_literal",
@@ -10953,7 +10953,7 @@ ZodError.create = (issues) => {
   return error2;
 };
 
-// ../../node_modules/zod/v3/locales/en.js
+// node_modules/zod/v3/locales/en.js
 var errorMap = (issue2, _ctx) => {
   let message;
   switch (issue2.code) {
@@ -11056,7 +11056,7 @@ var errorMap = (issue2, _ctx) => {
 };
 var en_default = errorMap;
 
-// ../../node_modules/zod/v3/errors.js
+// node_modules/zod/v3/errors.js
 var overrideErrorMap = en_default;
 function setErrorMap(map) {
   overrideErrorMap = map;
@@ -11065,7 +11065,7 @@ function getErrorMap() {
   return overrideErrorMap;
 }
 
-// ../../node_modules/zod/v3/helpers/parseUtil.js
+// node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
   const { data, path: path2, errorMaps, issueData } = params;
   const fullPath = [...path2, ...issueData.path || []];
@@ -11175,14 +11175,14 @@ var isDirty = (x) => x.status === "dirty";
 var isValid = (x) => x.status === "valid";
 var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
 
-// ../../node_modules/zod/v3/helpers/errorUtil.js
+// node_modules/zod/v3/helpers/errorUtil.js
 var errorUtil;
 (function(errorUtil2) {
   errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
   errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
 })(errorUtil || (errorUtil = {}));
 
-// ../../node_modules/zod/v3/types.js
+// node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
   constructor(parent, value, path2, key) {
     this._cachedPath = [];
@@ -14630,7 +14630,7 @@ var coerce = {
 };
 var NEVER = INVALID;
 
-// ../../node_modules/zod/v4/core/core.js
+// node_modules/zod/v4/core/core.js
 var NEVER2 = Object.freeze({
   status: "aborted"
 });
@@ -14690,7 +14690,7 @@ function config(newConfig) {
   return globalConfig;
 }
 
-// ../../node_modules/zod/v4/core/util.js
+// node_modules/zod/v4/core/util.js
 var util_exports = {};
 __export(util_exports, {
   BIGINT_FORMAT_RANGES: () => BIGINT_FORMAT_RANGES,
@@ -15211,7 +15211,7 @@ var Class = class {
   }
 };
 
-// ../../node_modules/zod/v4/core/errors.js
+// node_modules/zod/v4/core/errors.js
 var initializer = (inst, def) => {
   inst.name = "$ZodError";
   Object.defineProperty(inst, "_zod", {
@@ -15286,7 +15286,7 @@ function formatError(error2, _mapper) {
   return fieldErrors;
 }
 
-// ../../node_modules/zod/v4/core/parse.js
+// node_modules/zod/v4/core/parse.js
 var _parse = (_Err) => (schema, value, _ctx, _params) => {
   const ctx = _ctx ? Object.assign(_ctx, { async: false }) : { async: false };
   const result = schema._zod.run({ value, issues: [] }, ctx);
@@ -15338,7 +15338,7 @@ var _safeParseAsync = (_Err) => async (schema, value, _ctx) => {
 };
 var safeParseAsync = /* @__PURE__ */ _safeParseAsync($ZodRealError);
 
-// ../../node_modules/zod/v4/core/regexes.js
+// node_modules/zod/v4/core/regexes.js
 var cuid = /^[cC][^\s-]{8,}$/;
 var cuid2 = /^[0-9a-z]+$/;
 var ulid = /^[0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{26}$/;
@@ -15396,7 +15396,7 @@ var _null = /null/i;
 var lowercase = /^[^A-Z]*$/;
 var uppercase = /^[^a-z]*$/;
 
-// ../../node_modules/zod/v4/core/checks.js
+// node_modules/zod/v4/core/checks.js
 var $ZodCheck = /* @__PURE__ */ $constructor("$ZodCheck", (inst, def) => {
   var _a;
   inst._zod ?? (inst._zod = {});
@@ -15781,7 +15781,7 @@ var $ZodCheckOverwrite = /* @__PURE__ */ $constructor("$ZodCheckOverwrite", (ins
   };
 });
 
-// ../../node_modules/zod/v4/core/doc.js
+// node_modules/zod/v4/core/doc.js
 var Doc = class {
   constructor(args = []) {
     this.content = [];
@@ -15817,14 +15817,14 @@ var Doc = class {
   }
 };
 
-// ../../node_modules/zod/v4/core/versions.js
+// node_modules/zod/v4/core/versions.js
 var version = {
   major: 4,
   minor: 0,
   patch: 0
 };
 
-// ../../node_modules/zod/v4/core/schemas.js
+// node_modules/zod/v4/core/schemas.js
 var $ZodType = /* @__PURE__ */ $constructor("$ZodType", (inst, def) => {
   var _a;
   inst ?? (inst = {});
@@ -17062,7 +17062,7 @@ function handleRefineResult(result, payload, input, inst) {
   }
 }
 
-// ../../node_modules/zod/v4/locales/en.js
+// node_modules/zod/v4/locales/en.js
 var parsedType = (data) => {
   const t = typeof data;
   switch (t) {
@@ -17180,7 +17180,7 @@ function en_default2() {
   };
 }
 
-// ../../node_modules/zod/v4/core/registries.js
+// node_modules/zod/v4/core/registries.js
 var $output = Symbol("ZodOutput");
 var $input = Symbol("ZodInput");
 var $ZodRegistry = class {
@@ -17230,7 +17230,7 @@ function registry() {
 }
 var globalRegistry = /* @__PURE__ */ registry();
 
-// ../../node_modules/zod/v4/core/api.js
+// node_modules/zod/v4/core/api.js
 function _string(Class2, params) {
   return new Class2({
     type: "string",
@@ -17669,7 +17669,7 @@ function _refine(Class2, fn, _params) {
   return schema;
 }
 
-// ../../node_modules/zod/v4/core/to-json-schema.js
+// node_modules/zod/v4/core/to-json-schema.js
 var JSONSchemaGenerator = class {
   constructor(params) {
     this.counter = 0;
@@ -18436,7 +18436,7 @@ function isTransforming(_schema, _ctx) {
   throw new Error(`Unknown schema type: ${def.type}`);
 }
 
-// ../../node_modules/zod/v4/mini/schemas.js
+// node_modules/zod/v4/mini/schemas.js
 var ZodMiniType = /* @__PURE__ */ $constructor("ZodMiniType", (inst, def) => {
   if (!inst._zod)
     throw new Error("Uninitialized schema in ZodMiniType.");
@@ -18482,7 +18482,7 @@ function object(shape, params) {
   return new ZodMiniObject(def);
 }
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-compat.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-compat.js
 function isZ4Schema(s) {
   const schema = s;
   return !!schema._zod;
@@ -18642,7 +18642,7 @@ function getLiteralValue(schema) {
   return void 0;
 }
 
-// ../../node_modules/zod/v4/classic/iso.js
+// node_modules/zod/v4/classic/iso.js
 var iso_exports2 = {};
 __export(iso_exports2, {
   ZodISODate: () => ZodISODate,
@@ -18683,7 +18683,7 @@ function duration2(params) {
   return _isoDuration(ZodISODuration, params);
 }
 
-// ../../node_modules/zod/v4/classic/errors.js
+// node_modules/zod/v4/classic/errors.js
 var initializer2 = (inst, issues) => {
   $ZodError.init(inst, issues);
   inst.name = "ZodError";
@@ -18717,13 +18717,13 @@ var ZodRealError = $constructor("ZodError", initializer2, {
   Parent: Error
 });
 
-// ../../node_modules/zod/v4/classic/parse.js
+// node_modules/zod/v4/classic/parse.js
 var parse2 = /* @__PURE__ */ _parse(ZodRealError);
 var parseAsync2 = /* @__PURE__ */ _parseAsync(ZodRealError);
 var safeParse3 = /* @__PURE__ */ _safeParse(ZodRealError);
 var safeParseAsync3 = /* @__PURE__ */ _safeParseAsync(ZodRealError);
 
-// ../../node_modules/zod/v4/classic/schemas.js
+// node_modules/zod/v4/classic/schemas.js
 var ZodType2 = /* @__PURE__ */ $constructor("ZodType", (inst, def) => {
   $ZodType.init(inst, def);
   inst.def = def;
@@ -19334,10 +19334,10 @@ function preprocess(fn, schema) {
   return pipe(transform(fn), schema);
 }
 
-// ../../node_modules/zod/v4/classic/external.js
+// node_modules/zod/v4/classic/external.js
 config(en_default2());
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/types.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/types.js
 var LATEST_PROTOCOL_VERSION = "2025-11-25";
 var SUPPORTED_PROTOCOL_VERSIONS = [LATEST_PROTOCOL_VERSION, "2025-06-18", "2025-03-26", "2024-11-05", "2024-10-07"];
 var RELATED_TASK_META_KEY = "io.modelcontextprotocol/related-task";
@@ -20866,12 +20866,12 @@ var UrlElicitationRequiredError = class extends McpError {
   }
 };
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.js
 function isTerminal(status) {
   return status === "completed" || status === "failed" || status === "cancelled";
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/Options.js
+// node_modules/zod-to-json-schema/dist/esm/Options.js
 var ignoreOverride = Symbol("Let zodToJsonSchema decide on which parser to use");
 var defaultOptions = {
   name: void 0,
@@ -20905,7 +20905,7 @@ var getDefaultOptions = (options) => typeof options === "string" ? {
   ...options
 };
 
-// ../../node_modules/zod-to-json-schema/dist/esm/Refs.js
+// node_modules/zod-to-json-schema/dist/esm/Refs.js
 var getRefs = (options) => {
   const _options = getDefaultOptions(options);
   const currentPath = _options.name !== void 0 ? [..._options.basePath, _options.definitionPath, _options.name] : _options.basePath;
@@ -20926,7 +20926,7 @@ var getRefs = (options) => {
   };
 };
 
-// ../../node_modules/zod-to-json-schema/dist/esm/errorMessages.js
+// node_modules/zod-to-json-schema/dist/esm/errorMessages.js
 function addErrorMessage(res, key, errorMessage, refs) {
   if (!refs?.errorMessages)
     return;
@@ -20942,7 +20942,7 @@ function setResponseValueAndErrors(res, key, value, errorMessage, refs) {
   addErrorMessage(res, key, errorMessage, refs);
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/getRelativePath.js
+// node_modules/zod-to-json-schema/dist/esm/getRelativePath.js
 var getRelativePath = (pathA, pathB) => {
   let i = 0;
   for (; i < pathA.length && i < pathB.length; i++) {
@@ -20952,7 +20952,7 @@ var getRelativePath = (pathA, pathB) => {
   return [(pathA.length - i).toString(), ...pathB.slice(i)].join("/");
 };
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/any.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/any.js
 function parseAnyDef(refs) {
   if (refs.target !== "openAi") {
     return {};
@@ -20968,7 +20968,7 @@ function parseAnyDef(refs) {
   };
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/array.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/array.js
 function parseArrayDef(def, refs) {
   const res = {
     type: "array"
@@ -20992,7 +20992,7 @@ function parseArrayDef(def, refs) {
   return res;
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/bigint.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/bigint.js
 function parseBigintDef(def, refs) {
   const res = {
     type: "integer",
@@ -21038,24 +21038,24 @@ function parseBigintDef(def, refs) {
   return res;
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/boolean.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/boolean.js
 function parseBooleanDef() {
   return {
     type: "boolean"
   };
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/branded.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/branded.js
 function parseBrandedDef(_def, refs) {
   return parseDef(_def.type._def, refs);
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/catch.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/catch.js
 var parseCatchDef = (def, refs) => {
   return parseDef(def.innerType._def, refs);
 };
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/date.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/date.js
 function parseDateDef(def, refs, overrideDateStrategy) {
   const strategy = overrideDateStrategy ?? refs.dateStrategy;
   if (Array.isArray(strategy)) {
@@ -21114,7 +21114,7 @@ var integerDateParser = (def, refs) => {
   return res;
 };
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/default.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/default.js
 function parseDefaultDef(_def, refs) {
   return {
     ...parseDef(_def.innerType._def, refs),
@@ -21122,12 +21122,12 @@ function parseDefaultDef(_def, refs) {
   };
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/effects.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/effects.js
 function parseEffectsDef(_def, refs) {
   return refs.effectStrategy === "input" ? parseDef(_def.schema._def, refs) : parseAnyDef(refs);
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/enum.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/enum.js
 function parseEnumDef(def) {
   return {
     type: "string",
@@ -21135,7 +21135,7 @@ function parseEnumDef(def) {
   };
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/intersection.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/intersection.js
 var isJsonSchema7AllOfType = (type) => {
   if ("type" in type && type.type === "string")
     return false;
@@ -21177,7 +21177,7 @@ function parseIntersectionDef(def, refs) {
   } : void 0;
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/literal.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/literal.js
 function parseLiteralDef(def, refs) {
   const parsedType2 = typeof def.value;
   if (parsedType2 !== "bigint" && parsedType2 !== "number" && parsedType2 !== "boolean" && parsedType2 !== "string") {
@@ -21197,7 +21197,7 @@ function parseLiteralDef(def, refs) {
   };
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/string.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/string.js
 var emojiRegex2 = void 0;
 var zodPatterns = {
   /**
@@ -21522,7 +21522,7 @@ function stringifyRegExpWithFlags(regex, refs) {
   return pattern;
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/record.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/record.js
 function parseRecordDef(def, refs) {
   if (refs.target === "openAi") {
     console.warn("Warning: OpenAI may not support records in schemas! Try an array of key-value pairs instead.");
@@ -21574,7 +21574,7 @@ function parseRecordDef(def, refs) {
   return schema;
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/map.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/map.js
 function parseMapDef(def, refs) {
   if (refs.mapStrategy === "record") {
     return parseRecordDef(def, refs);
@@ -21599,7 +21599,7 @@ function parseMapDef(def, refs) {
   };
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/nativeEnum.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/nativeEnum.js
 function parseNativeEnumDef(def) {
   const object3 = def.values;
   const actualKeys = Object.keys(def.values).filter((key) => {
@@ -21613,7 +21613,7 @@ function parseNativeEnumDef(def) {
   };
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/never.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/never.js
 function parseNeverDef(refs) {
   return refs.target === "openAi" ? void 0 : {
     not: parseAnyDef({
@@ -21623,7 +21623,7 @@ function parseNeverDef(refs) {
   };
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/null.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/null.js
 function parseNullDef(refs) {
   return refs.target === "openApi3" ? {
     enum: ["null"],
@@ -21633,7 +21633,7 @@ function parseNullDef(refs) {
   };
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/union.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/union.js
 var primitiveMappings = {
   ZodString: "string",
   ZodNumber: "number",
@@ -21701,7 +21701,7 @@ var asAnyOf = (def, refs) => {
   return anyOf.length ? { anyOf } : void 0;
 };
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/nullable.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/nullable.js
 function parseNullableDef(def, refs) {
   if (["ZodString", "ZodNumber", "ZodBigInt", "ZodBoolean", "ZodNull"].includes(def.innerType._def.typeName) && (!def.innerType._def.checks || !def.innerType._def.checks.length)) {
     if (refs.target === "openApi3") {
@@ -21733,7 +21733,7 @@ function parseNullableDef(def, refs) {
   return base && { anyOf: [base, { type: "null" }] };
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/number.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/number.js
 function parseNumberDef(def, refs) {
   const res = {
     type: "number"
@@ -21782,7 +21782,7 @@ function parseNumberDef(def, refs) {
   return res;
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/object.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/object.js
 function parseObjectDef(def, refs) {
   const forceOptionalIntoNullable = refs.target === "openAi";
   const result = {
@@ -21852,7 +21852,7 @@ function safeIsOptional(schema) {
   }
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/optional.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/optional.js
 var parseOptionalDef = (def, refs) => {
   if (refs.currentPath.toString() === refs.propertyPath?.toString()) {
     return parseDef(def.innerType._def, refs);
@@ -21871,7 +21871,7 @@ var parseOptionalDef = (def, refs) => {
   } : parseAnyDef(refs);
 };
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/pipeline.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/pipeline.js
 var parsePipelineDef = (def, refs) => {
   if (refs.pipeStrategy === "input") {
     return parseDef(def.in._def, refs);
@@ -21891,12 +21891,12 @@ var parsePipelineDef = (def, refs) => {
   };
 };
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/promise.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/promise.js
 function parsePromiseDef(def, refs) {
   return parseDef(def.type._def, refs);
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/set.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/set.js
 function parseSetDef(def, refs) {
   const items = parseDef(def.valueType._def, {
     ...refs,
@@ -21916,7 +21916,7 @@ function parseSetDef(def, refs) {
   return schema;
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/tuple.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/tuple.js
 function parseTupleDef(def, refs) {
   if (def.rest) {
     return {
@@ -21944,24 +21944,24 @@ function parseTupleDef(def, refs) {
   }
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/undefined.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/undefined.js
 function parseUndefinedDef(refs) {
   return {
     not: parseAnyDef(refs)
   };
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/unknown.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/unknown.js
 function parseUnknownDef(refs) {
   return parseAnyDef(refs);
 }
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parsers/readonly.js
+// node_modules/zod-to-json-schema/dist/esm/parsers/readonly.js
 var parseReadonlyDef = (def, refs) => {
   return parseDef(def.innerType._def, refs);
 };
 
-// ../../node_modules/zod-to-json-schema/dist/esm/selectParser.js
+// node_modules/zod-to-json-schema/dist/esm/selectParser.js
 var selectParser = (def, typeName, refs) => {
   switch (typeName) {
     case ZodFirstPartyTypeKind.ZodString:
@@ -22037,7 +22037,7 @@ var selectParser = (def, typeName, refs) => {
   }
 };
 
-// ../../node_modules/zod-to-json-schema/dist/esm/parseDef.js
+// node_modules/zod-to-json-schema/dist/esm/parseDef.js
 function parseDef(def, refs, forceResolution = false) {
   const seenItem = refs.seen.get(def);
   if (refs.override) {
@@ -22093,7 +22093,7 @@ var addMeta = (def, refs, jsonSchema) => {
   return jsonSchema;
 };
 
-// ../../node_modules/zod-to-json-schema/dist/esm/zodToJsonSchema.js
+// node_modules/zod-to-json-schema/dist/esm/zodToJsonSchema.js
 var zodToJsonSchema = (schema, options) => {
   const refs = getRefs(options);
   let definitions = typeof options === "object" && options.definitions ? Object.entries(options.definitions).reduce((acc, [name2, schema2]) => ({
@@ -22155,7 +22155,7 @@ var zodToJsonSchema = (schema, options) => {
   return combined;
 };
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-json-schema-compat.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-json-schema-compat.js
 function mapMiniTarget(t) {
   if (!t)
     return "draft-7";
@@ -22197,7 +22197,7 @@ function parseWithCompat(schema, data) {
   return result.data;
 }
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.js
 var DEFAULT_REQUEST_TIMEOUT_MSEC = 6e4;
 var Protocol = class {
   constructor(_options) {
@@ -23151,7 +23151,7 @@ function mergeCapabilities(base, additional) {
   return result;
 }
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/validation/ajv-provider.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/validation/ajv-provider.js
 var import_ajv = __toESM(require_ajv(), 1);
 var import_ajv_formats = __toESM(require_dist(), 1);
 function createDefaultAjvInstance() {
@@ -23219,7 +23219,7 @@ var AjvJsonSchemaValidator = class {
   }
 };
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/server.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/server.js
 var ExperimentalServerTasks = class {
   constructor(_server) {
     this._server = _server;
@@ -23432,7 +23432,7 @@ var ExperimentalServerTasks = class {
   }
 };
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/helpers.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/helpers.js
 function assertToolsCallTaskCapability(requests, method, entityName) {
   if (!requests) {
     throw new Error(`${entityName} does not support task creation (required for ${method})`);
@@ -23467,7 +23467,7 @@ function assertClientRequestTaskCapability(requests, method, entityName) {
   }
 }
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.js
 var Server = class extends Protocol {
   /**
    * Initializes this server with the given name and version information.
@@ -23838,7 +23838,7 @@ var Server = class extends Protocol {
   }
 };
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/completable.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/server/completable.js
 var COMPLETABLE_SYMBOL = Symbol.for("mcp.completable");
 function isCompletable(schema) {
   return !!schema && typeof schema === "object" && COMPLETABLE_SYMBOL in schema;
@@ -23852,7 +23852,7 @@ var McpZodTypeKind;
   McpZodTypeKind2["Completable"] = "McpCompletable";
 })(McpZodTypeKind || (McpZodTypeKind = {}));
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/shared/toolNameValidation.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/shared/toolNameValidation.js
 var TOOL_NAME_REGEX = /^[A-Za-z0-9._-]{1,128}$/;
 function validateToolName(name) {
   const warnings = [];
@@ -23910,7 +23910,7 @@ function validateAndWarnToolName(name) {
   return result.isValid;
 }
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/mcp-server.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/mcp-server.js
 var ExperimentalMcpServerTasks = class {
   constructor(_mcpServer) {
     this._mcpServer = _mcpServer;
@@ -23925,7 +23925,7 @@ var ExperimentalMcpServerTasks = class {
   }
 };
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/mcp.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/server/mcp.js
 var McpServer = class {
   constructor(serverInfo, options) {
     this._registeredResources = {};
@@ -24717,10 +24717,10 @@ var EMPTY_COMPLETION_RESULT = {
   }
 };
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
 import process2 from "node:process";
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.js
 var STDIO_DEFAULT_MAX_BUFFER_SIZE = 10 * 1024 * 1024;
 var ReadBuffer = class {
   constructor(options) {
@@ -24757,7 +24757,7 @@ function serializeMessage(message) {
   return JSON.stringify(message) + "\n";
 }
 
-// ../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
+// node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
 var StdioServerTransport = class {
   constructor(_stdin = process2.stdin, _stdout = process2.stdout, options) {
     this._stdin = _stdin;
@@ -24824,7 +24824,7 @@ var StdioServerTransport = class {
   }
 };
 
-// ../../node_modules/ws/wrapper.mjs
+// node_modules/ws/wrapper.mjs
 var import_stream = __toESM(require_stream(), 1);
 var import_extension = __toESM(require_extension(), 1);
 var import_permessage_deflate = __toESM(require_permessage_deflate(), 1);
@@ -24834,10 +24834,10 @@ var import_subprotocol = __toESM(require_subprotocol(), 1);
 var import_websocket = __toESM(require_websocket(), 1);
 var import_websocket_server = __toESM(require_websocket_server(), 1);
 
-// src/ws-bridge.ts
+// packages/mcp-server/src/ws-bridge.ts
 import path from "path";
 
-// src/usage.ts
+// packages/mcp-server/src/usage.ts
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
@@ -24885,7 +24885,7 @@ function flushUsage() {
   if (dirty) flush();
 }
 
-// src/ws-bridge.ts
+// packages/mcp-server/src/ws-bridge.ts
 var WS_PORT_BASE = 7970;
 var WS_PORT_MAX = 7980;
 var REQUEST_TIMEOUT_MS = 3e4;
@@ -25037,7 +25037,7 @@ var WsBridge = class {
   }
 };
 
-// src/flow-store.ts
+// packages/mcp-server/src/flow-store.ts
 import { homedir as homedir2 } from "node:os";
 import { join as join2, dirname as dirname2 } from "node:path";
 import { existsSync, mkdirSync as mkdirSync2, readFileSync as readFileSync2, writeFileSync as writeFileSync2, renameSync } from "node:fs";
@@ -25180,13 +25180,13 @@ function isFragileSelector(selector) {
   return !!selector && FRAGILE_RE.test(selector);
 }
 
-// src/tools/browser.ts
+// packages/mcp-server/src/tools/browser.ts
 import { writeFileSync as writeFileSync3, copyFileSync, readFileSync as readFileSync3 } from "fs";
 import { tmpdir, homedir as homedir3 } from "os";
 import { join as join3 } from "path";
 import { execSync } from "child_process";
 
-// src/policy.ts
+// packages/mcp-server/src/policy.ts
 function isBlockedUrl(rawUrl) {
   let parsed;
   try {
@@ -25211,7 +25211,7 @@ function isBlockedUrl(rawUrl) {
   return { blocked: false };
 }
 
-// src/tools/browser.ts
+// packages/mcp-server/src/tools/browser.ts
 function registerBrowserTools(server, bridge, flowStore) {
   server.tool(
     "open_page",
@@ -25481,7 +25481,9 @@ The saved file path can be passed directly to set_file_input(hint, file_path) to
   );
   server.tool(
     "get_form_fields",
-    `Inventory form fields on the active page (inputs, textareas, selects, CodeMirror editors). Sorted top-to-bottom by y-position; includes fields below the fold.
+    `Inventory form fields on the active page (inputs, textareas, selects, CodeMirror editors). Sorted top-to-bottom by on-screen position; includes fields below the fold.
+
+Fields inside same-origin iframes are included and carry a \`frame\` value naming the frame that holds them \u2014 pass it back as fill_input's \`frame\`. Pass \`frame\` here to inventory one frame only.
 
 Pass \`query\` to filter+rank by label/placeholder/aria-label/name/id (the old find_input behavior \u2014 match strength reported as aria-eq / placeholder-eq / label-text-eq / name-eq / id-eq / *-includes / fuzzy-text-walk). Pass \`exact: true\` to refuse fuzzy text-walk matches.
 
@@ -25491,7 +25493,7 @@ Pass \`only_empty: true\` to filter the inventory to required-but-empty fields. 
       max: external_exports.number().int().min(1).optional().describe("Maximum fields to return when query is set (default 5). Ignored without query (full inventory)."),
       type_filter: external_exports.string().optional().describe('Restrict to a specific input type (e.g. "email", "checkbox", "file"). Only with query.'),
       exact: external_exports.boolean().optional().describe("Refuse fuzzy text-walk and *-includes matches. Only with query."),
-      frame: external_exports.string().optional().describe("Same-origin iframe CSS selector to search inside. Cross-origin iframes are not supported."),
+      frame: external_exports.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Honoured in BOTH inventory and query mode."),
       only_empty: external_exports.boolean().optional().describe("Filter inventory to required-but-empty fields only. Use as a Submit-disabled diagnostic. Ignored when query is set.")
     },
     async ({ query, max, type_filter, exact, frame, only_empty }) => {
@@ -25513,9 +25515,10 @@ ${lines2.join("\n")}
 
 To fill: fill_input("${r2.fields[0].label}", "<value>")` }] };
       }
-      const response = await bridge.request({ type: "get_form_fields", only_empty });
+      const response = await bridge.request({ type: "get_form_fields", only_empty, frame });
       if (response.type !== "form_fields_response") throw new Error("Unexpected response");
       const r = response;
+      if (r.frame_error) return { content: [{ type: "text", text: r.frame_error }] };
       const fields = r.fields;
       const captchaLine = r.captcha ? `
 
@@ -25531,7 +25534,8 @@ To fill: fill_input("${r2.fields[0].label}", "<value>")` }] };
         const val = f.value ? ` [currently: "${f.value}"]` : "";
         const ctx = f.context ? ` [under: "${f.context}"]` : "";
         const req = f.required ? " *required" : "";
-        return `${f.index}. [${f.type}] "${f.label}"${req}${val}${ctx} \u2014 y:${f.y}`;
+        const fr = f.frame ? ` [in iframe: ${f.frame}]` : "";
+        return `${f.index}. [${f.type}] "${f.label}"${req}${val}${ctx}${fr} \u2014 y:${f.y}`;
       });
       const header = only_empty ? `Required-but-empty fields (${fields.length}):` : `Form fields (${fields.length} total, sorted top-to-bottom):`;
       return { content: [{ type: "text", text: `${header}
@@ -25540,7 +25544,7 @@ ${lines.join("\n")}${r.warning ?? ""}${captchaLine}${oauthLine}` }] };
   );
   server.tool(
     "type_text",
-    `Type text into the currently focused element via CDP keystrokes (produces isTrusted=true events). Use when fill_input fails because the page validates isTrusted (CodeMirror/Monaco/Ace editors, shadow DOM inputs, isTrusted-gated forms). Pass \`into_selector\` to focus the target before typing (shadow-piercing CSS) \u2014 combined with \`clear_first: true\`, this collapses the old "wait_for_click \u2192 execute_script selectAll \u2192 type_text" pattern into a single call. Pass \`frame: "iframe.selector"\` to type into a same-origin iframe's first editable element.
+    `Type text into the currently focused element via CDP keystrokes (produces isTrusted=true events). Use when fill_input fails because the page validates isTrusted (CodeMirror/Monaco/Ace editors, shadow DOM inputs, isTrusted-gated forms). Pass \`into_selector\` to focus the target before typing (shadow-piercing CSS) \u2014 combined with \`clear_first: true\`, this collapses the old "wait_for_click \u2192 execute_script selectAll \u2192 type_text" pattern into a single call. Pass \`frame\` to type into a frame \u2014 including a CROSS-ORIGIN one, since focus is set by a script injected into the frame itself and the keystrokes then follow focus wherever it landed. Combine with \`into_selector\` to pick a specific element inside that frame.
 
 **TipTap / ProseMirror auto-recovery**: when \`into_selector\` targets a contenteditable inside a \`.tiptap\` / \`.ProseMirror\` / \`[data-tiptap-editor]\` ancestor, type_text verifies post-type that the text actually landed. If tiptap's internal state machine silently dropped the CDP keystrokes (a known failure mode where the editor reverts to placeholder a few seconds later), type_text automatically re-fills via \`document.execCommand('insertText', ...)\` which tiptap accepts. The response message records "TipTap/ProseMirror silently dropped..., recovered via execCommand insertText" when this fired.`,
     {
@@ -25552,7 +25556,7 @@ ${lines.join("\n")}${r.warning ?? ""}${captchaLine}${oauthLine}` }] };
         "Only with into_selector: run document.execCommand('selectAll') + 'delete' on the focused element before typing. Use to overwrite tiptap / ProseMirror editors and similar contenteditable surfaces in one call."
       ),
       frame: external_exports.string().optional().describe(
-        "CSS selector for an iframe whose contents you want to type into (e.g. 'iframe.se-rte-frame__summary'). Same-origin only. Before typing, the first contenteditable/input inside the iframe is focused; after typing, input/change events are dispatched in the iframe's context."
+        "Frame to type into. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a substring of the frame's src / title / id. Works for cross-origin frames. Before typing, into_selector (or the first contenteditable/input) inside the frame is focused; after typing, input/change events are dispatched in the frame's own context."
       )
     },
     async ({ text, frame, into_selector, clear_first }) => {
@@ -25626,10 +25630,11 @@ When the page navigates mid-script, the response carries \`navigated: true\` and
         "JavaScript expression or multi-statement script to evaluate in the page. Top-level `return` is supported."
       ),
       tab_query: external_exports.string().optional().describe("Run against a specific tab without changing focus. Same syntax as switch_to_tab: numeric index, URL substring, or title substring. Omit to run against the active tab."),
-      timeout_ms: external_exports.number().int().min(1e3).optional().describe('Script execution timeout in milliseconds (default 30000). When the script exceeds this limit, execution is terminated via CDP Runtime.terminateExecution and the debugger is released cleanly. Without this, a hung script locks the debugger session indefinitely and every subsequent tool call fails with "Another debugger is already attached." Increase for large DOM traversals inside shadow roots; decrease when you want fast failure on scripts that might hang.')
+      timeout_ms: external_exports.number().int().min(1e3).optional().describe('Script execution timeout in milliseconds (default 30000). When the script exceeds this limit, execution is terminated via CDP Runtime.terminateExecution and the debugger is released cleanly. Without this, a hung script locks the debugger session indefinitely and every subsequent tool call fails with "Another debugger is already attached." Increase for large DOM traversals inside shadow roots; decrease when you want fast failure on scripts that might hang.'),
+      frame: external_exports.string().optional().describe("Address a frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id. Unlike every other frame parameter this one works for CROSS-ORIGIN frames as well: the script is injected into the frame under the extension's own host permissions rather than reached into from the parent, so the script's `document` IS the frame's document. Ambiguity (two frames loading the same URL) is reported, never guessed at.")
     },
-    async ({ code, tab_query, timeout_ms }) => {
-      const response = await bridge.request({ type: "execute_script", code, tab_query, timeout_ms });
+    async ({ code, tab_query, timeout_ms, frame }) => {
+      const response = await bridge.request({ type: "execute_script", code, tab_query, timeout_ms, frame });
       if (response.type !== "script_response") throw new Error("Unexpected response");
       const { result, alert, navigated, reauthorized } = response;
       let text = `Result: ${result}`;
@@ -25678,7 +25683,7 @@ PAGE ALERT: "${alert}" \u2014 the page showed a dialog with this message. Read i
   );
 }
 
-// src/tools/highlight.ts
+// packages/mcp-server/src/tools/highlight.ts
 function registerHighlightTools(server, bridge) {
   server.tool(
     "highlight_region",
@@ -25686,6 +25691,8 @@ function registerHighlightTools(server, bridge) {
 - text \u2014 search the page for this visible text, highlight the match
 - selector \u2014 CSS selector, highlight the matched element
 - x/y/width/height \u2014 pixel rectangle (use only when DOM lookup failed)
+
+Text and selector lookups reach into same-origin iframes, and the callout is positioned in page coordinates either way \u2014 which matters because this is the handoff path for anything Claude cannot click itself, and a box drawn over the wrong part of the page is worse than none.
 
 Returns whether the element was found. Set valueToType only when the user must personally type a sensitive value (password, payment data) \u2014 otherwise Claude should auto-fill after the click.`,
     {
@@ -25696,9 +25703,10 @@ Returns whether the element was found. Set valueToType only when the user must p
       width: external_exports.number().optional().describe("Width in CSS pixels \u2014 only when no selector/text."),
       height: external_exports.number().optional().describe("Height in CSS pixels \u2014 only when no selector/text."),
       message: external_exports.string().describe("Instruction to show the user in the callout."),
-      valueToType: external_exports.string().optional().describe("Only when the user must personally type a sensitive value. Omit when Claude will auto-fill.")
+      valueToType: external_exports.string().optional().describe("Only when the user must personally type a sensitive value. Omit when Claude will auto-fill."),
+      frame: external_exports.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a substring of the frame's src / title / id. The callout is drawn in page coordinates, so a frame-hosted target is translated automatically.")
     },
-    async ({ text, selector, x, y, width, height, message, valueToType }) => {
+    async ({ text, selector, x, y, width, height, message, valueToType, frame }) => {
       if (text) {
         const response = await bridge.request({ type: "find_highlight", text, message, valueToType });
         if (response.type !== "find_highlight_response") throw new Error("Unexpected response");
@@ -25709,7 +25717,7 @@ Returns whether the element was found. Set valueToType only when the user must p
           }]
         };
       }
-      await bridge.request({ type: "highlight_region", selector, x, y, width, height, message, valueToType });
+      await bridge.request({ type: "highlight_region", selector, x, y, width, height, message, valueToType, frame });
       return {
         content: [{
           type: "text",
@@ -25720,7 +25728,7 @@ Returns whether the element was found. Set valueToType only when the user must p
   );
 }
 
-// src/tools/capture.ts
+// packages/mcp-server/src/tools/capture.ts
 import { appendFileSync, mkdirSync as mkdirSync3, readFileSync as readFileSync4, writeFileSync as writeFileSync4 } from "fs";
 import { resolve, relative, isAbsolute, dirname as dirname3 } from "path";
 function registerCaptureTools(server, bridge) {
@@ -25739,7 +25747,7 @@ Works on React-controlled inputs, contenteditable (Stripe, Notion), and CodeMirr
       value: external_exports.string().describe("Value to fill"),
       nth: external_exports.number().int().min(1).optional().describe("Which match to fill when multiple inputs share the same label (1 = first, default 1). textHint mode only."),
       exact: external_exports.boolean().optional().describe("Refuse fuzzy text-walk and *-includes matches. textHint mode only. Default false."),
-      frame: external_exports.string().optional().describe("Same-origin iframe CSS selector for selector-mode targeting of inputs inside an iframe.")
+      frame: external_exports.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Selector mode only. Works for CROSS-ORIGIN frames too: the value is set by a script injected into the frame itself rather than reached into from the parent.")
     },
     async ({ textHint, selector, value, nth, exact, frame }) => {
       if (!textHint && !selector) {
@@ -25785,17 +25793,21 @@ Or pass selector="<css>" instead of textHint to bypass fuzzy matching entirely.`
 Use this instead of take_screenshot whenever you need to read what's on the page \u2014 errors, build status, form labels, confirmation messages, etc.
 Returns up to 10,000 characters per call (~3k tokens). If the response ends with "... (N more characters)", call again with startIndex to read the next chunk.
 Use the selector parameter to scope extraction to a specific section and avoid pulling unnecessary content.
-Never use take_screenshot just to read page content \u2014 paginate with startIndex instead.`,
+Never use take_screenshot just to read page content \u2014 paginate with startIndex instead.
+
+Whole-page reads append the text of substantial same-origin iframes, each under a \`--- iframe <path> ---\` header, so an app whose UI lives entirely inside a frame does not read as a blank page. Small ad/analytics frames are excluded by size. Pass \`frame\` to read one frame only, or \`include_frames: false\` to suppress the sections.`,
     {
       selector: external_exports.string().optional().describe(
         `CSS selector to scope the extraction (e.g. 'main', '.error-toast', '[data-testid="status"]'). Omit to auto-extract from the main content area.`
       ),
+      frame: external_exports.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Returns only that frame's text."),
+      include_frames: external_exports.boolean().optional().describe("Set false to suppress the appended same-origin frame sections on a whole-page read. Default true."),
       startIndex: external_exports.number().optional().describe(
         "Character offset to start from. Use this to read past the first 20,000 characters \u2014 the response will tell you the next startIndex when more content exists."
       )
     },
-    async ({ selector, startIndex }) => {
-      const response = await bridge.request({ type: "get_page_text", selector, startIndex });
+    async ({ selector, startIndex, frame, include_frames }) => {
+      const response = await bridge.request({ type: "get_page_text", selector, startIndex, frame, include_frames });
       if (response.type !== "page_text_response") throw new Error("Unexpected response");
       const r = response;
       let text = r.text;
@@ -25834,10 +25846,11 @@ When the goal is "is X on this page?" or "find clickable Y", use \`find_text\` i
       selector: external_exports.string().optional().describe(
         "CSS selector to scope the HTML to. Pierces closed shadow roots. Omit to return the main content area (or body)."
       ),
-      max_chars: external_exports.number().int().min(1e3).optional().describe("Truncate after this many chars (default 50000). The response includes total_chars so you know if you missed anything.")
+      max_chars: external_exports.number().int().min(1e3).optional().describe("Truncate after this many chars (default 50000). The response includes total_chars so you know if you missed anything."),
+      frame: external_exports.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Returns only that frame's HTML.")
     },
-    async ({ selector, max_chars }) => {
-      const response = await bridge.request({ type: "get_page_html", selector, max_chars });
+    async ({ selector, max_chars, frame }) => {
+      const response = await bridge.request({ type: "get_page_html", selector, max_chars, frame });
       if (response.type !== "page_html_response") throw new Error("Unexpected response");
       const r = response;
       const notes = [];
@@ -26082,7 +26095,7 @@ ${r.body_text}` : "";
   );
 }
 
-// src/tools/flow.ts
+// packages/mcp-server/src/tools/flow.ts
 function registerFlowTools(server, bridge, flowStore) {
   server.tool(
     "click_element",
@@ -26114,6 +26127,7 @@ ANTI-BOT SUBMIT CEILING \u2014 synthetic clicks on social/auth platforms (Reddit
         `CSS selector for the element to click (e.g. 'faceplate-textarea-input', '#open-composer', 'button[aria-label="More options"]'). Pierces open AND closed shadow roots via queryAllDeep. Use when the target has no usable text. Exactly one of textHint or selector must be set.`
       ),
       nth: external_exports.number().int().min(1).optional().describe("Which match to click when multiple elements share the same label (1 = first/topmost, default 1). Visible candidates are ranked above hidden, so a hidden flair-dropdown won't claim nth=1 over the visible submit button."),
+      frame: external_exports.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Same-origin frames are already searched without this, with top-frame matches ranked first; pass it to scope to one frame when several contain the same label. Cross-origin frames are refused - use click_at_coordinates(frame=...) for those."),
       until_selector: external_exports.string().optional().describe('Wait until this CSS selector appears on the page after the click (e.g. ".success-toast"). Returns success=false if it does not appear within until_timeout_ms.'),
       until_url_contains: external_exports.string().optional().describe('Wait until the URL contains this substring after the click (e.g. "/checkout/complete"). If the substring was already in the pre-click URL, requires the URL to actually change before matching \u2014 prevents false positives on intra-prefix navigation like /tasks/OLD \u2192 /tasks/NEW with until_url_contains="tasks/".'),
       until_text_contains: external_exports.string().optional().describe('Wait until the visible page text contains this substring after the click (e.g. "Listing published"). Returns success=false if it does not.'),
@@ -26131,7 +26145,7 @@ ANTI-BOT SUBMIT CEILING \u2014 synthetic clicks on social/auth platforms (Reddit
       wait_until_enabled_ms: external_exports.number().int().min(0).optional().describe(`When the matched target is currently disabled (native disabled OR aria-disabled=true), poll for up to this many ms waiting for it to become enabled before clicking. Default 0 (do not wait \u2014 return target_disabled immediately). Use 2000-5000 for Submit-style buttons that briefly disable while an async copilot/validator/save is in flight. On timeout the response carries target_disabled=true plus a structured disabled_state snapshot (disabled, aria_disabled, pointer_events, opacity, visible) so the caller can decide between "wait more" or "field is genuinely missing \u2014 run get_form_fields(only_empty:true)".`),
       pierce_overlays: external_exports.boolean().optional().describe(`ChromeBoost overlay piercing. ON by default. Before clicking, the target is hit-tested: if something is painted over it (cookie scrim, modal backdrop, sticky header, toast, invisible click-away catcher), those layers are temporarily given \`pointer-events: none\`, the SAME real CDP click is fired so isTrusted stays true, and every touched inline style is restored immediately. The response names what was pierced. Set false to disable and get the raw click plus an \`occluded_by\` report instead \u2014 useful when you WANT to click the overlay itself (e.g. dismissing a backdrop).`)
     },
-    async ({ textHint, selector, nth, until_selector, until_url_contains, until_text_contains, until_url_changes, until_timeout_ms, expect_submit, within_selector, near_text, try_fiber, activity_timeout_ms, skip_activity_probe, via, in_dialog, dialog_query, wait_until_enabled_ms, pierce_overlays }) => {
+    async ({ frame, textHint, selector, nth, until_selector, until_url_contains, until_text_contains, until_url_changes, until_timeout_ms, expect_submit, within_selector, near_text, try_fiber, activity_timeout_ms, skip_activity_probe, via, in_dialog, dialog_query, wait_until_enabled_ms, pierce_overlays }) => {
       if (!textHint && !selector || textHint && selector) {
         return {
           content: [{ type: "text", text: "click_element requires exactly one of textHint or selector" }]
@@ -26142,7 +26156,7 @@ ANTI-BOT SUBMIT CEILING \u2014 synthetic clicks on social/auth platforms (Reddit
       let response;
       try {
         response = await bridge.request(
-          { type: "click_element", textHint, selector, nth, until_selector, until_url_contains, until_text_contains, until_url_changes, until_timeout_ms, expect_submit, within_selector, near_text, try_fiber, activity_timeout_ms, skip_activity_probe, via, in_dialog, dialog_query, wait_until_enabled_ms, pierce_overlays },
+          { type: "click_element", textHint, selector, nth, until_selector, until_url_contains, until_text_contains, until_url_changes, until_timeout_ms, expect_submit, within_selector, near_text, try_fiber, activity_timeout_ms, skip_activity_probe, via, in_dialog, dialog_query, wait_until_enabled_ms, pierce_overlays, frame },
           wsTimeout
         );
       } catch (err) {
@@ -26275,7 +26289,7 @@ CDP re-dispatched: isTrusted=true click at (${r.target?.x ?? 0}, ${r.target?.y ?
     "click_at_coordinates",
     `Dispatch a real CDP mouse click at viewport (x, y). The only way to interact with cross-origin iframes \u2014 \`click_element\` refuses cross-origin frames because \`find_text\` can't enter them, but a CDP-level mouse event resolves at the renderer process and reaches the iframe's content the way an OS-level click does.
 
-Coordinates are viewport CSS pixels, NOT screen coordinates. \`list_frames\` reports each iframe at \`(x, y, width, height)\` in this same space, so to click 50px in / 80px down inside an iframe: \`click_at_coordinates(frame.x + 50, frame.y + 80)\`.
+Coordinates are viewport CSS pixels, NOT screen coordinates. Pass \`frame\` to make them relative to a frame's own top-left corner instead \u2014 \`click_at_coordinates(frame: "iframe#builder", x: 50, y: 80)\` \u2014 and chromeboost adds the offset, including for a frame nested several levels deep. A point outside the named frame is refused rather than silently landing on the parent page.
 
 Runs the same humanlike sequence as \`click_element\` (bezier approach path, settle-hover micro-tremor, press, release, post-click micro-move) so behavioural fingerprinters can't distinguish the call from any other chromeboost click. Skips the activity probe \u2014 cross-origin iframe activity isn't observable from the parent.
 
@@ -26290,10 +26304,13 @@ On a page whose main thread is saturated (heavy Angular/Ember dashboards \u2014 
       button: external_exports.enum(["left", "right", "middle"]).optional().describe('Mouse button (default "left").'),
       double: external_exports.boolean().optional().describe("Fire a double-click instead of a single click. Default false."),
       pierce: external_exports.boolean().optional().describe("Temporarily disable pointer interception on the topmost layer(s) at (x, y) so the click reaches the UI underneath, then restore. Default false \u2014 at a bare coordinate ChromeBoost can't know you meant the layer below, so this is opt-in. Use after a click reports it landed on a transparent catcher."),
-      pierce_layers: external_exports.number().int().min(1).max(8).optional().describe("How many stacked layers pierce may strip (default 3).")
+      pierce_layers: external_exports.number().int().min(1).max(8).optional().describe("How many stacked layers pierce may strip (default 3)."),
+      frame: external_exports.string().optional().describe(
+        "Interpret x and y as offsets inside this frame rather than the page. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a substring of the frame's src / title / id. This is THE route into a cross-origin frame: chromeboost adds the frame's on-screen origin for you, and refuses a point that falls outside the frame instead of quietly clicking the parent page behind it."
+      )
     },
-    async ({ x, y, button, double, pierce, pierce_layers }) => {
-      const response = await bridge.request({ type: "click_at_coordinates", x, y, button, double, pierce, pierce_layers });
+    async ({ x, y, button, double, pierce, pierce_layers, frame }) => {
+      const response = await bridge.request({ type: "click_at_coordinates", x, y, button, double, pierce, pierce_layers, frame });
       const r = response;
       const navLine = r.navigated && r.after_url ? `
 \u2192 Navigated: ${r.after_url}` : "";
@@ -26318,7 +26335,7 @@ Pass \`since: "now"\` in text mode to skip the initial check and only resolve on
       shadow_root: external_exports.boolean().optional().describe("Selector mode: require the matched host to have an attached shadowRoot. Default false."),
       scope_selector: external_exports.string().optional().describe("Text mode: limit search to this CSS selector's subtree. Pierces shadow roots."),
       regex: external_exports.boolean().optional().describe("Text mode: interpret query (each entry, if an array) as a case-insensitive regex."),
-      frame: external_exports.string().optional().describe("Same-origin iframe CSS selector to wait inside (text mode)."),
+      frame: external_exports.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Same-origin frames are already searched without this, with top-frame matches ranked first; pass it to scope to one frame when several contain the same label. Text mode only."),
       since: external_exports.enum(["now"]).optional().describe(`Text mode: gate on a NEW mutation. Skips the initial check so already-present matches don't short-circuit. Use when the page keeps stale text in the DOM after a route change (e.g. stacked instruction panels) and you need to wait for the next render.`),
       whole_word: external_exports.boolean().optional().describe(`Text mode: gate matches on word boundaries. Use for common English words ("Live", "New", "Done") that would otherwise substring-match unrelated content (e.g. "Live" matching "delivery"). Default false.`),
       settle_ms: external_exports.number().int().optional().describe("change_in mode: ms to wait after the first mutation for batching (default 150)."),
@@ -26379,19 +26396,22 @@ ${preview}` }] };
     "scroll_to_element",
     `Scroll an element into view by CSS selector or label/text match.
 Use this instead of guessing scroll amounts when you know which field or section you need to reach.
-Examples: scroll_to_element("#submit-btn"), scroll_to_element("Billing address"), scroll_to_element(".cm-editor")`,
+Examples: scroll_to_element("#submit-btn"), scroll_to_element("Billing address"), scroll_to_element(".cm-editor")
+
+Resolves into same-origin iframes. When the match is inside one, the frame is named in the response and the reported document y is measured within THAT frame, since that is the document being scrolled.`,
     {
-      query: external_exports.string().describe("CSS selector (e.g. '#my-input', '.section-header') or visible text / label to search for")
+      query: external_exports.string().describe("CSS selector (e.g. '#my-input', '.section-header') or visible text / label to search for"),
+      frame: external_exports.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Same-origin frames are already searched without this, with top-frame matches ranked first; pass it to scope to one frame when several contain the same label.")
     },
-    async ({ query }) => {
-      const response = await bridge.request({ type: "scroll_to_element", query });
+    async ({ query, frame }) => {
+      const response = await bridge.request({ type: "scroll_to_element", query, frame });
       const msg = response.message ?? `Scrolled to element matching "${query}".`;
       return { content: [{ type: "text", text: msg }] };
     }
   );
   server.tool(
     "find_text",
-    `Search the active page for text and return actionable matches (text, surrounding context, best-effort CSS selector, clickable flag). Use this instead of get_page_text when checking "is X on the page?" or locating a clickable target. Pierces open AND closed shadow roots. Pass \`frame: "iframe.selector"\` for same-origin iframe search.
+    `Search the active page for text and return actionable matches (text, surrounding context, best-effort CSS selector, clickable flag). Use this instead of get_page_text when checking "is X on the page?" or locating a clickable target. Pierces open AND closed shadow roots AND same-origin iframes; matches inside a frame carry a \`frame\` field naming it, and their \`position\` is already translated to page coordinates so it can be fed straight to click_at_coordinates.
 
 When visible_only=true (the default) filters out all matches AND there were hidden matches, the response surfaces the hidden count so you can re-run with visible_only=false instead of guessing "is this on the page or not?"
 
@@ -26403,7 +26423,7 @@ Scope helpers: \`in_dialog: true\` restricts the search to the topmost open dial
       regex: external_exports.boolean().optional().describe("Treat query as regex (case-insensitive). Default false."),
       visible_only: external_exports.boolean().optional().describe("Skip display:none / visibility:hidden / aria-hidden=true. Default true."),
       context_chars: external_exports.number().int().min(0).optional().describe("Surrounding context chars per match (default 40)."),
-      frame: external_exports.string().optional().describe("Same-origin iframe CSS selector to search inside."),
+      frame: external_exports.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Same-origin frames are already searched without this, with top-frame matches ranked first; pass it to scope to one frame when several contain the same label."),
       in_dialog: external_exports.boolean().optional().describe("Scope to the topmost open [role=dialog] / [role=alertdialog] / <dialog open>. Mirrors click_element."),
       dialog_query: external_exports.string().optional().describe("Scope to the dialog whose heading or aria-label contains this substring. Mirrors click_element."),
       whole_word: external_exports.boolean().optional().describe(`Gate matches on word boundaries. Use for common English words ("Live", "New", "Done", "Confirm") that would otherwise substring-match unrelated pre-rendered content (e.g. "Live" matching "delivery", "Done" matching "abandoned"). Default false to preserve the substring-by-default contract; flip on whenever your query is a single common word that may also appear inside larger words.`)
@@ -26491,26 +26511,34 @@ ${lines.join("\n")}`
   );
   server.tool(
     "list_frames",
-    `List every top-level iframe/frame on the active page, with its origin, whether its contentDocument is accessible (same-origin), and its on-screen position. Also reports shadow-host inventory so you can spot pages whose visible content is rendered inside closed shadow roots (Radix portals, Stencil/Lit, custom web components).
+    `Map every frame boundary on the active page: iframes/frames at ANY nesting depth, same-origin and cross-origin, plus the shadow-host inventory. This is the discovery call to make when a selector "does not exist" on a page where you can plainly see the element.
 
-Use this BEFORE calling find_text({frame: "..."}) or other frame-targeted tools \u2014 it shows you which frames exist and which are reachable. Knowing a frame is cross-origin up front means you can route to read_attachment (for the frame's src URL) or take_screenshot instead of getting a "frame not accessible" error from another tool.
-
-Also use this as a quick diagnostic when execute_script returns an empty document on a page you can clearly see \u2014 non-zero \`shadow_hosts\` (especially closed roots) means switch to find_text / get_page_text / click_element / fill_input, which pierce shadow DOM via the extension's privileged API.
+Each frame's \`selector\` is an address other tools accept verbatim as \`frame\`. For a nested frame it is a path: \`iframe#shell >>> iframe.builder\`. You can also address a frame by a substring of its src, title, or id, which is usually shorter and more stable than a generated class list.
 
 Per-frame fields:
-- selector: CSS selector you can pass to other tools' \`frame\` parameter
-- src: the iframe's src attribute (may be empty for about:blank frames)
-- origin: parsed origin (e.g. "https://canvadoc.instructure.com") \u2014 empty when src is data:/javascript:/empty
-- accessible: true if contentDocument is reachable (same-origin), false otherwise
-- title: the iframe's title attribute, often the most human-readable identifier
-- x, y, width, height: bounding-box position in viewport CSS pixels
+- selector: pass to any tool's \`frame\` parameter
+- depth: 1 for a top-level frame, 2 for a frame inside a frame, and so on
+- src: the frame's src attribute (may be empty for about:blank frames)
+- url: the frame's CURRENT document URL, which differs from src once the frame navigates
+- origin: parsed origin (e.g. "https://canvadoc.instructure.com")
+- accessible: true when DOM tools can read it (same-origin), false otherwise
+- title: the frame's title attribute, often the most human-readable identifier
+- x, y, width, height: the frame's VISIBLE box in viewport CSS pixels, already clipped by any ancestor frame
+- content_origin_x / content_origin_y: where the frame's own (0, 0) sits in page coordinates
+
+Same-origin frames need no special handling: click_element, find_text, fill_input, hover, drag, get_form_fields and the rest resolve into them automatically and translate coordinates back to page space, and they report a \`frame\` field when a match came from one. Use \`frame\` to disambiguate when two frames hold the same label.
+
+Cross-origin frames cannot be read or queried by any DOM tool \u2014 that is the same-origin policy, not a chromeboost limitation. Three routes do work, and each frame's \`hint\` names them:
+- click_at_coordinates(frame: "<selector>", x, y) \u2014 CDP input resolves at the renderer, so it reaches the frame like an OS click. Coordinates are relative to the frame.
+- execute_script(frame: "<selector>", code) \u2014 injected per frame under the extension's own permissions.
+- fetch_url(src) for its HTML, take_screenshot for its pixels.
 
 Per-shadow-host fields:
 - selector: short CSS hint for the host element (tag, id, or .class)
 - open: true if the shadow root is exposed via \`el.shadowRoot\` (most web components), false if it is closed (Radix portals, Stencil/Lit defaults) \u2014 closed roots are invisible to execute_script but pierced by chromeboost's other tools.
 - depth: nesting depth (0 = top-level host attached directly to the document)
 
-Note: this returns top-level frames only. Nested cross-origin frame trees are not enumerated. Shadow hosts are capped at 25 to keep the response compact.`,
+Shadow hosts are capped at 25 to keep the response compact.`,
     {},
     async () => {
       const response = await bridge.request({ type: "list_frames" });
@@ -26534,20 +26562,33 @@ Shadow hosts (${hosts.length}: ${openCount} open, ${closedCount} closed):` + (cl
         const noFrames = "No iframes or frames on this page.";
         return { content: [{ type: "text", text: hosts.length > 0 ? `${noFrames}${shadowSection}` : noFrames }] };
       }
+      const reachable = r.frames.filter((f) => f.accessible).length;
+      const blocked = r.frames.length - reachable;
       const lines = r.frames.map((f) => {
-        const access = f.accessible ? "accessible" : "cross-origin";
+        const access = f.accessible ? "same-origin" : "cross-origin";
         const titleBit = f.title ? ` "${f.title}"` : "";
         const originBit = f.origin || "(no origin)";
-        return `${f.index}. ${f.selector}${titleBit} \u2014 ${originBit} [${access}] \u2014 ${f.width}\xD7${f.height} @ (${f.x},${f.y})${f.src ? `
-   src: ${f.src}` : ""}`;
+        const indent = "  ".repeat(Math.max(0, (f.depth ?? 1) - 1));
+        const head = `${f.index}. ${indent}${f.selector}${titleBit} \u2014 ${originBit} [${access}] \u2014 ${f.width}x${f.height} @ (${f.x},${f.y})`;
+        const srcLine = f.src ? `
+   ${indent}src: ${f.src}` : "";
+        const urlLine = f.url && f.url !== f.src ? `
+   ${indent}url: ${f.url}` : "";
+        const hintLine = f.hint ? `
+   ${indent}${f.hint}` : "";
+        return head + srcLine + urlLine + hintLine;
       });
-      return { content: [{ type: "text", text: `Found ${r.frames.length} frame${r.frames.length === 1 ? "" : "s"}:
-${lines.join("\n")}${shadowSection}` }] };
+      const header = `Found ${r.frames.length} frame${r.frames.length === 1 ? "" : "s"} (${reachable} same-origin, ${blocked} cross-origin):`;
+      const footer = reachable > 0 ? `
+
+Same-origin frames are searched automatically by click_element / find_text / fill_input / hover / drag / get_form_fields \u2014 pass \`frame\` only to disambiguate.` : "";
+      return { content: [{ type: "text", text: `${header}
+${lines.join("\n")}${footer}${shadowSection}` }] };
     }
   );
 }
 
-// src/tools/cursor.ts
+// packages/mcp-server/src/tools/cursor.ts
 function registerCursorTools(server, bridge) {
   server.tool(
     "hover",
@@ -26569,9 +26610,10 @@ Pass exactly one of \`selector\`, \`text\`, or \`x\`+\`y\`.`,
       text: external_exports.string().optional().describe("Visible text of the element to hover, when it has no stable selector."),
       x: external_exports.number().optional().describe("Viewport CSS X coordinate. Use with y when there is no DOM element (canvas, cross-origin iframe)."),
       y: external_exports.number().optional().describe("Viewport CSS Y coordinate."),
-      settle_ms: external_exports.number().int().min(0).max(5e3).optional().describe("How long to hold the cursor still after arriving, in ms (default 220). Raise to 600-1000 for menus with an intentional open delay.")
+      settle_ms: external_exports.number().int().min(0).max(5e3).optional().describe("How long to hold the cursor still after arriving, in ms (default 220). Raise to 600-1000 for menus with an intentional open delay."),
+      frame: external_exports.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Same-origin frames are already searched without this, with top-frame matches ranked first; pass it to scope the search to one frame when several contain the same label. Cross-origin frames are refused here - use click_at_coordinates(frame=...) or execute_script(frame=...).")
     },
-    async ({ selector, text, x, y, settle_ms }) => {
+    async ({ selector, text, x, y, settle_ms, frame }) => {
       const coordSet = x !== void 0 && y !== void 0;
       const provided = [selector, text, coordSet ? "coords" : void 0].filter(Boolean).length;
       if (provided !== 1) {
@@ -26580,7 +26622,7 @@ Pass exactly one of \`selector\`, \`text\`, or \`x\`+\`y\`.`,
         };
       }
       const response = await bridge.request(
-        { type: "hover", selector, text, x, y, settle_ms },
+        { type: "hover", selector, text, x, y, settle_ms, frame },
         2e4
       );
       const r = response;
@@ -26596,6 +26638,7 @@ This is the only way to drive UI that has no clickable DOM node:
 - canvas / WebGL apps, drawing surfaces, signature pads
 - map panning and zoom-box selection
 - drag-and-drop reordering (Kanban cards, sortable lists, file drop zones)
+- any of the above inside an iframe: selectors resolve into same-origin frames and the endpoints are translated to page coordinates automatically
 - resize handles and split-pane dividers
 
 Intermediate moves matter: HTML5 drag-and-drop and every JS drag library ignore a press/release pair with no motion between them, which is why a pair of clicks never works for these.
@@ -26609,10 +26652,11 @@ Specify each end as either a selector or raw coordinates: \`from_selector\`/\`to
       to_x: external_exports.number().optional().describe("Viewport CSS X to release at. Use with to_y instead of to_selector."),
       to_y: external_exports.number().optional().describe("Viewport CSS Y to release at."),
       steps: external_exports.number().int().min(6).max(60).optional().describe("How many intermediate move events to emit (default 24). Raise for long drags across a canvas; lower for a short slider nudge."),
-      hold_ms: external_exports.number().int().min(0).max(2e3).optional().describe("How long to dwell after pressing before moving, in ms (default 90). Raise to 300-600 for libraries that require a long-press before a drag starts (touch-style sortable lists).")
+      hold_ms: external_exports.number().int().min(0).max(2e3).optional().describe("How long to dwell after pressing before moving, in ms (default 90). Raise to 300-600 for libraries that require a long-press before a drag starts (touch-style sortable lists)."),
+      frame: external_exports.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Same-origin frames are already searched without this, with top-frame matches ranked first; pass it to scope the search to one frame when several contain the same label. Cross-origin frames are refused here - use click_at_coordinates(frame=...) or execute_script(frame=...). Raw from_x/from_y/to_x/to_y become relative to the frame's own top-left corner, so a kanban board inside a builder frame can be driven with the coordinates you read off it.")
     },
     async (args) => {
-      const { from_selector, from_x, from_y, to_selector, to_x, to_y, steps, hold_ms } = args;
+      const { from_selector, from_x, from_y, to_selector, to_x, to_y, steps, hold_ms, frame } = args;
       const hasFrom = !!from_selector || from_x !== void 0 && from_y !== void 0;
       const hasTo = !!to_selector || to_x !== void 0 && to_y !== void 0;
       if (!hasFrom || !hasTo) {
@@ -26626,7 +26670,7 @@ Specify each end as either a selector or raw coordinates: \`from_selector\`/\`to
         };
       }
       const response = await bridge.request(
-        { type: "drag", from_selector, from_x, from_y, to_selector, to_x, to_y, steps, hold_ms },
+        { type: "drag", from_selector, from_x, from_y, to_selector, to_x, to_y, steps, hold_ms, frame },
         45e3
       );
       const r = response;
@@ -26641,7 +26685,7 @@ This is the diagnostic for the most confusing failure in browser automation: a c
 
 Typical loop: \`click_element\` reports \`occluded\` \u2192 \`probe_point\` at the reported coordinate to see the stack \u2192 either dismiss the overlay properly, or re-click with \`pierce_overlays: true\` (the default) / \`click_at_coordinates(pierce: true)\`.
 
-Also reports \`in_iframe\` when the top element is an \`<iframe>\`, which means DOM matching cannot reach the content and you need coordinate-based interaction.`,
+Hit testing descends through same-origin iframes as well as shadow roots, so the reported element is the real one inside the frame rather than the \`<iframe>\` wrapper. Each layer carries a \`frame\` path when it lives in one, which is directly usable as another tool's \`frame\` argument. A bare \`<iframe>\` at the top of the stack now means specifically a CROSS-ORIGIN frame: nothing can see inside it, so drive it with \`click_at_coordinates(frame: ..., x, y)\`.`,
     {
       x: external_exports.number().describe("Viewport CSS X coordinate (left=0)."),
       y: external_exports.number().describe("Viewport CSS Y coordinate (top=0).")
@@ -26655,13 +26699,18 @@ Also reports \`in_iframe\` when the top element is an \`<iframe>\`, which means 
       }
       const lines = stack.map((s, i) => {
         const bits = [`z-index:${s.z_index}`, s.position];
+        if (s.frame) bits.push(`in iframe ${s.frame}`);
         return `${i === 0 ? "\u2192 TOP  " : "       "}<${s.tag}> ${s.selector} [${bits.join(", ")}]${s.text ? ` "${s.text.slice(0, 50)}"` : ""}`;
       });
       const notes = [];
       if (r.top?.transparent) notes.push("The topmost element is visually transparent \u2014 a click-catcher overlay. Retry the click with pierce enabled.");
       if (r.top?.full_screen_scrim) notes.push("The topmost element covers the viewport \u2014 a modal backdrop. Close the modal, or pierce it.");
       if (r.top?.pinned) notes.push("The topmost element is position:fixed/sticky \u2014 scrolling the target away from it may be enough.");
-      if (r.in_iframe) notes.push("The topmost element is an <iframe> \u2014 DOM matching can't enter it; use click_at_coordinates / drag with coordinates.");
+      if (r.frame) {
+        notes.push(`The element here lives inside same-origin iframe ${r.frame}. DOM tools reach it: click_element / find_text / fill_input resolve into it automatically, and you can pass frame: "${r.frame}" to scope to it.`);
+      } else if (r.in_iframe) {
+        notes.push('The topmost element is a cross-origin <iframe> \u2014 no DOM tool can enter it. Use click_at_coordinates(frame: "<selector from list_frames>", x, y), which dispatches at the renderer and does reach it.');
+      }
       return {
         content: [
           {
@@ -26712,7 +26761,7 @@ HUD state: ${s.hidden ? "hidden" : s.collapsed ? "collapsed" : "expanded"} at ($
   );
 }
 
-// src/index.ts
+// packages/mcp-server/src/index.ts
 var PACKAGE_VERSION = true ? "1.0.0" : "dev";
 var SUPPORT_URL = "https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00";
 function hostDisplayName() {

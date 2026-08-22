@@ -45,6 +45,7 @@ ANTI-BOT SUBMIT CEILING — synthetic clicks on social/auth platforms (Reddit, X
         .min(1)
         .optional()
         .describe("Which match to click when multiple elements share the same label (1 = first/topmost, default 1). Visible candidates are ranked above hidden, so a hidden flair-dropdown won't claim nth=1 over the visible submit button."),
+      frame: z.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Same-origin frames are already searched without this, with top-frame matches ranked first; pass it to scope to one frame when several contain the same label. Cross-origin frames are refused - use click_at_coordinates(frame=...) for those."),
       until_selector: z
         .string()
         .optional()
@@ -116,7 +117,7 @@ ANTI-BOT SUBMIT CEILING — synthetic clicks on social/auth platforms (Reddit, X
         .optional()
         .describe(`ChromeBoost overlay piercing. ON by default. Before clicking, the target is hit-tested: if something is painted over it (cookie scrim, modal backdrop, sticky header, toast, invisible click-away catcher), those layers are temporarily given \`pointer-events: none\`, the SAME real CDP click is fired so isTrusted stays true, and every touched inline style is restored immediately. The response names what was pierced. Set false to disable and get the raw click plus an \`occluded_by\` report instead — useful when you WANT to click the overlay itself (e.g. dismissing a backdrop).`),
     },
-    async ({ textHint, selector, nth, until_selector, until_url_contains, until_text_contains, until_url_changes, until_timeout_ms, expect_submit, within_selector, near_text, try_fiber, activity_timeout_ms, skip_activity_probe, via, in_dialog, dialog_query, wait_until_enabled_ms, pierce_overlays }) => {
+    async ({ frame, textHint, selector, nth, until_selector, until_url_contains, until_text_contains, until_url_changes, until_timeout_ms, expect_submit, within_selector, near_text, try_fiber, activity_timeout_ms, skip_activity_probe, via, in_dialog, dialog_query, wait_until_enabled_ms, pierce_overlays }) => {
       // Validate exactly-one-of(textHint, selector)
       if ((!textHint && !selector) || (textHint && selector)) {
         return {
@@ -130,7 +131,7 @@ ANTI-BOT SUBMIT CEILING — synthetic clicks on social/auth platforms (Reddit, X
       let response;
       try {
         response = await bridge.request(
-          { type: "click_element", textHint, selector, nth, until_selector, until_url_contains, until_text_contains, until_url_changes, until_timeout_ms, expect_submit, within_selector, near_text, try_fiber, activity_timeout_ms, skip_activity_probe, via, in_dialog, dialog_query, wait_until_enabled_ms, pierce_overlays },
+          { type: "click_element", textHint, selector, nth, until_selector, until_url_contains, until_text_contains, until_url_changes, until_timeout_ms, expect_submit, within_selector, near_text, try_fiber, activity_timeout_ms, skip_activity_probe, via, in_dialog, dialog_query, wait_until_enabled_ms, pierce_overlays, frame },
           wsTimeout
         );
       } catch (err) {
@@ -319,7 +320,7 @@ Pass \`redispatch: true\` to turn the user's gesture into a CDP-dispatched isTru
     "click_at_coordinates",
     `Dispatch a real CDP mouse click at viewport (x, y). The only way to interact with cross-origin iframes — \`click_element\` refuses cross-origin frames because \`find_text\` can't enter them, but a CDP-level mouse event resolves at the renderer process and reaches the iframe's content the way an OS-level click does.
 
-Coordinates are viewport CSS pixels, NOT screen coordinates. \`list_frames\` reports each iframe at \`(x, y, width, height)\` in this same space, so to click 50px in / 80px down inside an iframe: \`click_at_coordinates(frame.x + 50, frame.y + 80)\`.
+Coordinates are viewport CSS pixels, NOT screen coordinates. Pass \`frame\` to make them relative to a frame's own top-left corner instead — \`click_at_coordinates(frame: "iframe#builder", x: 50, y: 80)\` — and chromeboost adds the offset, including for a frame nested several levels deep. A point outside the named frame is refused rather than silently landing on the parent page.
 
 Runs the same humanlike sequence as \`click_element\` (bezier approach path, settle-hover micro-tremor, press, release, post-click micro-move) so behavioural fingerprinters can't distinguish the call from any other chromeboost click. Skips the activity probe — cross-origin iframe activity isn't observable from the parent.
 
@@ -344,9 +345,15 @@ On a page whose main thread is saturated (heavy Angular/Ember dashboards — Goo
         .max(8)
         .optional()
         .describe("How many stacked layers pierce may strip (default 3)."),
+      frame: z
+        .string()
+        .optional()
+        .describe(
+          "Interpret x and y as offsets inside this frame rather than the page. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a substring of the frame's src / title / id. This is THE route into a cross-origin frame: chromeboost adds the frame's on-screen origin for you, and refuses a point that falls outside the frame instead of quietly clicking the parent page behind it."
+        ),
     },
-    async ({ x, y, button, double, pierce, pierce_layers }) => {
-      const response = await bridge.request({ type: "click_at_coordinates", x, y, button, double, pierce, pierce_layers });
+    async ({ x, y, button, double, pierce, pierce_layers, frame }) => {
+      const response = await bridge.request({ type: "click_at_coordinates", x, y, button, double, pierce, pierce_layers, frame });
       const r = response as {
         success: boolean;
         message: string;
@@ -379,7 +386,7 @@ Pass \`since: "now"\` in text mode to skip the initial check and only resolve on
       shadow_root: z.boolean().optional().describe("Selector mode: require the matched host to have an attached shadowRoot. Default false."),
       scope_selector: z.string().optional().describe("Text mode: limit search to this CSS selector's subtree. Pierces shadow roots."),
       regex: z.boolean().optional().describe("Text mode: interpret query (each entry, if an array) as a case-insensitive regex."),
-      frame: z.string().optional().describe("Same-origin iframe CSS selector to wait inside (text mode)."),
+      frame: z.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Same-origin frames are already searched without this, with top-frame matches ranked first; pass it to scope to one frame when several contain the same label. Text mode only."),
       since: z.enum(["now"]).optional().describe(`Text mode: gate on a NEW mutation. Skips the initial check so already-present matches don't short-circuit. Use when the page keeps stale text in the DOM after a route change (e.g. stacked instruction panels) and you need to wait for the next render.`),
       whole_word: z.boolean().optional().describe(`Text mode: gate matches on word boundaries. Use for common English words ("Live", "New", "Done") that would otherwise substring-match unrelated content (e.g. "Live" matching "delivery"). Default false.`),
       settle_ms: z.number().int().optional().describe("change_in mode: ms to wait after the first mutation for batching (default 150)."),
@@ -452,12 +459,15 @@ Pass \`since: "now"\` in text mode to skip the initial check and only resolve on
     "scroll_to_element",
     `Scroll an element into view by CSS selector or label/text match.
 Use this instead of guessing scroll amounts when you know which field or section you need to reach.
-Examples: scroll_to_element("#submit-btn"), scroll_to_element("Billing address"), scroll_to_element(".cm-editor")`,
+Examples: scroll_to_element("#submit-btn"), scroll_to_element("Billing address"), scroll_to_element(".cm-editor")
+
+Resolves into same-origin iframes. When the match is inside one, the frame is named in the response and the reported document y is measured within THAT frame, since that is the document being scrolled.`,
     {
       query: z.string().describe("CSS selector (e.g. '#my-input', '.section-header') or visible text / label to search for"),
+      frame: z.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Same-origin frames are already searched without this, with top-frame matches ranked first; pass it to scope to one frame when several contain the same label."),
     },
-    async ({ query }) => {
-      const response = await bridge.request({ type: "scroll_to_element", query });
+    async ({ query, frame }) => {
+      const response = await bridge.request({ type: "scroll_to_element", query, frame });
       const msg = (response as { message?: string }).message ?? `Scrolled to element matching "${query}".`;
       return { content: [{ type: "text", text: msg }] };
     }
@@ -465,7 +475,7 @@ Examples: scroll_to_element("#submit-btn"), scroll_to_element("Billing address")
 
   server.tool(
     "find_text",
-    `Search the active page for text and return actionable matches (text, surrounding context, best-effort CSS selector, clickable flag). Use this instead of get_page_text when checking "is X on the page?" or locating a clickable target. Pierces open AND closed shadow roots. Pass \`frame: "iframe.selector"\` for same-origin iframe search.
+    `Search the active page for text and return actionable matches (text, surrounding context, best-effort CSS selector, clickable flag). Use this instead of get_page_text when checking "is X on the page?" or locating a clickable target. Pierces open AND closed shadow roots AND same-origin iframes; matches inside a frame carry a \`frame\` field naming it, and their \`position\` is already translated to page coordinates so it can be fed straight to click_at_coordinates.
 
 When visible_only=true (the default) filters out all matches AND there were hidden matches, the response surfaces the hidden count so you can re-run with visible_only=false instead of guessing "is this on the page or not?"
 
@@ -477,7 +487,7 @@ Scope helpers: \`in_dialog: true\` restricts the search to the topmost open dial
       regex: z.boolean().optional().describe("Treat query as regex (case-insensitive). Default false."),
       visible_only: z.boolean().optional().describe("Skip display:none / visibility:hidden / aria-hidden=true. Default true."),
       context_chars: z.number().int().min(0).optional().describe("Surrounding context chars per match (default 40)."),
-      frame: z.string().optional().describe("Same-origin iframe CSS selector to search inside."),
+      frame: z.string().optional().describe("Address a same-origin frame instead of the top document. Accepts anything list_frames prints: a CSS selector, a nested 'outer >>> inner' path, or a plain substring of the frame's src / title / id (e.g. 'funnel-builder'). Same-origin frames are already searched without this, with top-frame matches ranked first; pass it to scope to one frame when several contain the same label."),
       in_dialog: z.boolean().optional().describe("Scope to the topmost open [role=dialog] / [role=alertdialog] / <dialog open>. Mirrors click_element."),
       dialog_query: z.string().optional().describe("Scope to the dialog whose heading or aria-label contains this substring. Mirrors click_element."),
       whole_word: z.boolean().optional().describe(`Gate matches on word boundaries. Use for common English words ("Live", "New", "Done", "Confirm") that would otherwise substring-match unrelated pre-rendered content (e.g. "Live" matching "delivery", "Done" matching "abandoned"). Default false to preserve the substring-by-default contract; flip on whenever your query is a single common word that may also appear inside larger words.`),
@@ -589,32 +599,45 @@ Pass \`exact: true\` for forms with short generic labels (like "Rate" or "Amount
 
   server.tool(
     "list_frames",
-    `List every top-level iframe/frame on the active page, with its origin, whether its contentDocument is accessible (same-origin), and its on-screen position. Also reports shadow-host inventory so you can spot pages whose visible content is rendered inside closed shadow roots (Radix portals, Stencil/Lit, custom web components).
+    `Map every frame boundary on the active page: iframes/frames at ANY nesting depth, same-origin and cross-origin, plus the shadow-host inventory. This is the discovery call to make when a selector "does not exist" on a page where you can plainly see the element.
 
-Use this BEFORE calling find_text({frame: "..."}) or other frame-targeted tools — it shows you which frames exist and which are reachable. Knowing a frame is cross-origin up front means you can route to read_attachment (for the frame's src URL) or take_screenshot instead of getting a "frame not accessible" error from another tool.
-
-Also use this as a quick diagnostic when execute_script returns an empty document on a page you can clearly see — non-zero \`shadow_hosts\` (especially closed roots) means switch to find_text / get_page_text / click_element / fill_input, which pierce shadow DOM via the extension's privileged API.
+Each frame's \`selector\` is an address other tools accept verbatim as \`frame\`. For a nested frame it is a path: \`iframe#shell >>> iframe.builder\`. You can also address a frame by a substring of its src, title, or id, which is usually shorter and more stable than a generated class list.
 
 Per-frame fields:
-- selector: CSS selector you can pass to other tools' \`frame\` parameter
-- src: the iframe's src attribute (may be empty for about:blank frames)
-- origin: parsed origin (e.g. "https://canvadoc.instructure.com") — empty when src is data:/javascript:/empty
-- accessible: true if contentDocument is reachable (same-origin), false otherwise
-- title: the iframe's title attribute, often the most human-readable identifier
-- x, y, width, height: bounding-box position in viewport CSS pixels
+- selector: pass to any tool's \`frame\` parameter
+- depth: 1 for a top-level frame, 2 for a frame inside a frame, and so on
+- src: the frame's src attribute (may be empty for about:blank frames)
+- url: the frame's CURRENT document URL, which differs from src once the frame navigates
+- origin: parsed origin (e.g. "https://canvadoc.instructure.com")
+- accessible: true when DOM tools can read it (same-origin), false otherwise
+- title: the frame's title attribute, often the most human-readable identifier
+- x, y, width, height: the frame's VISIBLE box in viewport CSS pixels, already clipped by any ancestor frame
+- content_origin_x / content_origin_y: where the frame's own (0, 0) sits in page coordinates
+
+Same-origin frames need no special handling: click_element, find_text, fill_input, hover, drag, get_form_fields and the rest resolve into them automatically and translate coordinates back to page space, and they report a \`frame\` field when a match came from one. Use \`frame\` to disambiguate when two frames hold the same label.
+
+Cross-origin frames cannot be read or queried by any DOM tool — that is the same-origin policy, not a chromeboost limitation. Three routes do work, and each frame's \`hint\` names them:
+- click_at_coordinates(frame: "<selector>", x, y) — CDP input resolves at the renderer, so it reaches the frame like an OS click. Coordinates are relative to the frame.
+- execute_script(frame: "<selector>", code) — injected per frame under the extension's own permissions.
+- fetch_url(src) for its HTML, take_screenshot for its pixels.
 
 Per-shadow-host fields:
 - selector: short CSS hint for the host element (tag, id, or .class)
 - open: true if the shadow root is exposed via \`el.shadowRoot\` (most web components), false if it is closed (Radix portals, Stencil/Lit defaults) — closed roots are invisible to execute_script but pierced by chromeboost's other tools.
 - depth: nesting depth (0 = top-level host attached directly to the document)
 
-Note: this returns top-level frames only. Nested cross-origin frame trees are not enumerated. Shadow hosts are capped at 25 to keep the response compact.`,
+Shadow hosts are capped at 25 to keep the response compact.`,
     {},
     async () => {
       const response = await bridge.request({ type: "list_frames" });
       if (response.type !== "list_frames_response") throw new Error(`Unexpected response: ${response.type}`);
       const r = response as {
-        frames: Array<{ index: number; selector: string; src: string; origin: string; title: string; accessible: boolean; x: number; y: number; width: number; height: number }>;
+        frames: Array<{
+          index: number; selector: string; depth?: number; src: string; origin: string; title: string;
+          accessible: boolean; cross_origin?: boolean; url?: string; hint?: string;
+          x: number; y: number; width: number; height: number;
+          content_origin_x?: number; content_origin_y?: number;
+        }>;
         shadow_hosts?: Array<{ selector: string; open: boolean; depth: number }>;
       };
       // Build a shadow-host section. Surfacing this here means the agent gets
@@ -642,13 +665,26 @@ Note: this returns top-level frames only. Nested cross-origin frame trees are no
         const noFrames = "No iframes or frames on this page.";
         return { content: [{ type: "text", text: hosts.length > 0 ? `${noFrames}${shadowSection}` : noFrames }] };
       }
+      const reachable = r.frames.filter((f) => f.accessible).length;
+      const blocked = r.frames.length - reachable;
       const lines = r.frames.map((f) => {
-        const access = f.accessible ? "accessible" : "cross-origin";
+        const access = f.accessible ? "same-origin" : "cross-origin";
         const titleBit = f.title ? ` "${f.title}"` : "";
         const originBit = f.origin || "(no origin)";
-        return `${f.index}. ${f.selector}${titleBit} — ${originBit} [${access}] — ${f.width}×${f.height} @ (${f.x},${f.y})${f.src ? `\n   src: ${f.src}` : ""}`;
+        // Indent by nesting depth so a frame tree reads as a tree.
+        const indent = "  ".repeat(Math.max(0, (f.depth ?? 1) - 1));
+        const head = `${f.index}. ${indent}${f.selector}${titleBit} — ${originBit} [${access}] — ${f.width}x${f.height} @ (${f.x},${f.y})`;
+        const srcLine = f.src ? `\n   ${indent}src: ${f.src}` : "";
+        // Only show url when it actually differs from src; repeating it is noise.
+        const urlLine = f.url && f.url !== f.src ? `\n   ${indent}url: ${f.url}` : "";
+        const hintLine = f.hint ? `\n   ${indent}${f.hint}` : "";
+        return head + srcLine + urlLine + hintLine;
       });
-      return { content: [{ type: "text", text: `Found ${r.frames.length} frame${r.frames.length === 1 ? "" : "s"}:\n${lines.join("\n")}${shadowSection}` }] };
+      const header = `Found ${r.frames.length} frame${r.frames.length === 1 ? "" : "s"} (${reachable} same-origin, ${blocked} cross-origin):`;
+      const footer = reachable > 0
+        ? `\n\nSame-origin frames are searched automatically by click_element / find_text / fill_input / hover / drag / get_form_fields — pass \`frame\` only to disambiguate.`
+        : "";
+      return { content: [{ type: "text", text: `${header}\n${lines.join("\n")}${footer}${shadowSection}` }] };
     }
   );
 

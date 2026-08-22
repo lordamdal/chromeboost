@@ -12,6 +12,7 @@
  */
 
 import { queryAllDeep } from "./shadow.js";
+import { framePathOf, isInFrame, uniqueSelectorIn, viewportRect } from "./frames.js";
 
 export interface EnumeratedField {
   index: number;
@@ -20,6 +21,13 @@ export interface EnumeratedField {
   value: string;
   y: number;
   selector: string;
+  /**
+   * Addressable path of the same-origin iframe hosting this field, absent for
+   * a top-frame field. Field discovery walks into frames now, so without this
+   * the caller would get a selector that resolves nowhere from the top
+   * document and no indication why.
+   */
+  frame?: string;
   context?: string;
   /** True when the field is `required`, `aria-required="true"`, or its
    *  containing `<label>` text ends in `*` (the de-facto required-field
@@ -110,6 +118,13 @@ export function getNearestHeading(el: Element, doc: Document): string {
  * (wrong). Fall back to the offsetParent chain.
  */
 function getDocumentY(el: HTMLElement, doc: Document): number {
+  // Fields from different frames share one inventory, so their sort key has
+  // to live in one coordinate space. For a frame-hosted field, "document y"
+  // in its own document says nothing about where it appears relative to the
+  // parent page's fields; its translated on-screen position does.
+  if (isInFrame(el)) {
+    return Math.round(viewportRect(el).top + window.scrollY);
+  }
   const view = doc.defaultView;
   const scrollY = view?.scrollY ?? 0;
   const rect = el.getBoundingClientRect();
@@ -295,12 +310,13 @@ function isFieldEmpty(el: HTMLElement): boolean {
  */
 function buildSelector(el: Element, doc: Document): string {
   if (el.id) return `#${CSS.escape(el.id)}`;
-  const tag = el.tagName.toLowerCase();
-  // Pierce shadow roots so the nth-of-type fallback is stable across
-  // light/shadow boundaries (otherwise the index re-counts after each shadow
-  // root, producing the same selector for multiple distinct elements).
-  const idx = queryAllDeep(doc, el.tagName).indexOf(el) + 1;
-  return `${tag}:nth-of-type(${idx})`;
+  // The old fallback was `tag:nth-of-type(<index among ALL such tags in the
+  // document>)`, which is only correct when every matching element happens to
+  // share one parent — `:nth-of-type` counts siblings. Frame descent made the
+  // mismatch routine rather than occasional, since the index then spanned
+  // several documents. uniqueSelectorIn builds a real path and verifies it
+  // resolves to exactly one element before handing it back.
+  return uniqueSelectorIn(el.ownerDocument ?? doc, el);
 }
 
 /**
@@ -326,7 +342,8 @@ export function enumerateFormFields(doc: Document = document): EnumerateResult {
         " — use set_file_input(hint, filePath) to upload",
       value: el.files?.[0]?.name ?? "",
       y: getDocumentY(el, doc),
-      selector: el.id ? `#${CSS.escape(el.id)}` : "input[type=file]",
+      selector: el.id ? `#${CSS.escape(el.id)}` : uniqueSelectorIn(el.ownerDocument ?? doc, el),
+      ...(isInFrame(el) ? { frame: framePathOf(el) } : {}),
       required: isRequiredField(el, doc),
       empty: isFieldEmpty(el),
       ...(context ? { context } : {}),
@@ -358,6 +375,7 @@ export function enumerateFormFields(doc: Document = document): EnumerateResult {
       value: value.slice(0, 60),
       y: getDocumentY(el, doc),
       selector: buildSelector(el, doc),
+      ...(isInFrame(el) ? { frame: framePathOf(el) } : {}),
       required: isRequiredField(el, doc),
       empty: isFieldEmpty(el),
       ...(context ? { context } : {}),
@@ -391,6 +409,7 @@ export function enumerateFormFields(doc: Document = document): EnumerateResult {
       value: currentText,
       y: Math.round(rect.top + scrollY),
       selector: ".cm-editor",
+      ...(isInFrame(editor) ? { frame: framePathOf(editor) } : {}),
       required: isRequiredField(editor, doc),
       empty: (editor.querySelector(".cm-content")?.textContent ?? "").trim().length === 0,
       ...(context ? { context } : {}),
@@ -426,6 +445,7 @@ export function enumerateFormFields(doc: Document = document): EnumerateResult {
       value: currentText,
       y: getDocumentY(editor, doc),
       selector: ".monaco-editor",
+      ...(isInFrame(editor) ? { frame: framePathOf(editor) } : {}),
       required: isRequiredField(editor, doc),
       empty: currentText.trim().length === 0,
       ...(context ? { context } : {}),

@@ -15,6 +15,40 @@
 
 const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE"]);
 
+/** Depth cap for same-origin frame descent, mirroring frames.ts. */
+const MAX_FRAME_DESCENT = 5;
+
+/**
+ * The document of a same-origin `<iframe>`/`<frame>`, or null when the frame
+ * is cross-origin, detached, or has not produced a body yet.
+ *
+ * Deliberately inlined here rather than imported from `frames.ts`: that module
+ * builds on `queryAllDeep`, and routing this one accessor through it would
+ * make the two modules mutually dependent at load time.
+ */
+function sameOriginFrameDoc(el: Element): Document | null {
+  if (el.tagName !== "IFRAME" && el.tagName !== "FRAME") return null;
+  try {
+    const doc = (el as HTMLIFrameElement).contentDocument;
+    return doc && doc.body ? doc : null;
+  } catch {
+    return null; // cross-origin
+  }
+}
+
+export type DeepWalkOptions = {
+  /**
+   * Descend into same-origin iframes. Default true: chromeboost treats the
+   * frame boundary the same way it treats the shadow boundary, because an
+   * agent asked to click "Save" should not have to know which document the
+   * button happens to live in. Pass false when the answer must be scoped to a
+   * single document — uniqueness checks for selector generation, for one,
+   * would otherwise count matches in unrelated frames and reject a selector
+   * that is perfectly unique where it will be used.
+   */
+  frames?: boolean;
+};
+
 /**
  * Return the shadow root attached to `el`, open OR closed. Uses the
  * content-script-only `chrome.dom.openOrClosedShadowRoot()` API when present,
@@ -38,22 +72,37 @@ export function getShadowRoot(el: Element): ShadowRoot | null {
  */
 export function queryAllDeep<E extends Element = Element>(
   root: Document | Element | ShadowRoot,
-  selector: string
+  selector: string,
+  options?: DeepWalkOptions
 ): E[] {
   const out: E[] = [];
   const seen = new WeakSet<Element>();
+  const seenDocs = new Set<Document>();
+  const intoFrames = options?.frames !== false;
 
-  function recurse(r: ParentNode) {
+  function recurse(r: ParentNode, depth: number) {
     for (const m of Array.from(r.querySelectorAll<E>(selector))) {
       if (!seen.has(m)) { seen.add(m); out.push(m); }
     }
     for (const el of Array.from(r.querySelectorAll<Element>("*"))) {
       const sr = getShadowRoot(el);
-      if (sr) recurse(sr);
+      if (sr) recurse(sr, depth);
+      if (!intoFrames || depth >= MAX_FRAME_DESCENT) continue;
+      const fdoc = sameOriginFrameDoc(el);
+      // Matches from the host document are collected before any frame is
+      // entered, so a selector that resolves in both keeps ranking the
+      // top-level element first. That ordering is what makes frame descent a
+      // safe default rather than a behaviour change.
+      if (fdoc && !seenDocs.has(fdoc)) {
+        seenDocs.add(fdoc);
+        recurse(fdoc, depth + 1);
+      }
     }
   }
 
-  recurse(root);
+  const rootDoc = (root as Document).nodeType === Node.DOCUMENT_NODE ? (root as Document) : null;
+  if (rootDoc) seenDocs.add(rootDoc);
+  recurse(root, 0);
   return out;
 }
 
@@ -62,7 +111,12 @@ export function queryAllDeep<E extends Element = Element>(
  * Yields elements in document order (parent before children, host before
  * shadow content).
  */
-export function* walkElementsDeep(root: Element | Document | ShadowRoot): Generator<Element> {
+export function* walkElementsDeep(
+  root: Element | Document | ShadowRoot,
+  options?: DeepWalkOptions
+): Generator<Element> {
+  const intoFrames = options?.frames !== false;
+  const seenDocs = new Set<Document>();
   const queue: Array<Element | DocumentFragment> = [root as Element];
   while (queue.length) {
     const node = queue.shift()!;
@@ -71,6 +125,13 @@ export function* walkElementsDeep(root: Element | Document | ShadowRoot): Genera
       yield el;
       const sr = getShadowRoot(el);
       if (sr) queue.push(sr as unknown as Element);
+      if (intoFrames) {
+        const fdoc = sameOriginFrameDoc(el);
+        if (fdoc && !seenDocs.has(fdoc)) {
+          seenDocs.add(fdoc);
+          queue.push(fdoc.documentElement);
+        }
+      }
     }
     if ("children" in node) {
       for (const c of Array.from(node.children)) queue.push(c);
@@ -117,7 +178,7 @@ export function extractTextDeep(root: Node, extraSkipTags?: Set<string>): string
  * <style>, etc. so you only see user-visible text. Used by fill_input's
  * fuzzy text walk so label-near-input matching works inside shadow trees.
  */
-export function* walkTextNodesDeep(root: Node): Generator<Text> {
+export function* walkTextNodesDeep(root: Node, options?: DeepWalkOptions): Generator<Text> {
   if (root.nodeType === Node.TEXT_NODE) {
     yield root as Text;
     return;
@@ -129,9 +190,17 @@ export function* walkTextNodesDeep(root: Node): Generator<Text> {
     const el = root as Element;
     if (SKIP_TAGS.has(el.tagName)) return;
     const sr = getShadowRoot(el);
-    if (sr) yield* walkTextNodesDeep(sr);
+    if (sr) yield* walkTextNodesDeep(sr, options);
+    // Labels live in the same document as the input they describe. Now that
+    // queryAllDeep resolves inputs inside same-origin frames, the label walk
+    // has to enter those frames too or fill_input would pair a frame-hosted
+    // input with whatever label happened to sit near it in the parent page.
+    if (options?.frames !== false) {
+      const fdoc = sameOriginFrameDoc(el);
+      if (fdoc) yield* walkTextNodesDeep(fdoc.body, options);
+    }
   }
-  for (const child of Array.from(root.childNodes)) yield* walkTextNodesDeep(child);
+  for (const child of Array.from(root.childNodes)) yield* walkTextNodesDeep(child, options);
 }
 
 /**

@@ -35,6 +35,43 @@
  */
 
 import { getShadowRoot } from "./shadow.js";
+import { frameClipOf, framePathOf, isInFrame, viewportRect, type FrameRect } from "./frames.js";
+
+/**
+ * The document of a same-origin frame, or null. Hit testing has to be able to
+ * cross this boundary: `document.elementFromPoint` stops at the `<iframe>`
+ * element exactly the way it stops at a shadow host, so without descending,
+ * every element inside a frame looks permanently occluded by the frame that
+ * contains it.
+ */
+function sameOriginFrameDoc(el: Element): Document | null {
+  if (el.tagName !== "IFRAME" && el.tagName !== "FRAME") return null;
+  try {
+    const doc = (el as HTMLIFrameElement).contentDocument;
+    return doc && doc.body ? doc : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Offset of a frame's content-box origin within its parent's viewport. */
+function frameContentOffset(frameEl: Element): { x: number; y: number } {
+  const r = frameEl.getBoundingClientRect();
+  let insetX = 0;
+  let insetY = 0;
+  try {
+    const cs = frameEl.ownerDocument?.defaultView?.getComputedStyle(frameEl);
+    if (cs) {
+      const bl = parseFloat(cs.borderLeftWidth || "0");
+      const bt = parseFloat(cs.borderTopWidth || "0");
+      const pl = parseFloat(cs.paddingLeft || "0");
+      const pt = parseFloat(cs.paddingTop || "0");
+      insetX = (isFinite(bl) ? bl : 0) + (isFinite(pl) ? pl : 0);
+      insetY = (isFinite(bt) ? bt : 0) + (isFinite(pt) ? pt : 0);
+    }
+  } catch { /* detached */ }
+  return { x: r.left + insetX, y: r.top + insetY };
+}
 
 export type PointHit = {
   tag: string;
@@ -85,17 +122,38 @@ export type ClearPointResult = {
 export function deepElementFromPoint(x: number, y: number): Element | null {
   let el = document.elementFromPoint(x, y);
   if (!el) return null;
+  // Local coordinates within whichever document we are currently probing.
+  let lx = x;
+  let ly = y;
   for (let depth = 0; depth < 24; depth++) {
     const sr = getShadowRoot(el);
-    if (!sr) break;
+    if (sr) {
+      let inner: Element | null = null;
+      try {
+        inner = sr.elementFromPoint(lx, ly);
+      } catch {
+        break;
+      }
+      if (!inner || inner === el) break;
+      el = inner;
+      continue;
+    }
+    // Same-origin frame: re-probe inside it, in that frame's coordinate space.
+    const fdoc = sameOriginFrameDoc(el);
+    if (!fdoc) break;
+    const off = frameContentOffset(el);
+    const nx = lx - off.x;
+    const ny = ly - off.y;
     let inner: Element | null = null;
     try {
-      inner = sr.elementFromPoint(x, y);
+      inner = fdoc.elementFromPoint(nx, ny);
     } catch {
       break;
     }
-    if (!inner || inner === el) break;
+    if (!inner) break;
     el = inner;
+    lx = nx;
+    ly = ny;
   }
   return el;
 }
@@ -108,28 +166,47 @@ export function deepElementFromPoint(x: number, y: number): Element | null {
 export function deepElementsFromPoint(x: number, y: number): Element[] {
   const out: Element[] = [];
   const seen = new Set<Element>();
-  let list: Element[] = [];
-  try {
-    list = Array.from(document.elementsFromPoint(x, y));
-  } catch {
-    const one = document.elementFromPoint(x, y);
-    if (one) list = [one];
-  }
-  for (const el of list) {
-    if (!seen.has(el)) { seen.add(el); out.push(el); }
-    // Descend into this layer's shadow tree so the inner node is reported too.
-    let cur: Element = el;
-    for (let depth = 0; depth < 24; depth++) {
-      const sr = getShadowRoot(cur);
-      if (!sr) break;
-      let inner: Element | null = null;
-      try { inner = sr.elementFromPoint(x, y); } catch { break; }
-      if (!inner || inner === cur || seen.has(inner)) break;
-      seen.add(inner);
-      out.unshift(inner); // inner sits above its host visually
-      cur = inner;
+
+  // `depth` guards against a frame that somehow re-enters itself; `lx/ly` are
+  // the probe point expressed in the current document's coordinate space.
+  const collect = (doc: Document | ShadowRoot, lx: number, ly: number, depth: number) => {
+    if (depth > 8) return;
+    let list: Element[] = [];
+    try {
+      list = Array.from(doc.elementsFromPoint(lx, ly));
+    } catch {
+      const one = doc.elementFromPoint(lx, ly);
+      if (one) list = [one];
     }
-  }
+    for (const el of list) {
+      if (!seen.has(el)) { seen.add(el); out.push(el); }
+      // Descend into this layer's shadow tree so the inner node is reported too.
+      let cur: Element = el;
+      for (let d = 0; d < 24; d++) {
+        const sr = getShadowRoot(cur);
+        if (!sr) break;
+        let inner: Element | null = null;
+        try { inner = sr.elementFromPoint(lx, ly); } catch { break; }
+        if (!inner || inner === cur || seen.has(inner)) break;
+        seen.add(inner);
+        out.unshift(inner); // inner sits above its host visually
+        cur = inner;
+      }
+      // A same-origin frame paints its own stack above itself. Splice that in
+      // ahead of the frame element so the reported order still reads
+      // topmost-first, which is what pierceAt and probe_point rely on.
+      const fdoc = sameOriginFrameDoc(el);
+      if (fdoc) {
+        const off = frameContentOffset(el);
+        const before = out.length;
+        collect(fdoc, lx - off.x, ly - off.y, depth + 1);
+        const added = out.splice(before, out.length - before);
+        out.unshift(...added);
+      }
+    }
+  };
+
+  collect(document, x, y, 0);
   return out;
 }
 
@@ -148,10 +225,28 @@ export function composedContains(container: Element, node: Node | null): boolean
       cur = parent;
       continue;
     }
-    // No parent: we're at the top of a shadow root (or the document).
+    // No parent: we're at the top of a shadow root (or a document).
     const host = (cur as ShadowRoot).host as Element | undefined;
-    if (!host) return false;
-    cur = host;
+    if (host) {
+      cur = host;
+      continue;
+    }
+    // A document's parent is the frame element that hosts it. Without this
+    // hop, an element inside a frame is never "contained" by anything in the
+    // parent page, so every frame-hosted target classified its own frame as
+    // an occluder and reported itself permanently blocked.
+    if ((cur as Document).nodeType === Node.DOCUMENT_NODE) {
+      let frameEl: Element | null = null;
+      try {
+        frameEl = (cur as Document).defaultView?.frameElement ?? null;
+      } catch {
+        return false; // cross-origin parent: not reachable, so not contained
+      }
+      if (!frameEl) return false;
+      cur = frameEl;
+      continue;
+    }
+    return false;
   }
   return false;
 }
@@ -197,6 +292,15 @@ export function describeOccluder(el: Element): OccluderInfo {
   let cs: CSSStyleDeclaration | null = null;
   try { cs = getComputedStyle(el); } catch { /* detached */ }
   const rect = el.getBoundingClientRect();
+  // Measure "covers the whole viewport" against the viewport this element
+  // actually lives in. A 100vw/100vh scrim inside a 400px-wide frame is a
+  // scrim for everything in that frame, and comparing it to the top window's
+  // dimensions would misreport it as a small local overlay.
+  const ownView = (() => {
+    try { return el.ownerDocument?.defaultView ?? window; } catch { return window; }
+  })();
+  const viewW = ownView?.innerWidth || window.innerWidth;
+  const viewH = ownView?.innerHeight || window.innerHeight;
   const position = cs?.position ?? "static";
   const opacity = parseFloat(cs?.opacity ?? "1");
   const bg = cs?.backgroundColor ?? "";
@@ -210,7 +314,7 @@ export function describeOccluder(el: Element): OccluderInfo {
     z_index: cs?.zIndex ?? "auto",
     position,
     full_screen_scrim:
-      rect.width >= window.innerWidth * 0.85 && rect.height >= window.innerHeight * 0.85,
+      rect.width >= viewW * 0.85 && rect.height >= viewH * 0.85,
     pinned: position === "fixed" || position === "sticky",
     transparent: opacity < 0.05 || (bgTransparent && shortText(el).length === 0),
   };
@@ -224,11 +328,16 @@ export function describeOccluder(el: Element): OccluderInfo {
  * further out. Points are generated inside the viewport intersection, so a
  * target that is half-scrolled-off still gets probed on the part you can see.
  */
-function candidatePoints(rect: DOMRect): Array<[number, number]> {
-  const left = Math.max(rect.left, 0);
-  const top = Math.max(rect.top, 0);
-  const right = Math.min(rect.right, window.innerWidth);
-  const bottom = Math.min(rect.bottom, window.innerHeight);
+function candidatePoints(rect: FrameRect, clip: FrameRect): Array<[number, number]> {
+  // `clip` is the top viewport intersected with every ancestor frame's box.
+  // For a top-frame element that is just the viewport, so this is unchanged;
+  // for a frame-hosted element it is what stops us probing a translated rect
+  // that has scrolled out of its own frame and now overlaps unrelated parent
+  // content.
+  const left = Math.max(rect.left, clip.left, 0);
+  const top = Math.max(rect.top, clip.top, 0);
+  const right = Math.min(rect.right, clip.right, window.innerWidth);
+  const bottom = Math.min(rect.bottom, clip.bottom, window.innerHeight);
   const w = right - left;
   const h = bottom - top;
   if (w <= 0 || h <= 0) return [];
@@ -270,8 +379,13 @@ function candidatePoints(rect: DOMRect): Array<[number, number]> {
  * still triggers the handler (event delegation) yet is worth surfacing.
  */
 export function findClearPoint(target: Element): ClearPointResult {
-  const rect = target.getBoundingClientRect();
-  const pts = candidatePoints(rect);
+  // Top-level viewport coordinates throughout. CDP's Input.dispatchMouseEvent
+  // speaks only that space, so a frame-hosted target's frame-local rect has to
+  // be translated before anything aims at it. viewportRect is the identity for
+  // a top-frame element.
+  const rect = viewportRect(target);
+  const clip = frameClipOf(target);
+  const pts = candidatePoints(rect, clip);
   if (pts.length === 0) {
     return { found: false, occluded: false, offscreen: true, probes: 0 };
   }
@@ -362,8 +476,11 @@ export function pierceAt(
     // Never disable something the target lives inside — pointer-events is
     // inherited, so this would take the target down with it.
     if (target && composedContains(hit, target)) break;
-    // Never disable the page root; that would make the whole document inert.
-    if (hit === document.body || hit === document.documentElement) break;
+    // Never disable a page root; that would make the whole document inert.
+    // Checked against the hit's OWN document so a frame-hosted overlay is
+    // measured against its frame's body, not the top page's.
+    const hitDoc = hit.ownerDocument ?? document;
+    if (hit === hitDoc.body || hit === hitDoc.documentElement) break;
 
     pierced.push(describeOccluder(hit));
     entries.push({
@@ -419,9 +536,11 @@ export function unpierceAll(): number {
 export function probePoint(x: number, y: number): {
   x: number;
   y: number;
-  stack: Array<{ tag: string; selector: string; text: string; z_index: string; position: string }>;
+  stack: Array<{ tag: string; selector: string; text: string; z_index: string; position: string; frame: string }>;
   top?: OccluderInfo;
   in_iframe: boolean;
+  /** Addressable path of the frame the hit lives in, or "" for the top frame. */
+  frame: string;
 } {
   const stack = deepElementsFromPoint(x, y).slice(0, 8).map((el) => {
     let cs: CSSStyleDeclaration | null = null;
@@ -432,15 +551,24 @@ export function probePoint(x: number, y: number): {
       text: shortText(el),
       z_index: cs?.zIndex ?? "auto",
       position: cs?.position ?? "static",
+      frame: isInFrame(el) ? framePathOf(el) : "",
     };
   });
   const top = deepElementFromPoint(x, y);
+  // `in_iframe` used to mean "the topmost paint here is an <iframe> element",
+  // which was only ever true for frames we could NOT see into — the moment
+  // hit testing descends, the reported element is the real one inside the
+  // frame. It now means what a caller actually wants to know: the thing under
+  // the cursor lives in a frame. `frame` names which one so the answer is
+  // directly usable as another tool's frame argument.
+  const insideFrame = !!top && isInFrame(top);
   return {
     x,
     y,
     stack,
     top: top ? describeOccluder(top) : undefined,
-    in_iframe: !!top && top.tagName === "IFRAME",
+    in_iframe: insideFrame || (!!top && (top.tagName === "IFRAME" || top.tagName === "FRAME")),
+    frame: top && insideFrame ? framePathOf(top) : "",
   };
 }
 
@@ -454,12 +582,29 @@ export function probePoint(x: number, y: number): {
  */
 export function scrollClearOfPinned(target: Element, occluder: OccluderInfo): boolean {
   if (!occluder.pinned || occluder.full_screen_scrim) return false;
-  const before = window.scrollY;
+  // Scroll the window the target lives in. A sticky toolbar inside an
+  // iframe-hosted builder is cleared by scrolling that frame; scrolling the
+  // top window instead would move the whole frame and leave the bar exactly
+  // where it was relative to the target.
+  let view: Window = window;
+  try {
+    view = target.ownerDocument?.defaultView ?? window;
+  } catch { /* detached */ }
+  const before = view.scrollY;
   const rect = target.getBoundingClientRect();
   // Nudge the target toward the vertical middle, the region least likely to be
   // covered by a top header or a bottom action bar.
-  const desiredTop = window.innerHeight / 2 - rect.height / 2;
+  const desiredTop = view.innerHeight / 2 - rect.height / 2;
   const delta = rect.top - desiredTop;
-  window.scrollBy({ top: delta, behavior: "instant" as ScrollBehavior });
-  return Math.abs(window.scrollY - before) > 1;
+  view.scrollBy({ top: delta, behavior: "instant" as ScrollBehavior });
+  if (Math.abs(view.scrollY - before) > 1) return true;
+  // The frame itself may be what needs moving (a short frame pinned under the
+  // parent's own sticky header). Fall back to the top window.
+  if (view !== window) {
+    const topBefore = window.scrollY;
+    const topRect = viewportRect(target);
+    window.scrollBy({ top: topRect.top - (window.innerHeight / 2 - topRect.height / 2), behavior: "instant" as ScrollBehavior });
+    return Math.abs(window.scrollY - topBefore) > 1;
+  }
+  return false;
 }
