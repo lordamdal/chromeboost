@@ -118,7 +118,19 @@
     padding: 7px 12px; text-decoration: none; border: 2px solid transparent;
   }
   .nav-links a:hover { border-color: var(--ink); background: var(--naples); }
-  @media (max-width: 820px) { .nav-links a:not(.nav-cta) { display: none; } }
+  .nav-gh { display: inline-flex; align-items: center; gap: 7px; border-color: var(--ink) !important; background: var(--paper-2); }
+  .nav-gh:hover { background: var(--ink); color: var(--naples); }
+  /* The section anchors collapse on narrow screens, but GitHub and Install do
+     not: they are the only two things a first-time visitor is looking for. */
+  @media (max-width: 820px) { .nav-links a:not(.nav-cta):not(.nav-gh) { display: none; } }
+  @media (max-width: 520px) { .nav-gh span { display: none; } .nav-gh { padding: 7px 10px; } }
+  /* The GitHub link costs the nav ~39px, which is enough to push brand + CTA
+     off a 320px screen. Buy it back from the gutter and the wordmark. */
+  @media (max-width: 400px) {
+    .nav-inner { padding: 12px 14px; gap: 10px; }
+    .brand-name { font-size: 16px; }
+    .brand-mark { width: 30px; height: 30px; }
+  }
   .nav-cta { border-color: var(--ink) !important; background: var(--coral); color: #fff; box-shadow: 3px 3px 0 var(--ink); }
   .nav-cta:hover { background: var(--ink) !important; color: var(--naples); }
 
@@ -180,6 +192,23 @@
   .btn-fill:hover { background: var(--coral); color: #fff; }
   .btn-out { background: var(--glass-2); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
   .btn-out:hover { background: var(--naples); }
+  .gh-inline {
+    margin-top: 18px; display: inline-flex; align-items: center; gap: 9px;
+    font-family: var(--mono); font-size: 12.5px; font-weight: 700;
+    color: var(--ink); text-decoration: none;
+  }
+  /* Underline only the URL. Carrying it across the whole anchor draws a rule
+     under the MIT chip too, which reads as a stray box rather than a link. */
+  .gh-inline span { border-bottom: 2px solid var(--ink); padding-bottom: 2px; }
+  .gh-inline:hover { color: var(--coral); }
+  .gh-inline:hover span { border-color: var(--coral); }
+  .gh-inline em {
+    font-style: normal; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink); background: var(--naples);
+    border: 2px solid var(--ink); padding: 1px 6px;
+  }
+  @media (max-width: 420px) { .gh-inline em { display: none; } }
+  @media (max-width: 400px) { .gh-inline { font-size: 11px; gap: 7px; } }
 
   /* Hero glass verdict card */
   .verdict-card { padding: 0; position: relative; }
@@ -670,6 +699,12 @@
     <symbol id="ico-cursor" viewBox="0 0 64 64">
       <path d="M14 5 L52 30 L34 33 L26 52 Z" fill="currentColor" filter="url(#gouache-ico)"/>
     </symbol>
+    <!-- GitHub mark. Left unfiltered on purpose: the gouache filter smears the
+         octocat's thin tail into mush at 16px, and a mangled logo reads as a
+         broken image rather than a stylistic choice. -->
+    <symbol id="ico-github" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+    </symbol>
   </defs>
 </svg>
 
@@ -688,6 +723,10 @@
       <a href="#human">How</a>
       <a href="#hud">HUD</a>
       <a href="#tools">Tools</a>
+      <a class="nav-gh" href="https://github.com/lordamdal/chromeboost" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-github"/></svg>
+        <span>GitHub</span>
+      </a>
       <a class="nav-cta" href="#install">Install</a>
     </div>
   </div>
@@ -736,6 +775,11 @@
           <a class="btn btn-fill" href="#install">Install → 2 minutes</a>
           <a class="btn btn-out" href="#prompts">See what to ask it</a>
         </div>
+        <a class="gh-inline" href="https://github.com/lordamdal/chromeboost" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-github"/></svg>
+          <span>github.com/lordamdal/chromeboost</span>
+          <em>MIT · free</em>
+        </a>
       </div>
 
       <div class="verdict-card glass">
