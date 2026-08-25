@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ChromeBoost OG card</title>
+<!--
+  Source for apps/website/og.png. Rendered by tools/og/render.sh at exactly
+  1200x630. Lives outside apps/website so Vercel never serves it.
+
+  Everything here is lifted from the landing page on purpose: same pigments,
+  same gouache displacement filters, same hard offset shadows. A social card
+  that does not look like the site it links to is a worse card.
+-->
+<style>
+  :root {
+    --ink:#14110d; --ink-soft:#4a4239; --paper:#f2ece0;
+    --coral:#e2603c; --teal:#3ba0b2; --naples:#efb63d; --violet:#6a4dad;
+    --glass-2: rgba(255,252,245,.66);
+    --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --sans: "Helvetica Neue",Helvetica,Inter,system-ui,-apple-system,Arial,sans-serif;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { width:1200px; height:630px; overflow:hidden; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: var(--sans); line-height:1.5;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+  /* Same paper grain as the site. */
+  .grain {
+    position:absolute; inset:0; z-index:5; pointer-events:none; opacity:.34;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.34'/%3E%3C/svg%3E");
+  }
+  .paint { position:absolute; inset:0; z-index:0; overflow:hidden; }
+  .paint svg { position:absolute; }
+
+  .frame {
+    position:relative; z-index:3; height:630px;
+    padding:52px 56px 46px; display:flex; flex-direction:column;
+  }
+
+  /* ── Top row ── */
+  .top { display:flex; align-items:center; gap:16px; }
+  .mark {
+    width:52px; height:52px; border:4px solid var(--ink); background:var(--naples);
+    display:grid; place-items:center; box-shadow:5px 5px 0 var(--ink); flex:none;
+  }
+  .wordmark { font-size:31px; font-weight:900; letter-spacing:-.035em; }
+  .eyebrow {
+    margin-left:auto; font-family:var(--mono); font-size:18px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.12em;
+    border:4px solid var(--ink); background:var(--teal);
+    padding:9px 16px; box-shadow:5px 5px 0 var(--ink);
+    transform:rotate(-1.4deg);
+  }
+
+  /* ── Middle band ── */
+  .band { flex:1; display:flex; align-items:center; gap:46px; padding-top:8px; }
+  h1 {
+    font-size:80px; font-weight:900; line-height:.93;
+    letter-spacing:-.045em; text-transform:uppercase; flex:1;
+  }
+  h1 .hl { position:relative; display:inline-block; padding:0 .1em; color:var(--paper); }
+  h1 .hl::before {
+    content:""; position:absolute; inset:-.05em -.02em;
+    background:var(--coral); z-index:-1;
+    transform:rotate(-1deg) skewX(-3deg); filter:url(#gouache-edge);
+  }
+
+  .term { width:452px; flex:none; border:4px solid var(--ink); box-shadow:9px 9px 0 var(--ink); }
+  .term-head {
+    display:flex; align-items:center; gap:11px;
+    background:var(--ink); color:var(--paper);
+    padding:12px 16px; border-bottom:4px solid var(--ink);
+  }
+  .dots { display:flex; gap:6px; }
+  .dots i { width:12px; height:12px; border-radius:50%; display:block; }
+  .term-head span {
+    font-family:var(--mono); font-size:14px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.14em;
+  }
+  .term-body {
+    background:var(--glass-2); padding:19px 20px;
+    font-family:var(--mono); font-size:16px; line-height:1.95;
+  }
+  .term-body b { font-weight:700; }
+  .dim { color:var(--ink-soft); }
+  .good { color:#1d6b46; font-weight:700; }
+
+  /* ── Bottom row ── */
+  .foot {
+    display:flex; align-items:center; gap:14px;
+    border-top:4px solid var(--ink); padding-top:20px;
+    font-family:var(--mono); font-size:23px; font-weight:700;
+  }
+  .foot .chip {
+    margin-left:auto; font-size:15px; letter-spacing:.13em; text-transform:uppercase;
+    background:var(--naples); border:3px solid var(--ink); padding:4px 11px;
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="gouache-edge" x="-25%" y="-25%" width="150%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="11" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="17" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="gouache-soft" x="-25%" y="-25%" width="150%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" seed="4" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="26" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="gouache-ico" x="-25%" y="-25%" width="150%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="3" seed="9" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="paint">
+  <svg style="top:-150px; right:-120px" width="700" height="640" viewBox="0 0 640 600">
+    <path d="M300 44 C400 8 530 52 580 148 C632 248 618 372 528 448 C438 524 300 540 206 486 C104 428 44 316 62 208 C80 100 196 82 300 44 Z"
+          fill="#efb63d" opacity=".82" filter="url(#gouache-soft)"/>
+    <path d="M336 132 C412 108 486 158 502 236 C520 320 470 396 392 420 C310 446 224 404 202 330 C180 254 240 162 336 132 Z"
+          fill="#e2603c" opacity=".78" filter="url(#gouache-edge)"/>
+  </svg>
+  <svg style="top:265px; left:-250px" width="560" height="540" viewBox="0 0 540 520">
+    <path d="M262 26 C368 6 458 84 478 186 C500 296 438 412 330 452 C218 494 92 440 54 340 C16 240 66 118 160 62 C196 40 222 34 262 26 Z"
+          fill="#3ba0b2" opacity=".58" filter="url(#gouache-soft)"/>
+  </svg>
+  <svg style="bottom:-190px; right:-90px" width="430" height="330" viewBox="0 0 480 360">
+    <path d="M234 18 C330 4 424 66 442 156 C462 252 396 330 296 342 C190 356 78 306 50 218 C24 134 108 40 234 18 Z"
+          fill="#6a4dad" opacity=".42" filter="url(#gouache-soft)"/>
+  </svg>
+</div>
+
+<div class="frame">
+  <div class="top">
+    <span class="mark">
+      <svg width="26" height="26" viewBox="0 0 64 64">
+        <path d="M36 3 L12 36 h16 L26 61 L52 26 H35 Z" fill="#14110d" filter="url(#gouache-ico)"/>
+      </svg>
+    </span>
+    <span class="wordmark">ChromeBoost</span>
+    <span class="eyebrow">Chrome extension + MCP server</span>
+  </div>
+
+  <div class="band">
+    <h1>Give Claude<br><span class="hl">hands</span> in<br>your own<br>browser.</h1>
+
+    <div class="term">
+      <div class="term-head">
+        <span class="dots"><i style="background:#e2603c"></i><i style="background:#efb63d"></i><i style="background:#2e7a58"></i></span>
+        <span>you &rarr; claude code</span>
+      </div>
+      <div class="term-body">
+        <div><span class="dim">&rsaquo;</span> <b>grab my Stripe test key into .env</b></div>
+        <div class="dim">&rarr; opened dashboard.stripe.com</div>
+        <div class="dim">&rarr; read Developers &rarr; API keys</div>
+        <div class="good">&rarr; wrote STRIPE_SECRET_KEY to .env &check;</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+    </svg>
+    <span>github.com/lordamdal/chromeboost</span>
+    <span class="chip">MIT &middot; free</span>
+  </div>
+</div>
+
+<div class="grain"></div>
+</body>
+</html>
