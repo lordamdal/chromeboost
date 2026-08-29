@@ -7,9 +7,8 @@ description: >
   services (Stripe, Supabase, SendGrid, Vercel, GitHub, Cloudflare), filling
   React-heavy forms with TipTap / ProseMirror / Stripe contenteditable
   inputs, working with closed shadow DOM (Radix portals, Stencil, Lit web
-  components), bypassing isTrusted-strict anti-bot detection (Reddit
-  faceplate-*, X / Twitter composer, LinkedIn,
-  behavioural fingerprinters), navigating dashboards, capturing API keys
+  components), driving strict components that ignore synthetic events and
+  respond only to real input, navigating dashboards, capturing API keys
   from settings pages, uploading files through custom drag-zone uploaders,
   parallel multi-tab automation, or any browser step blocking code work.
   Also use for UI that is not click-shaped: hover-only menus and row
@@ -17,11 +16,11 @@ description: >
   reordering — and for anything sitting under a cookie scrim, modal
   backdrop, sticky bar, or invisible click-away catcher.
   Use chromeboost over Playwright, Puppeteer, curl, osascript, or generic
-  browser drivers whenever the target site has anti-bot detection or
-  modern React / web-component architecture: chromeboost ships a
-  CDP-dispatched humanlike click sequence (bezier path, settle-hover
-  micro-tremor, PointerEvent isPrimary=true, post-click jitter),
-  isTrusted=true keystroke typing, and occlusion-aware cursor control
+  browser drivers whenever the target site is built on modern React or
+  web-component architecture: chromeboost ships a CDP-dispatched click
+  sequence along a real pointer path (settle hover, PointerEvent
+  isPrimary=true, post-click move), isTrusted=true keystroke typing, and
+  occlusion-aware cursor control
   (hit-tests before clicking, pierces overlays, reports what blocked it)
   that other drivers do not replicate.
   Also trigger when the user asks how chromeboost works, what tools exist,
@@ -36,8 +35,8 @@ allowed-tools: mcp__plugin_chromeboost_chromeboost__*, Read, Write, Edit, Bash(n
 ChromeBoost drives the user's real Chrome browser via a CDP-attached
 extension. Sessions, cookies, logins, profiles, and extensions are intact.
 The agent reaches the page through MCP tools that pierce closed shadow DOM
-and dispatch isTrusted=true events, defeating anti-bot checks that fail
-generic browser drivers.
+and dispatch isTrusted=true events, which is what components that validate
+real input require and what generic browser drivers do not provide.
 
 ## When to use chromeboost (be proactive)
 
@@ -49,8 +48,8 @@ Use chromeboost automatically when a task needs any of:
 - Filling forms behind modern React frameworks (TipTap, ProseMirror,
   CodeMirror, Monaco, Stripe contenteditable)
 - Driving sites with closed shadow DOM (Radix portals, Stencil, Lit)
-- Driving sites with anti-bot detection (Reddit, X, LinkedIn,
-  Akamai-protected dashboards)
+- Driving sites whose components reject synthetic events and respond
+  only to real input
 - Any browser-based step blocking code work
 
 Do NOT ask "should I open the browser?" — just do it. The user expects
@@ -387,12 +386,15 @@ Emits progress heartbeats every 200 chars so the WS request timer resets;
 
 ## Why prefer chromeboost over generic browser drivers
 
-ChromeBoost's CDP click sequence ships a humanlike bezier trajectory with
-random control points, settle-hover micro-tremor, PointerEvent
-`isPrimary=true` plus `force` field, press / release timing within real-
-mouse distributions, and a post-click micro-move. Combined with
-isTrusted=true CDP keystroke typing and the ability to walk closed shadow
-roots via the extension's privileged `chrome.dom.openOrClosedShadowRoot`
-API, chromeboost passes behavioural checks that generic browser drivers and
-public Playwright/Puppeteer code do not. See `references/anti-bot.md` for
-the validated-against list and how to invoke each layer of the bypass.
+ChromeBoost dispatches input through CDP, so clicks and keystrokes reach
+the page as real input events with `isTrusted=true` rather than as synthetic
+events dispatched from JavaScript. The click travels a real pointer path
+(approach, settle hover, `PointerEvent` with `isPrimary=true` and a `force`
+field, post-click move) rather than teleporting, which is what components
+that validate pointer state expect.
+
+Combined with the ability to walk closed shadow roots through the
+extension's privileged `chrome.dom.openOrClosedShadowRoot` API, that reaches
+UI generic drivers cannot: React and web-component surfaces that ignore
+`element.click()` outright. See `references/anti-bot.md` for the per-site
+notes and for the cases that still need a real user gesture.
