@@ -71,8 +71,8 @@ async function build() {
     }),
     esbuild.context({
       ...sharedConfig,
-      entryPoints: ["src/stealth.ts"],
-      outfile: "dist/stealth.js",
+      entryPoints: ["src/page-shims.ts"],
+      outfile: "dist/page-shims.js",
       format: "iife",
       platform: "browser",
     }),

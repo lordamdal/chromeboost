@@ -749,7 +749,7 @@ async function dispatchHumanMouseClick(
     // the listener registered here was already removed.
 
     // (Previously: Page.bringToFront here to seed user activation. Removed in
-    // 0.10.14 because the stealth shim in stealth.ts now patches
+    // 0.10.14 because the page shims in page-shims.ts now patch
     // document.hasFocus and navigator.userActivation at document_start, which
     // covers the same gates without stealing OS focus from the user's
     // terminal/IDE.)

@@ -1,30 +1,46 @@
 /**
- * Stealth patches — runs at document_start in the MAIN world (page context),
- * BEFORE any page script. Hides JS-level fingerprints commonly used by
- * anti-automation systems (LinkedIn, Cloudflare, Datadome, etc.).
+ * MAIN-world page shims. Runs at document_start in the page's own context,
+ * before any page script, so these values are in place before a page reads
+ * them.
  *
- * What this fixes:
- *   - navigator.webdriver:                  forced to false (some env flips to true)
- *   - navigator.permissions notifications:  returns "default" instead of headless "denied"
- *   - navigator.plugins:                    ensures non-empty (empty = headless tell)
- *   - navigator.languages:                  ensures non-empty
- *   - window.chrome.runtime:                ensures present (extension contexts can leak this)
- *   - Function.prototype.toString:          patches above are wrapped to look native
+ * They fall into three groups, and the difference matters both for review
+ * and for deciding what belongs in this file at all.
  *
- * What this does NOT fix:
- *   - TLS / JA3 fingerprint
- *   - Canvas / WebGL / audio fingerprints
- *   - Behavioral signals (mouse, keyboard timing)
+ * 1. Protects the user. RTCPeerConnection host-candidate filtering stops a
+ *    page enumerating the machine's private LAN addresses. That is a
+ *    fingerprinting vector with nothing to do with automation, and stripping
+ *    it is what a privacy extension would do.
  *
- * Pages can still detect chromeboost via behavioral analysis or canvas
- * fingerprinting. This is the JS-API layer of defense only.
+ * 2. Keeps automation working while the user is present but not focused.
+ *    They are sitting right there looking at their terminal while the agent
+ *    drives a tab, so document.hasFocus(), visibilityState and
+ *    navigator.userActivation are held at their "user is here" values.
+ *    Strict components otherwise reject input purely because the OS
+ *    foreground window is the editor. navigator.plugins, languages and
+ *    window.chrome.runtime are kept non-empty for the same reason.
+ *
+ * 3. Suppresses automation signals outright: navigator.webdriver forced
+ *    false, WebGL vendor/renderer rewritten when they look like a headless
+ *    GPU, and Function.prototype.toString patched so the patches above
+ *    report "[native code]" under inspection.
+ *
+ *    Group 3 is detection evasion. It is not defensible as compatibility,
+ *    and it is the part of this file carrying policy and legal risk. If
+ *    ChromeBoost ever needs to shed that risk, group 3 is what gets deleted;
+ *    nothing in groups 1 and 2 depends on it.
+ *
+ * Deliberately not handled: TLS/JA3, canvas and audio fingerprints,
+ * behavioural timing. A page that wants to identify automation still can.
+ *
+ * Every patch is wrapped so it can never throw into the page. A shim that
+ * breaks the host page is worse than no shim.
  */
 
 (() => {
   try {
-    // Idempotent — if another stealth shim already ran, do nothing.
-    if ((window as unknown as { __cfStealthApplied?: boolean }).__cfStealthApplied) return;
-    Object.defineProperty(window, "__cfStealthApplied", { value: true, configurable: false, enumerable: false, writable: false });
+    // Idempotent: if the shims already ran in this context, do nothing.
+    if ((window as unknown as { __cbPageShimsApplied?: boolean }).__cbPageShimsApplied) return;
+    Object.defineProperty(window, "__cbPageShimsApplied", { value: true, configurable: false, enumerable: false, writable: false });
 
     const nativeToString = Function.prototype.toString;
     const nativeCode = (name: string) => `function ${name}() { [native code] }`;
@@ -282,6 +298,6 @@
       }
     } catch { /* ignore — WebRTC not available */ }
   } catch {
-    // Stealth patches must NEVER break the page. Silently swallow any error.
+    // Shims must NEVER break the page. Silently swallow any error.
   }
 })();

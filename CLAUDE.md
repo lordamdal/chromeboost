@@ -47,7 +47,7 @@ packages/
         hud.ts              # Draggable / hideable on-page HUD (closed shadow root)
       offscreen.ts          # Persistent WebSocket connection to MCP server
       popup/                # Browser-action popup UI
-      stealth.ts            # MAIN-world stealth shims (WebRTC, etc.)
+      page-shims.ts         # MAIN-world page shims (focus, WebRTC, etc.)
     build.mjs               # esbuild
     pack.mjs                # Zip the dist/ for Chrome Web Store
     manifest.json
@@ -88,7 +88,7 @@ bash packages/plugin/scripts/build-server.sh  # MCP server → packages/plugin/s
 cd packages/extension && npx tsc --noEmit
 cd packages/mcp-server && npx tsc --noEmit
 ```
-Extension has some pre-existing TS errors in `stealth.ts` and
+Extension has some pre-existing TS errors in `page-shims.ts` and
 `content/find.ts` that are not load-bearing (the build uses esbuild,
 not tsc). New errors should still be fixed.
 
