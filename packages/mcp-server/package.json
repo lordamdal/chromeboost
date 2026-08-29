@@ -41,7 +41,7 @@
     "url": "git+https://github.com/lordamdal/chromeboost.git",
     "directory": "packages/mcp-server"
   },
-  "homepage": "https://chromeboost.vercel.app",
+  "homepage": "https://chromeboost.work",
   "bugs": "https://github.com/lordamdal/chromeboost/issues",
   "license": "MIT",
   "author": "ChromeBoost contributors",

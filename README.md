@@ -5,11 +5,16 @@
 **Give Claude hands in your own browser.**
 
 Not a headless clone in a data centre — *your* Chrome, already signed into your accounts,
-driven by clicks, drags and keystrokes shaped like a person's.
+driven by real clicks, drags and keystrokes that modern web apps actually accept.
 
-[**chromeboost.vercel.app**](https://chromeboost.vercel.app) · [Install](#install) · [What to ask it](#things-people-actually-say-to-it) · [Tools](#tool-surface) · [☕ Buy me a coffee](https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00)
+[**chromeboost.work**](https://chromeboost.work) · [Install](#install) · [What to ask it](#things-people-actually-say-to-it) · [Tools](#tool-surface) · [☕ Buy me a coffee](https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00)
 
 MIT · no account · no telemetry
+
+<br>
+
+<img src="docs/media/01-hands.png" width="860"
+     alt="ChromeBoost. Headline reads: give Claude hands in your own browser. A terminal shows Claude opening a post, reading four new comments, drafting a reply to each, then waiting for the user to click Post.">
 
 </div>
 
@@ -24,7 +29,7 @@ to confirm; ChromeBoost fills in everything around them and hands back control.
 
 ## Things people actually say to it
 
-> *"Reply to the new comments on my last LinkedIn post — draft each one and I'll hit Post."*
+> *"Reply to the new comments on my last post — draft each one and I'll hit Post."*
 
 Opens the post, reads the thread, types a reply into the composer for each comment. It stops at
 Post every time: the button gets highlighted and it waits for your click, so nothing goes out in
@@ -57,6 +62,9 @@ click event. ChromeBoost sends the whole gesture through Chrome's own input pipe
 approach, a settle tremor before it lands, pressure on the way down, keystrokes that arrive as
 real key events. React, TipTap, ProseMirror, CodeMirror, Monaco and Stripe's contenteditable
 fields all register input that scripted events silently swallow.
+
+<img src="docs/media/03-occlusion.png" width="820"
+     alt="A browser window where a Save changes button sits underneath a cookie consent banner, with the cursor reaching it anyway. The tool response reads: clicked Save changes, pierced 1 overlay, div#cookie-scrim, styles restored.">
 
 **Cookie banners don't stop it.** This is what breaks most browser agents: a page paints a scrim,
 a modal backdrop, or an invisible catch-all `<div>` over the button, the click lands on *that*,
@@ -246,6 +254,9 @@ You lose the bundled skill and permission allowlist, so you'll be prompted on ev
 
 While Claude drives, a small panel sits on the page so you know a session is in control and which
 one.
+
+<img src="docs/media/04-hud.png" width="820"
+     alt="A checkout page with the ChromeBoost status panel in the corner, showing a live session named my-app filling the checkout form at step 3 of 5. Chips below read: drag it, collapse it, dismiss it, Alt+Shift+B.">
 
 | Action | How |
 |---|---|
