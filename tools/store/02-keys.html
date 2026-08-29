@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>ChromeBoost store shot 2</title><link rel="stylesheet" href="shot.css"></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<filter id="gouache-edge" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="11" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="17" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="gouache-soft" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" seed="4" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="26" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="gouache-ico" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="3" seed="9" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="3.2" xChannelSelector="R" yChannelSelector="G"/></filter>
+</defs></svg>
+<div class="paint">
+  <svg style="top:-160px; left:-170px" width="600" height="580" viewBox="0 0 540 520"><path d="M262 26 C368 6 458 84 478 186 C500 296 438 412 330 452 C218 494 92 440 54 340 C16 240 66 118 160 62 C196 40 222 34 262 26 Z" fill="#2e7a58" opacity=".42" filter="url(#gouache-soft)"/></svg>
+  <svg style="bottom:-210px; right:-120px" width="520" height="420" viewBox="0 0 480 360"><path d="M234 18 C330 4 424 66 442 156 C462 252 396 330 296 342 C190 356 78 306 50 218 C24 134 108 40 234 18 Z" fill="#efb63d" opacity=".62" filter="url(#gouache-soft)"/></svg>
+</div>
+<div class="frame">
+  <div class="top"><span class="mark"><svg width="24" height="24" viewBox="0 0 64 64"><path d="M36 3 L12 36 h16 L26 61 L52 26 H35 Z" fill="#14110d" filter="url(#gouache-ico)"/></svg></span><span class="wordmark">ChromeBoost</span><span class="eyebrow naples">Real logins, real dashboards</span></div>
+  <h1 class="sm">Pull API keys<br>straight into <span class="hl teal">.env</span></h1>
+  <p class="sub">It is already signed in as you. No copy and paste, no clipboard, no screenshots of secrets.</p>
+  <div class="stage">
+    <div class="browser" style="flex:1.15">
+      <div class="bar"><span class="dots"><i style="background:#e2603c"></i><i style="background:#efb63d"></i><i style="background:#2e7a58"></i></span><span class="url">dashboard.stripe.com/apikeys</span></div>
+      <div class="page">
+        <div style="font-weight:800;font-size:17px;margin-bottom:14px">Standard keys</div>
+        <div class="ph" style="width:72%"></div>
+        <div style="font-family:var(--mono);font-size:13.5px;border:3px solid #14110d;background:#f2ece0;padding:11px 13px;box-shadow:4px 4px 0 #14110d;margin:14px 0">sk_test_51QxA&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;7fD2</div>
+        <div class="ph" style="width:54%"></div><div class="ph" style="width:38%"></div>
+      </div>
+    </div>
+    <div class="term" style="flex:1">
+      <div class="term-head"><span class="dots"><i style="background:#e2603c"></i><i style="background:#efb63d"></i><i style="background:#2e7a58"></i></span><span class="t">you &rarr; claude code</span></div>
+      <div class="term-body">
+        <div><span class="dim">&rsaquo;</span> <b>grab my Stripe test key into .env</b></div>
+        <div class="dim">&rarr; opened dashboard.stripe.com</div>
+        <div class="dim">&rarr; revealed the secret key</div>
+        <div class="good">&rarr; wrote STRIPE_SECRET_KEY &check;</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>chromeboost.work</span><span class="tag">Key never hits your clipboard</span></div>
+</div>
+<div class="grain"></div></body></html>

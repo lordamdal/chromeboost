@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>ChromeBoost store shot 3</title><link rel="stylesheet" href="shot.css"></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<filter id="gouache-edge" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="11" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="17" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="gouache-soft" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" seed="4" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="26" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="gouache-ico" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="3" seed="9" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="3.2" xChannelSelector="R" yChannelSelector="G"/></filter>
+</defs></svg>
+<div class="paint">
+  <svg style="top:-200px; right:-150px" width="640" height="600" viewBox="0 0 540 520"><path d="M262 26 C368 6 458 84 478 186 C500 296 438 412 330 452 C218 494 92 440 54 340 C16 240 66 118 160 62 C196 40 222 34 262 26 Z" fill="#6a4dad" opacity=".40" filter="url(#gouache-soft)"/></svg>
+  <svg style="bottom:-190px; left:-160px" width="540" height="440" viewBox="0 0 480 360"><path d="M234 18 C330 4 424 66 442 156 C462 252 396 330 296 342 C190 356 78 306 50 218 C24 134 108 40 234 18 Z" fill="#e2603c" opacity=".52" filter="url(#gouache-soft)"/></svg>
+</div>
+<div class="frame">
+  <div class="top"><span class="mark"><svg width="24" height="24" viewBox="0 0 64 64"><path d="M36 3 L12 36 h16 L26 61 L52 26 H35 Z" fill="#14110d" filter="url(#gouache-ico)"/></svg></span><span class="wordmark">ChromeBoost</span><span class="eyebrow violet">Occlusion aware cursor</span></div>
+  <h1 class="sm">Clicks that reach<br>through what is <span class="hl violet">on top</span>.</h1>
+  <p class="sub">Cookie scrims, modal backdrops, sticky bars, invisible click away catchers. It hit tests first, pierces what it can, and tells you what was in the way.</p>
+  <div class="stage">
+    <div class="browser" style="flex:1.1">
+      <div class="bar"><span class="dots"><i style="background:#e2603c"></i><i style="background:#efb63d"></i><i style="background:#2e7a58"></i></span><span class="url">app.example.com/settings</span></div>
+      <div class="page" style="min-height:196px">
+        <div class="ph" style="width:58%"></div><div class="ph" style="width:76%"></div><div class="ph" style="width:44%"></div>
+        <div style="margin-top:16px"><span class="btn-mock">Save changes</span></div>
+        <div class="scrim" style="z-index:5">
+          <div class="cookie"><b>We value your privacy</b><span class="accept">Accept all</span></div>
+        </div>
+        <svg class="cursor" style="left:150px;top:118px" width="30" height="30" viewBox="0 0 64 64"><path d="M14 5 L52 30 L34 33 L26 52 Z" fill="#fffdf7" stroke="#14110d" stroke-width="5" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div class="term" style="flex:1">
+      <div class="term-head"><span class="dots"><i style="background:#e2603c"></i><i style="background:#efb63d"></i><i style="background:#2e7a58"></i></span><span class="t">tool response</span></div>
+      <div class="term-body">
+        <div class="good">&check; Clicked "Save changes"</div>
+        <div class="dim">&nbsp;&nbsp;pierced 1 overlay</div>
+        <div class="dim">&nbsp;&nbsp;div#cookie-scrim</div>
+        <div class="dim">&nbsp;&nbsp;styles restored &check;</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>chromeboost.work</span><span class="tag">probe_point shows the stack</span></div>
+</div>
+<div class="grain"></div></body></html>

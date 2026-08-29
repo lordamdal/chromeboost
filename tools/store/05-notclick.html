@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>ChromeBoost store shot 5</title><link rel="stylesheet" href="shot.css"></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<filter id="gouache-edge" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="11" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="17" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="gouache-soft" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" seed="4" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="26" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="gouache-ico" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="3" seed="9" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="3.2" xChannelSelector="R" yChannelSelector="G"/></filter>
+</defs></svg>
+<div class="paint">
+  <svg style="top:-180px; right:-160px" width="640" height="600" viewBox="0 0 540 520"><path d="M262 26 C368 6 458 84 478 186 C500 296 438 412 330 452 C218 494 92 440 54 340 C16 240 66 118 160 62 C196 40 222 34 262 26 Z" fill="#cd4f7c" opacity=".44" filter="url(#gouache-soft)"/></svg>
+  <svg style="bottom:-210px; left:-150px" width="560" height="460" viewBox="0 0 480 360"><path d="M234 18 C330 4 424 66 442 156 C462 252 396 330 296 342 C190 356 78 306 50 218 C24 134 108 40 234 18 Z" fill="#2e7a58" opacity=".40" filter="url(#gouache-soft)"/></svg>
+</div>
+<div class="frame">
+  <div class="top"><span class="mark"><svg width="24" height="24" viewBox="0 0 64 64"><path d="M36 3 L12 36 h16 L26 61 L52 26 H35 Z" fill="#14110d" filter="url(#gouache-ico)"/></svg></span><span class="wordmark">ChromeBoost</span><span class="eyebrow coral">hover &middot; drag &middot; probe</span></div>
+  <h1 class="sm">Not all UI is<br><span class="hl">click shaped</span>.</h1>
+  <p class="sub">Menus that only exist while hovered. Sliders, canvas, map panning, drag to reorder. Repeated clicking never reaches any of it.</p>
+  <div class="stage">
+    <div class="browser" style="flex:1.05">
+      <div class="bar"><span class="dots"><i style="background:#e2603c"></i><i style="background:#efb63d"></i><i style="background:#2e7a58"></i></span><span class="url">app.example.com/editor</span></div>
+      <div class="page" style="min-height:200px">
+        <div style="font-family:var(--mono);font-size:13px;font-weight:700;margin-bottom:9px">Opacity</div>
+        <div style="position:relative;height:12px;background:#ded2ba;border:3px solid #14110d;margin:0 4px 22px">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:62%;background:#efb63d"></div>
+          <div style="position:absolute;left:62%;top:-11px;width:26px;height:28px;background:#e2603c;border:3px solid #14110d;box-shadow:3px 3px 0 #14110d"></div>
+        </div>
+        <div style="display:flex;gap:11px">
+          <div style="flex:1;border:3px solid #14110d;background:#f2ece0;padding:10px 12px;font-size:13px;font-weight:700;box-shadow:3px 3px 0 #14110d">Card A</div>
+          <div style="flex:1;border:3px dashed #14110d;background:#e9e0cd;padding:10px 12px;font-size:13px;color:#4a4239">drop here</div>
+          <div style="flex:1;border:3px solid #14110d;background:#f2ece0;padding:10px 12px;font-size:13px;font-weight:700;box-shadow:3px 3px 0 #14110d">Card C</div>
+        </div>
+      </div>
+    </div>
+    <div class="term" style="flex:1">
+      <div class="term-head"><span class="dots"><i style="background:#e2603c"></i><i style="background:#efb63d"></i><i style="background:#2e7a58"></i></span><span class="t">what it calls</span></div>
+      <div class="term-body">
+        <div><b>hover</b><span class="dim">(text: "Account")</span></div>
+        <div class="dim">&rarr; submenu opened</div>
+        <div><b>drag</b><span class="dim">(from: slider,</span></div>
+        <div class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to_x: 640)</div>
+        <div class="good">&rarr; real move events &check;</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>chromeboost.work</span><span class="tag">35 tools over MCP</span></div>
+</div>
+<div class="grain"></div></body></html>

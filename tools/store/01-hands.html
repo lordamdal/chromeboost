@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>ChromeBoost store shot 1</title><link rel="stylesheet" href="shot.css"></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<filter id="gouache-edge" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="11" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="17" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="gouache-soft" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" seed="4" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="26" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="gouache-ico" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="3" seed="9" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="3.2" xChannelSelector="R" yChannelSelector="G"/></filter>
+</defs></svg>
+<div class="paint">
+  <svg style="top:-190px; right:-140px" width="720" height="660" viewBox="0 0 640 600"><path d="M300 44 C400 8 530 52 580 148 C632 248 618 372 528 448 C438 524 300 540 206 486 C104 428 44 316 62 208 C80 100 196 82 300 44 Z" fill="#efb63d" opacity=".80" filter="url(#gouache-soft)"/><path d="M336 132 C412 108 486 158 502 236 C520 320 470 396 392 420 C310 446 224 404 202 330 C180 254 240 162 336 132 Z" fill="#e2603c" opacity=".72" filter="url(#gouache-edge)"/></svg>
+  <svg style="bottom:-230px; left:-210px" width="580" height="560" viewBox="0 0 540 520"><path d="M262 26 C368 6 458 84 478 186 C500 296 438 412 330 452 C218 494 92 440 54 340 C16 240 66 118 160 62 C196 40 222 34 262 26 Z" fill="#3ba0b2" opacity=".50" filter="url(#gouache-soft)"/></svg>
+</div>
+<div class="frame">
+  <div class="top"><span class="mark"><svg width="24" height="24" viewBox="0 0 64 64"><path d="M36 3 L12 36 h16 L26 61 L52 26 H35 Z" fill="#14110d" filter="url(#gouache-ico)"/></svg></span><span class="wordmark">ChromeBoost</span><span class="eyebrow">Chrome extension + MCP server</span></div>
+  <h1>Give Claude<br><span class="hl">hands</span> in your own browser.</h1>
+  <p class="sub">Not a headless clone in a data centre. <b>Your</b> Chrome, already signed into your accounts, driven from Claude Code, Codex or Gemini CLI.</p>
+  <div class="stage">
+    <div class="term" style="flex:1">
+      <div class="term-head"><span class="dots"><i style="background:#e2603c"></i><i style="background:#efb63d"></i><i style="background:#2e7a58"></i></span><span class="t">you &rarr; claude code</span></div>
+      <div class="term-body">
+        <div><span class="dim">&rsaquo;</span> <b>reply to the new comments on my last post</b></div>
+        <div class="dim">&rarr; opened the post, read 4 new comments</div>
+        <div class="dim">&rarr; drafted a reply in the composer for each</div>
+        <div class="warn">&rarr; waiting for you to click Post &nbsp;&#9208;</div>
+      </div>
+    </div>
+  </div>
+  <div class="chips">
+    <span class="chip on">Your sessions</span><span class="chip">No account</span><span class="chip">No telemetry</span><span class="chip">MIT</span>
+  </div>
+  <div class="foot"><span>chromeboost.work</span><span class="tag">Free &middot; open source</span></div>
+</div>
+<div class="grain"></div></body></html>

@@ -1,0 +1,164 @@
+/* Shared chrome for the Chrome Web Store screenshots, rendered at 1280x800
+   by tools/store/render.sh. Pigments, gouache filters and hard offset
+   shadows are lifted from the landing page on purpose: a store listing that
+   does not look like the site it links to is a worse listing. */
+:root {
+  --ink:#14110d; --ink-soft:#4a4239;
+  --paper:#f2ece0; --paper-2:#e9e0cd; --paper-3:#ded2ba;
+  --coral:#e2603c; --ultra:#2d49ab; --viridian:#2e7a58;
+  --teal:#3ba0b2; --naples:#efb63d; --rose:#cd4f7c; --violet:#6a4dad;
+  --glass-2: rgba(255,252,245,.72);
+  --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --sans: "Helvetica Neue",Helvetica,Inter,system-ui,-apple-system,Arial,sans-serif;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html,body { width:1280px; height:800px; overflow:hidden; }
+body {
+  background:var(--paper); color:var(--ink);
+  font-family:var(--sans); line-height:1.5;
+  -webkit-font-smoothing:antialiased; position:relative;
+}
+.grain {
+  position:absolute; inset:0; z-index:9; pointer-events:none; opacity:.30;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.34'/%3E%3C/svg%3E");
+}
+.paint { position:absolute; inset:0; z-index:0; overflow:hidden; }
+.paint svg { position:absolute; }
+
+.frame {
+  position:relative; z-index:3; height:800px;
+  padding:44px 54px 40px; display:flex; flex-direction:column;
+}
+
+/* Brand row */
+.top { display:flex; align-items:center; gap:15px; flex:none; }
+.mark {
+  width:46px; height:46px; border:4px solid var(--ink); background:var(--naples);
+  display:grid; place-items:center; box-shadow:5px 5px 0 var(--ink); flex:none;
+}
+.wordmark { font-size:27px; font-weight:900; letter-spacing:-.035em; }
+.eyebrow {
+  margin-left:auto; font-family:var(--mono); font-size:15px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.12em;
+  border:4px solid var(--ink); background:var(--teal); color:var(--ink);
+  padding:8px 15px; box-shadow:5px 5px 0 var(--ink); transform:rotate(-1.3deg);
+}
+.eyebrow.naples { background:var(--naples); }
+.eyebrow.coral  { background:var(--coral); color:#fff; }
+.eyebrow.violet { background:var(--violet); color:#fff; }
+
+/* Headline */
+h1 {
+  font-size:62px; font-weight:900; line-height:.95;
+  letter-spacing:-.045em; text-transform:uppercase; margin-top:34px; flex:none;
+}
+h1.sm { font-size:54px; }
+h1 .hl { position:relative; display:inline-block; padding:0 .1em; color:var(--paper); }
+h1 .hl::before {
+  content:""; position:absolute; inset:-.05em -.02em;
+  background:var(--coral); z-index:-1;
+  transform:rotate(-1deg) skewX(-3deg); filter:url(#gouache-edge);
+}
+h1 .hl.teal::before   { background:var(--teal); }
+h1 .hl.violet::before { background:var(--violet); }
+h1 .hl.ultra::before  { background:var(--ultra); }
+.sub {
+  margin-top:16px; font-size:23px; line-height:1.5; color:var(--ink-soft);
+  max-width:60ch; flex:none;
+}
+.sub b { color:var(--ink); font-weight:700; }
+
+.stage { flex:1; display:flex; align-items:center; gap:34px; margin-top:30px; min-height:0; }
+.stage.col { flex-direction:column; align-items:stretch; justify-content:center; }
+
+/* Terminal */
+.term { border:4px solid var(--ink); box-shadow:9px 9px 0 var(--ink); background:var(--glass-2); }
+.term-head {
+  display:flex; align-items:center; gap:11px;
+  background:var(--ink); color:var(--paper);
+  padding:11px 15px; border-bottom:4px solid var(--ink);
+}
+.dots { display:flex; gap:6px; }
+.dots i { width:11px; height:11px; border-radius:50%; display:block; }
+.term-head span.t {
+  font-family:var(--mono); font-size:13px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.14em;
+}
+.term-body { padding:18px 20px; font-family:var(--mono); font-size:16px; line-height:1.95; }
+.term-body b { font-weight:700; }
+.dim  { color:var(--ink-soft); }
+.good { color:#1d6b46; font-weight:700; }
+.warn { color:var(--coral); font-weight:700; }
+
+/* Mock browser window */
+.browser { border:4px solid var(--ink); box-shadow:9px 9px 0 var(--ink); background:#fffdf7; position:relative; overflow:hidden; }
+.bar {
+  display:flex; align-items:center; gap:11px; padding:10px 14px;
+  background:var(--paper-2); border-bottom:4px solid var(--ink);
+}
+.url {
+  flex:1; font-family:var(--mono); font-size:13px; color:var(--ink-soft);
+  background:#fffdf7; border:2px solid var(--ink); padding:5px 11px;
+}
+.page { padding:22px 24px; position:relative; }
+.ph { height:13px; background:var(--paper-3); margin-bottom:11px; }
+.btn-mock {
+  display:inline-block; font-family:var(--mono); font-size:15px; font-weight:700;
+  border:3px solid var(--ink); background:var(--viridian); color:#fff;
+  padding:9px 20px; box-shadow:4px 4px 0 var(--ink);
+}
+
+/* Full-bleed overlay scrim, for the occlusion shot */
+.scrim {
+  position:absolute; inset:0; background:rgba(20,17,13,.62);
+  display:flex; align-items:flex-end; justify-content:center; padding-bottom:16px;
+}
+.cookie {
+  width:88%; border:3px solid var(--ink); background:var(--paper);
+  box-shadow:5px 5px 0 var(--ink); padding:13px 16px;
+  font-size:14px; display:flex; align-items:center; gap:12px;
+}
+.cookie b { font-size:14px; }
+.cookie .accept {
+  margin-left:auto; font-family:var(--mono); font-size:12px; font-weight:700;
+  border:2px solid var(--ink); background:var(--naples); padding:5px 12px; flex:none;
+}
+
+/* Cursor glyph */
+.cursor { position:absolute; z-index:6; filter:drop-shadow(2px 3px 0 rgba(20,17,13,.5)); }
+
+/* HUD panel, matching the shipped one */
+.hud {
+  width:260px; border:3px solid var(--ink); background:var(--paper);
+  box-shadow:6px 6px 0 var(--ink); font-family:var(--mono); overflow:hidden;
+}
+.hud-head {
+  display:flex; align-items:center; gap:8px; padding:8px 11px;
+  background:var(--ink); color:var(--paper); font-size:12px; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase;
+}
+.hud-head .grip { color:var(--naples); }
+.hud-head .btns { margin-left:auto; display:flex; gap:7px; opacity:.85; }
+.hud-body { padding:11px 13px; font-size:12.5px; line-height:1.8; color:var(--ink-soft); }
+.hud-body .live { color:var(--viridian); font-weight:700; }
+
+/* Callout chips */
+.chips { display:flex; gap:12px; flex-wrap:wrap; margin-top:26px; flex:none; }
+.chip {
+  font-family:var(--mono); font-size:14px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.08em;
+  border:3px solid var(--ink); background:var(--paper); padding:8px 14px;
+  box-shadow:4px 4px 0 var(--ink);
+}
+.chip.on { background:var(--naples); }
+
+/* Footer strip */
+.foot {
+  display:flex; align-items:center; gap:13px; flex:none;
+  border-top:4px solid var(--ink); padding-top:18px; margin-top:26px;
+  font-family:var(--mono); font-size:19px; font-weight:700;
+}
+.foot .tag {
+  margin-left:auto; font-size:13px; letter-spacing:.13em; text-transform:uppercase;
+  background:var(--naples); border:3px solid var(--ink); padding:4px 11px;
+}
