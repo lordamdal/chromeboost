@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ChromeBoost — give Claude hands in your own browser</title>
-<meta name="description" content="ChromeBoost lets Claude Code, Gemini CLI or Codex drive your real Chrome — already logged in as you, moving like a person. Draft social replies, pull API keys into .env, fill long forms, document a flow. You approve anything that publishes.">
+<meta name="description" content="ChromeBoost lets Claude Code, Gemini CLI or Codex drive your real Chrome — already logged in as you, driven by real input. Draft social replies, pull API keys into .env, fill long forms, document a flow. You approve anything that publishes.">
 <meta name="theme-color" content="#f2ece0">
-<link rel="canonical" href="https://chromeboost.vercel.app/">
+<link rel="canonical" href="https://chromeboost.work/">
 
 <!-- Link previews. og.png is generated from tools/og/card.html by
      tools/og/render.sh; re-run it after editing the card, and add a ?v=N to
@@ -15,11 +15,11 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ChromeBoost">
 <meta property="og:locale" content="en_US">
-<meta property="og:url" content="https://chromeboost.vercel.app/">
+<meta property="og:url" content="https://chromeboost.work/">
 <meta property="og:title" content="ChromeBoost: give Claude hands in your own browser">
-<meta property="og:description" content="Claude Code, Codex or Gemini CLI drives the Chrome you already use: signed in as you, moving like a person. Pull API keys into .env, fill long forms, work dashboards. Anything that publishes waits for your approval.">
-<meta property="og:image" content="https://chromeboost.vercel.app/og.png">
-<meta property="og:image:secure_url" content="https://chromeboost.vercel.app/og.png">
+<meta property="og:description" content="Claude Code, Codex or Gemini CLI drives the Chrome you already use: signed in as you, driven by real input. Pull API keys into .env, fill long forms, work dashboards. Anything that publishes waits for your approval.">
+<meta property="og:image" content="https://chromeboost.work/og.png">
+<meta property="og:image:secure_url" content="https://chromeboost.work/og.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -27,8 +27,8 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ChromeBoost: give Claude hands in your own browser">
-<meta name="twitter:description" content="Claude Code, Codex or Gemini CLI drives the Chrome you already use: signed in as you, moving like a person. Anything that publishes waits for your approval.">
-<meta name="twitter:image" content="https://chromeboost.vercel.app/og.png">
+<meta name="twitter:description" content="Claude Code, Codex or Gemini CLI drives the Chrome you already use: signed in as you, driven by real input. Anything that publishes waits for your approval.">
+<meta name="twitter:image" content="https://chromeboost.work/og.png">
 <meta name="twitter:image:alt" content="ChromeBoost card. The headline reads Give Claude hands in your own browser, beside a terminal where Claude opens the Stripe dashboard and writes STRIPE_SECRET_KEY into .env.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='2' y='2' width='60' height='60' rx='10' fill='%23efb63d' stroke='%2314110d' stroke-width='4'/><path d='M36 11 L15 37 h14 L27 55 L49 30 H35 Z' fill='%2314110d'/></svg>">
 <!-- Google tag (gtag.js) -->
@@ -249,6 +249,26 @@
   .vc-line:nth-child(2) { animation-delay: .9s; }
   .vc-line:nth-child(3) { animation-delay: 1.6s; }
   .vc-line:nth-child(4) { animation-delay: 2.3s; }
+
+  /* ── Rotating hero prompts ────────────────────────────────
+     Scenes are swapped with display, not opacity, because going from
+     display:none to shown restarts the .vc-line typeIn animations for
+     free. min-height holds the card still so the hero doesn't jump as
+     scenes of different lengths cycle. */
+  .vc-body { min-height: 8.9em; }
+  .vc-body .hold { color: #c2481f; font-weight: 700; }
+  .vc-scene { display: none; }
+  .vc-scene.is-on { display: block; }
+
+  .vc-nav { margin-left: auto; display: flex; gap: 5px; }
+  .vc-pip {
+    width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%;
+    background: rgba(242, 236, 224, .32); cursor: pointer;
+    transition: background .25s ease, transform .25s ease;
+  }
+  .vc-pip:hover { background: rgba(242, 236, 224, .7); }
+  .vc-pip.is-on { background: var(--naples); transform: scale(1.3); }
+  .vc-pip:focus-visible { outline: 2px solid var(--naples); outline-offset: 3px; }
   @keyframes typeIn { from { opacity: 0; transform: translateX(-7px); } to { opacity: 1; transform: none; } }
 
   /* ── Marquee ──────────────────────────────────────────── */
@@ -788,7 +808,7 @@
         <h1>Give Claude <span class="hl">hands</span> in your own browser.</h1>
         <p class="hero-sub">
           Not a headless clone in a data centre — <strong>your Chrome</strong>, already signed into
-          your accounts, driven by clicks, drags and keystrokes shaped like a person's. Ask in plain
+          your accounts, driven by real clicks, drags and keystrokes that modern web apps accept. Ask in plain
           English; watch it happen in the window in front of you. <strong>Anything that publishes
           stops and waits for you.</strong>
         </p>
@@ -803,16 +823,49 @@
         </a>
       </div>
 
-      <div class="verdict-card glass">
+      <div class="verdict-card glass" id="verdictCard">
         <div class="vc-head">
           <span class="vc-dots"><i style="background:#e2603c"></i><i style="background:#efb63d"></i><i style="background:#2e7a58"></i></span>
           <span class="label" style="letter-spacing:.14em">you → claude code</span>
+          <span class="vc-nav" role="tablist" aria-label="Example prompts">
+            <button class="vc-pip is-on" type="button" role="tab" aria-selected="true" aria-label="Prompt 1: set up Google Analytics on the marketing site"></button>
+            <button class="vc-pip" type="button" role="tab" aria-selected="false" aria-label="Prompt 2: invite the marketers in my network to Friday's event"></button>
+            <button class="vc-pip" type="button" role="tab" aria-selected="false" aria-label="Prompt 3: grab my Stripe test key into .env"></button>
+            <button class="vc-pip" type="button" role="tab" aria-selected="false" aria-label="Prompt 4: walk our signup flow and screenshot every step"></button>
+            <button class="vc-pip" type="button" role="tab" aria-selected="false" aria-label="Prompt 5: download last month's invoices from the billing portal"></button>
+          </span>
         </div>
         <div class="vc-body">
-          <span class="vc-line"><span class="dim">›</span> <b>grab my Stripe test key into .env</b></span>
-          <span class="vc-line"><span class="dim">→ opened dashboard.stripe.com (already signed in)</span></span>
-          <span class="vc-line"><span class="dim">→ read Developers → API keys</span></span>
-          <span class="vc-line"><span class="good">→ wrote STRIPE_SECRET_KEY to .env ✓</span></span>
+          <div class="vc-scene is-on" role="tabpanel">
+            <span class="vc-line"><span class="dim">›</span> <b>set up Google Analytics on the marketing site</b></span>
+            <span class="vc-line"><span class="dim">→ created the property in analytics.google.com</span></span>
+            <span class="vc-line"><span class="dim">→ copied measurement ID G-2HFKQHS0Q2</span></span>
+            <span class="vc-line"><span class="good">→ wrote NEXT_PUBLIC_GA_ID to .env ✓</span></span>
+          </div>
+          <div class="vc-scene" role="tabpanel">
+            <span class="vc-line"><span class="dim">›</span> <b>invite the marketers in my network to Friday's event</b></span>
+            <span class="vc-line"><span class="dim">→ opened the event, filtered connections by industry</span></span>
+            <span class="vc-line"><span class="dim">→ queued 24 invitations, none sent yet</span></span>
+            <span class="vc-line"><span class="hold">⏸ waiting for you to review and send</span></span>
+          </div>
+          <div class="vc-scene" role="tabpanel">
+            <span class="vc-line"><span class="dim">›</span> <b>grab my Stripe test key into .env</b></span>
+            <span class="vc-line"><span class="dim">→ opened dashboard.stripe.com (already signed in)</span></span>
+            <span class="vc-line"><span class="dim">→ read Developers → API keys</span></span>
+            <span class="vc-line"><span class="good">→ wrote STRIPE_SECRET_KEY to .env ✓</span></span>
+          </div>
+          <div class="vc-scene" role="tabpanel">
+            <span class="vc-line"><span class="dim">›</span> <b>walk our signup flow and screenshot every step</b></span>
+            <span class="vc-line"><span class="dim">→ filled the form, submitted, waited for each screen</span></span>
+            <span class="vc-line"><span class="dim">→ captured 6 steps at 1440×900</span></span>
+            <span class="vc-line"><span class="good">→ saved to ./docs/signup/ ✓</span></span>
+          </div>
+          <div class="vc-scene" role="tabpanel">
+            <span class="vc-line"><span class="dim">›</span> <b>download last month's invoices from the billing portal</b></span>
+            <span class="vc-line"><span class="dim">→ signed in, opened Billing → Invoices</span></span>
+            <span class="vc-line"><span class="dim">→ filtered to July, found 9 PDFs</span></span>
+            <span class="vc-line"><span class="good">→ saved to ./invoices/2026-07/ ✓</span></span>
+          </div>
         </div>
       </div>
     </div>
@@ -821,8 +874,8 @@
 
 <div class="marquee" aria-hidden="true">
   <div class="marquee-track">
-    <span>Your logins <b>✦</b> Your cookies <b>✦</b> Your profile <b>✦</b> Human-shaped clicks <b>✦</b> Real drags <b>✦</b> isTrusted keystrokes <b>✦</b> Closed shadow DOM <b>✦</b> You approve every publish <b>✦</b></span>
-    <span>Your logins <b>✦</b> Your cookies <b>✦</b> Your profile <b>✦</b> Human-shaped clicks <b>✦</b> Real drags <b>✦</b> isTrusted keystrokes <b>✦</b> Closed shadow DOM <b>✦</b> You approve every publish <b>✦</b></span>
+    <span>Your logins <b>✦</b> Your cookies <b>✦</b> Your profile <b>✦</b> Real pointer events <b>✦</b> Real drags <b>✦</b> isTrusted keystrokes <b>✦</b> Closed shadow DOM <b>✦</b> You approve every publish <b>✦</b></span>
+    <span>Your logins <b>✦</b> Your cookies <b>✦</b> Your profile <b>✦</b> Real pointer events <b>✦</b> Real drags <b>✦</b> isTrusted keystrokes <b>✦</b> Closed shadow DOM <b>✦</b> You approve every publish <b>✦</b></span>
   </div>
 </div>
 
@@ -848,7 +901,7 @@
 
     <div class="prompts">
       <div class="prompt glass">
-        <div class="prompt-say"><span class="caret">›</span><q>Reply to the new comments on my last LinkedIn post — draft each one and I'll hit Post.</q></div>
+        <div class="prompt-say"><span class="caret">›</span><q>Reply to the new comments on my last post — draft each one and I'll hit Post.</q></div>
         <div class="prompt-does">
           Opens the post, reads the comment thread, and types a reply into the composer for each
           one. <b>It stops at Post every time</b> — it highlights the button and waits for your
@@ -1000,7 +1053,7 @@
       </div>
       <div class="slab glass">
         <svg width="46" height="46" viewBox="0 0 64 64" style="color:var(--teal)" aria-hidden="true"><use href="#ico-shield"/></svg>
-        <h3>It types like a person</h3>
+        <h3>It types for real</h3>
         <p>
           Keystrokes go through Chrome's real input path, so React, TipTap, ProseMirror, CodeMirror,
           Monaco and Stripe's contenteditable fields all register them — the editors that silently
@@ -1481,6 +1534,8 @@
       <a href="#human">How it moves</a>
       <a href="#install">Install</a>
       <a href="#tools">Tools</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
     </div>
   </div>
 </footer>
@@ -1743,6 +1798,54 @@
       setHidden(!hidden);
     }
   }, true);
+})();
+</script>
+
+<script>
+// Rotating hero prompts. One scene at a time so the .vc-line typeIn
+// animations replay on each swap; pips let the reader jump, and the timer
+// stops on hover so a prompt can't slide away mid-sentence.
+(function () {
+  var card = document.getElementById('verdictCard');
+  if (!card) return;
+  var scenes = [].slice.call(card.querySelectorAll('.vc-scene'));
+  var pips   = [].slice.call(card.querySelectorAll('.vc-pip'));
+  if (scenes.length < 2) return;
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var HOLD = 7000;
+  var i = 0, timer = null;
+
+  function show(n) {
+    i = (n + scenes.length) % scenes.length;
+    for (var k = 0; k < scenes.length; k++) {
+      scenes[k].classList.toggle('is-on', k === i);
+      pips[k].classList.toggle('is-on', k === i);
+      pips[k].setAttribute('aria-selected', k === i ? 'true' : 'false');
+    }
+  }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
+  function start() {
+    stop();
+    if (!reduce.matches) timer = setInterval(function () { show(i + 1); }, HOLD);
+  }
+
+  pips.forEach(function (pip, k) {
+    pip.addEventListener('click', function () { show(k); start(); });
+  });
+  card.addEventListener('mouseenter', stop);
+  card.addEventListener('mouseleave', start);
+  card.addEventListener('focusin', stop);
+  card.addEventListener('focusout', start);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stop(); else start();
+  });
+  if (reduce.addEventListener) {
+    reduce.addEventListener('change', function () { show(0); start(); });
+  }
+
+  show(0);
+  start();
 })();
 </script>
 

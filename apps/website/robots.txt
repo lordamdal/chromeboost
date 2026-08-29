@@ -1,0 +1,5 @@
+# chromeboost.work
+User-agent: *
+Allow: /
+
+Sitemap: https://chromeboost.work/sitemap.xml

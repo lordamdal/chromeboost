@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — ChromeBoost</title>
+<meta name="description" content="What ChromeBoost does and does not do with your data. No telemetry, no accounts, no analytics in the extension. Everything stays between your browser and your own machine.">
+<meta name="theme-color" content="#f2ece0">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='2' y='2' width='60' height='60' rx='10' fill='%23efb63d' stroke='%2314110d' stroke-width='4'/><path d='M36 11 L15 37 h14 L27 55 L49 30 H35 Z' fill='%2314110d'/></svg>">
+<link rel="stylesheet" href="/page.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <span class="brand-mark">
+        <svg width="17" height="17" viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M36 3 L12 36 h16 L26 61 L52 26 H35 Z" fill="#14110d"/>
+        </svg>
+      </span>
+      <span class="brand-name">ChromeBoost</span>
+    </a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated 28 August 2026</p>
+
+  <div class="callout">
+    <p><strong>The short version.</strong> ChromeBoost has no servers. It has no accounts, no
+    telemetry, and no analytics inside the extension. The extension talks to exactly one thing:
+    an MCP server running on your own computer, over a WebSocket bound to
+    <code>localhost</code>. Nothing about your browsing is sent to us, because there is no
+    "us" to send it to.</p>
+    <p>The one thing you should understand before installing is in
+    <a href="#agent">section 3</a>: page content that you ask ChromeBoost to read is handed to
+    whichever AI coding agent you are running, and that agent will normally send it onward to
+    its own provider.</p>
+  </div>
+
+  <h2 id="who">1. Who this covers</h2>
+  <p>ChromeBoost is a free, MIT licensed, open source project maintained by an individual
+  developer. This policy covers two things:</p>
+  <ul>
+    <li>The <strong>ChromeBoost Chrome extension</strong>, distributed through the Chrome Web
+    Store and through <a href="https://github.com/lordamdal/chromeboost">GitHub</a>.</li>
+    <li>The <strong>chromeboost.work website</strong>, which is the page you are reading.</li>
+  </ul>
+  <p>The full source for both is public. If any statement here does not match the code, the
+  code is the truth and the discrepancy is a bug worth
+  <a href="https://github.com/lordamdal/chromeboost/issues">reporting</a>.</p>
+
+  <h2 id="collect">2. What the extension collects</h2>
+  <p><strong>Nothing is collected by the developer.</strong> ChromeBoost operates no backend,
+  no logging service, no crash reporter, and no analytics. There is no network destination
+  that data could be collected at.</p>
+  <p>The extension opens a single outbound connection, and it is a local one:</p>
+  <table>
+    <thead><tr><th>Destination</th><th>What travels over it</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>ws://localhost:PORT</td>
+        <td>The MCP server on your own machine. Commands from your AI agent travel in,
+        and the results of those commands travel back. This connection never leaves your
+        computer.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>The extension stores a small amount of state locally using
+  <code>chrome.storage.local</code>. It stays in your browser profile and is never
+  transmitted:</p>
+  <ul>
+    <li>The position, collapsed state, and visibility of the on-page status panel.</li>
+    <li>Which local agent sessions are connected, and on which ports.</li>
+    <li>A short random prefix used internally to tag elements during a page operation.</li>
+  </ul>
+  <p>No browsing history, no bookmarks, no form data, and no credentials are stored by the
+  extension.</p>
+
+  <h2 id="agent">3. Where page content actually goes</h2>
+  <div class="callout warn">
+    <p><strong>Read this part.</strong> ChromeBoost is the hands, not the brain. When you ask
+    your agent to read a page, fill a form, or find a button, the relevant page content is
+    passed to the AI coding agent running on your machine, for example Claude Code, Codex, or
+    Gemini CLI. Those tools send what they receive to their own provider's API in order to
+    think about it.</p>
+    <p>So while ChromeBoost itself transmits nothing to anyone, the practical result of using
+    it is that pages you point it at can reach Anthropic, OpenAI, or Google, governed by
+    <em>their</em> privacy policies and your agreement with them, not this one. Treat it the
+    same way you would treat pasting a page into a chat window.</p>
+  </div>
+  <p>Two consequences worth being deliberate about:</p>
+  <ul>
+    <li>Content is only read when a tool call asks for it. ChromeBoost does not watch, scrape,
+    or index pages in the background, and it does not read tabs you have not directed it at.</li>
+    <li>Before page text is returned, it passes through a redaction step that strips
+    high confidence secret patterns such as API keys and JWTs, so that credentials sitting on
+    a dashboard are less likely to end up in your agent's context by accident. This is a safety
+    net and not a guarantee. Do not rely on it to protect something that genuinely matters.</li>
+  </ul>
+
+  <h2 id="permissions">4. Permissions, and why each one exists</h2>
+  <p>Chrome shows a blunt warning at install time. Here is the specific reason for each
+  permission the extension requests:</p>
+  <table>
+    <thead><tr><th>Permission</th><th>Why it is needed</th></tr></thead>
+    <tbody>
+      <tr><td>debugger</td><td>The core of the product. Clicks, drags, and keystrokes are
+      dispatched through the Chrome DevTools Protocol so they arrive as real, trusted input
+      events. Ordinary synthetic events are silently ignored by many modern web apps.</td></tr>
+      <tr><td>&lt;all_urls&gt;</td><td>You decide which sites to automate, so the extension
+      cannot know the list in advance. It acts only on the tab you direct it to.</td></tr>
+      <tr><td>tabs</td><td>Listing, opening, switching, and closing tabs on request.</td></tr>
+      <tr><td>activeTab</td><td>Reading and screenshotting the tab currently being worked
+      on.</td></tr>
+      <tr><td>scripting</td><td>Injecting the content script that performs DOM work such as
+      hit testing, form filling, and shadow DOM traversal.</td></tr>
+      <tr><td>offscreen</td><td>Holding the WebSocket connection open. An MV3 service worker
+      is shut down when idle, which would drop the connection.</td></tr>
+      <tr><td>storage</td><td>Remembering the status panel position and which local sessions
+      are connected.</td></tr>
+      <tr><td>windows</td><td>Focusing and arranging browser windows during multi tab
+      work.</td></tr>
+      <tr><td>downloads</td><td>Saving a file when you explicitly ask for a download, and
+      reading back files the agent was told to fetch.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="sale">5. What is never done</h2>
+  <ul>
+    <li>Your data is never sold, rented, or licensed. There is no commercial data
+    relationship of any kind.</li>
+    <li>Your data is never transferred to third parties by the extension, other than the local
+    connection described above.</li>
+    <li>Your data is never used for advertising, profiling, credit scoring, or any purpose
+    unrelated to the feature you invoked.</li>
+    <li>Nothing is done with your data beyond carrying out the single tool call you asked
+    for.</li>
+  </ul>
+
+  <h2 id="website">6. The website</h2>
+  <p>The site is a static page hosted on Vercel. Two things about it differ from the
+  extension, and it would be misleading not to say so:</p>
+  <ul>
+    <li><strong>Google Analytics</strong> runs on this website, and only on this website. It
+    records ordinary aggregate visit data such as page views, referrer, approximate region,
+    and browser. It is not present in the extension and it has no visibility into anything
+    you automate. You can block it with any content blocker without affecting the extension
+    at all.</li>
+    <li><strong>Vercel</strong>, as the host, keeps standard server logs including IP
+    addresses, as any web host does.</li>
+    <li>The "buy me a coffee" button links out to <strong>Stripe</strong>. Payments are
+    handled entirely by Stripe under its own privacy policy. No payment details ever reach
+    this site or the developer, and donating is not required to use anything.</li>
+  </ul>
+
+  <h2 id="children">7. Children</h2>
+  <p>ChromeBoost is a developer tool and is not directed at children under 13. No age
+  information is collected, because no personal information is collected.</p>
+
+  <h2 id="changes">8. Changes to this policy</h2>
+  <p>If this policy changes in a way that affects how data is handled, the date at the top
+  will change and the revision will be visible in the public
+  <a href="https://github.com/lordamdal/chromeboost/commits/main">commit history</a> of this
+  file. Because the project has no accounts, there is no mailing list to notify, so the git
+  history is the record.</p>
+
+  <h2 id="contact">9. Contact</h2>
+  <p>Questions, corrections, or a privacy concern: open an issue at
+  <a href="https://github.com/lordamdal/chromeboost/issues">github.com/lordamdal/chromeboost/issues</a>.
+  For anything you would rather not discuss in public, including suspected security issues,
+  see <a href="https://github.com/lordamdal/chromeboost/blob/main/SECURITY.md">SECURITY.md</a>.</p>
+
+</main>
+
+<footer class="bot">
+  <div class="wrap">
+    <p>ChromeBoost is free and MIT licensed. No account, no telemetry, no servers.</p>
+    <p><a href="/">Back to chromeboost.work</a> &nbsp;·&nbsp;
+       <a href="/terms">Terms</a> &nbsp;·&nbsp;
+       <a href="https://github.com/lordamdal/chromeboost">GitHub</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
