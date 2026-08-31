@@ -1,25 +1,64 @@
-description = "Finish ChromeBoost setup: copy the Chrome extension somewhere reachable and walk through loading it."
+description = "Finish ChromeBoost setup: install the Chrome extension and bind a window."
 
 prompt = """
 # Finish ChromeBoost setup
 
 The MCP server half of ChromeBoost is already running (that is this extension).
-What is left is loading the Chrome extension, the half that touches the browser.
-The extension ships inside this extension directory, so there is nothing to
-clone or build.
+What is left is the Chrome extension, the half that touches the browser. It is
+on the **Chrome Web Store**, so this is a one-click install.
 
 Work through this now, without asking the user whether to proceed.
 
-## 1. Copy the extension somewhere reachable
+## 1. Check whether it is already done
 
-Run:
+Call `list_tabs` first. If it returns their tabs, the extension is installed and
+bound: say so and skip to the closing suggestion in step 4. Users often arrive
+here already set up, and walking them through an install they have finished is
+noise.
 
-```bash
-node "$(dirname "$(gemini extensions path chromeboost 2>/dev/null || echo .)")/chromeboost/packages/plugin/scripts/install-extension.mjs"
-```
+## 2. Install from the Chrome Web Store
 
-If that path does not resolve, find the extension directory under
-`~/.gemini/extensions/chromeboost` and run:
+Give them this link and ask them to click **Add to Chrome**:
+
+https://chromewebstore.google.com/detail/chromeboost/alphgffnpbhpfaimmaaibbcdmpmcbndo
+
+Then have them pin ChromeBoost to the toolbar so the popup is one click away.
+
+That is the whole install. No developer mode, no folder to keep, and it updates
+itself. If they would rather run from local files, see the unpacked fallback at
+the bottom.
+
+**If they already had the unpacked copy loaded**, they need to remove it at
+`chrome://extensions` now. Both copies connect to the same local port, the
+server keeps only one connection, and each new one evicts the other, so they
+reconnect in a loop and tool calls land on whichever won the last race. Two
+ChromeBoost cards on that page is the tell.
+
+## 3. Connect a window
+
+Tell them to click the ChromeBoost toolbar icon. This session should appear with
+a green dot and a **Gemini** badge, on a port in the 7970-7980 range. They click
+**Use this window** to bind the Chrome window they want driven.
+
+## 4. Verify it actually works
+
+Once they say it is installed, confirm the link yourself rather than taking it
+on trust: call `list_tabs`. If it returns their open tabs, setup is done. Say so
+plainly and suggest a first prompt, for example "open news.ycombinator.com and
+give me the top 5 stories".
+
+If `list_tabs` errors or times out, the extension is installed but not
+connected. Have them reload it at `chrome://extensions` using the circular arrow
+on the ChromeBoost card, then try `list_tabs` again.
+
+Keep it short and sequential. Do not skip step 4: an install that looks finished
+but is not connected is the most common failure here.
+
+## Loading unpacked instead
+
+Only offer this if they ask for it, or if the store version is behind this
+extension. The Chrome files also ship inside this extension directory, and after
+an update the bundled copy can be newer than what store review has published.
 
 ```bash
 node ~/.gemini/extensions/chromeboost/packages/plugin/scripts/install-extension.mjs
@@ -28,54 +67,18 @@ node ~/.gemini/extensions/chromeboost/packages/plugin/scripts/install-extension.
 This copies the extension to `~/Downloads/ChromeBoost-Extension` and prints the
 full path. It goes to Downloads on purpose: the extension directory is buried
 and its path changes on every update, which makes it painful to select in
-Chrome's folder picker. Downloads is one click in any file picker's sidebar.
+Chrome's folder picker.
 
 The script's last line is `CHROMEBOOST_EXTENSION_PATH=<path>`. Use that value
-verbatim rather than reconstructing the path.
-
-## 2. Open the folder for them
-
-Reveal it so they can drag it straight onto Chrome's extensions page:
-
-- macOS: `open -R "<path>"`
-- Windows: `explorer "<path>"`
-- Linux: `xdg-open "<path>"`
-
-Skip this if the command is unavailable. It is a convenience, not a requirement.
-
-## 3. Walk them through loading it
-
-Give these steps with the real path substituted in:
+verbatim rather than reconstructing the path. Reveal it with `open -R` on macOS,
+`explorer` on Windows, or `xdg-open` on Linux, then:
 
 1. Open `chrome://extensions` by pasting it into the address bar. `chrome://`
    links cannot be clicked from a page.
 2. Turn on **Developer mode**, top right.
-3. Click **Load unpacked**.
-4. Select the `ChromeBoost-Extension` folder, or drag it onto the page.
-5. Pin ChromeBoost to the toolbar so the popup is one click away.
+3. Click **Load unpacked** and select the folder, or drag it onto the page.
 
-Mention once that Chrome flags developer-mode extensions, which is expected
-here since ChromeBoost is not on the Web Store and runs from local files. Also
-tell them not to delete the folder: Chrome reads it on every launch, and
-removing it breaks the extension.
-
-## 4. Connect a window
-
-Tell them to click the ChromeBoost toolbar icon. This session should appear with
-a green dot and a **Gemini** badge, on a port in the 7970-7980 range. They click
-**Use this window** to bind the Chrome window they want driven.
-
-## 5. Verify it actually works
-
-Once they say it is loaded, confirm the link yourself rather than taking it on
-trust: call `list_tabs`. If it returns their open tabs, setup is done. Say so
-plainly and suggest a first prompt, for example "open news.ycombinator.com and
-give me the top 5 stories".
-
-If `list_tabs` errors or times out, the extension is loaded but not connected.
-Have them reload it at `chrome://extensions` using the circular arrow on the
-ChromeBoost card, then try `list_tabs` again.
-
-Keep it short and sequential. Do not skip step 5: an install that looks finished
-but is not connected is the most common failure here.
+Tell them not to delete the folder: Chrome reads it on every launch, and
+removing it breaks the extension. Remove the store copy first if they have it,
+for the same one-connection reason as above.
 """

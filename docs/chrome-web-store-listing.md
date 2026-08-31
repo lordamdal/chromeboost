@@ -4,7 +4,9 @@ Everything the dev console asks for, in the order the tabs appear. Copy each
 block verbatim. Source of truth for anything factual here is
 `packages/extension/manifest.json` and `apps/website/privacy.html`.
 
-Item: `725eb5e5-98b2-450d-9d0a-d8616654e6d1`
+Published: <https://chromewebstore.google.com/detail/chromeboost/alphgffnpbhpfaimmaaibbcdmpmcbndo>
+Item (dev console): `725eb5e5-98b2-450d-9d0a-d8616654e6d1`
+Extension id (public): `alphgffnpbhpfaimmaaibbcdmpmcbndo`
 Package to upload: `packages/extension/chromeboost-1.1.0.zip`
 Privacy policy URL: `https://chromeboost.work/privacy`
 Terms of use URL: `https://chromeboost.work/terms`

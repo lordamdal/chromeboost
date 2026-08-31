@@ -7,6 +7,17 @@
       "has": [{ "type": "host", "value": "www.chromeboost.work" }],
       "destination": "https://chromeboost.work/:path*",
       "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "chromeboost(-lordamdal)?(-lordamdals-projects)?\\.vercel\\.app"
+        }
+      ],
+      "destination": "https://chromeboost.work/:path*",
+      "permanent": true
     }
   ],
   "headers": [

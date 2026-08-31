@@ -213,6 +213,21 @@
   .btn-fill:hover { background: var(--coral); color: #fff; }
   .btn-out { background: var(--glass-2); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
   .btn-out:hover { background: var(--naples); }
+  /* Store CTA. Same family as .btn, but it carries a coral shadow instead of
+     the shared ink one so the single most important click on the page is not
+     visually interchangeable with the two hero buttons. */
+  .store-cta {
+    display: inline-flex; align-items: center; gap: 10px; margin-top: 4px;
+    font-family: var(--mono); font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em;
+    padding: 14px 22px; text-decoration: none;
+    color: var(--naples); background: var(--ink);
+    border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--coral);
+    transition: transform .1s ease, box-shadow .1s ease;
+    cursor: pointer;
+  }
+  .store-cta:hover { background: var(--coral); color: #fff; }
+  .store-cta:active { transform: translate(4px,4px); box-shadow: 2px 2px 0 var(--coral); }
   .gh-inline {
     margin-top: 18px; display: inline-flex; align-items: center; gap: 9px;
     font-family: var(--mono); font-size: 12.5px; font-weight: 700;
@@ -743,6 +758,12 @@
     <!-- GitHub mark. Left unfiltered on purpose: the gouache filter smears the
          octocat's thin tail into mush at 16px, and a mangled logo reads as a
          broken image rather than a stylistic choice. -->
+    <!-- Puzzle piece, not the Chrome wordmark. Chrome's logo is a trademark
+         with its own badge rules, and the gouache filter would mangle its four
+         colours anyway; the puzzle piece is Chrome's own glyph for extensions. -->
+    <symbol id="ico-ext" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7s2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"/>
+    </symbol>
     <symbol id="ico-github" viewBox="0 0 24 24">
       <path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
     </symbol>
@@ -1288,11 +1309,12 @@
 <section id="install">
   <div class="wrap">
     <span class="sec-tag label">06 / Install</span>
-    <h2>One CLI, one folder</h2>
+    <h2>One CLI, one click</h2>
     <p class="lead">
       ChromeBoost is a Chrome extension plus an MCP server, and it works with
-      <strong>Claude Code, Gemini CLI and Codex</strong>. On Claude and Gemini the install carries
-      both halves, so there's nothing to clone and no build step. All you need is Chrome.
+      <strong>Claude Code, Gemini CLI and Codex</strong>. The extension is on the Chrome Web Store
+      and your CLI installs the server, so there's nothing to clone and no build step. All you need
+      is Chrome.
     </p>
 
     <div class="steps">
@@ -1377,31 +1399,25 @@
       <div class="step">
         <div class="step-n">2</div>
         <div class="step-body glass">
-          <h3>Load the extension</h3>
+          <h3>Add the extension</h3>
           <p>
-            This copies the extension to <strong>your Downloads folder</strong> and opens it, so
-            it's one click away in Chrome's folder picker.
+            One click from the Chrome Web Store. No developer mode, no folder to keep around, and
+            it updates itself from then on.
           </p>
-          <div class="cmds">
-            <div class="cmd">
-              <span class="cmd-text"><span class="k">/chromeboost-setup</span></span>
-              <button class="cmd-copy" type="button" data-copy="/chromeboost-setup">Copy</button>
-            </div>
-          </div>
-          <ol class="mini">
-            <li>
-              Paste <code class="i">chrome://extensions</code> into Chrome's address bar
-              <button class="cmd-copy inline" type="button" data-copy="chrome://extensions">Copy</button>
-              <span class="mini-note">— <code class="i">chrome://</code> links can't be clicked from a page.</span>
-            </li>
-            <li>Turn on <strong>Developer mode</strong>, top right.</li>
-            <li>Click <strong>Load unpacked</strong> and pick <code class="i">ChromeBoost-Extension</code> from Downloads — or just drag the folder onto the page.</li>
-          </ol>
+          <a class="store-cta" href="https://chromewebstore.google.com/detail/chromeboost/alphgffnpbhpfaimmaaibbcdmpmcbndo" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-ext"/></svg>
+            <span>Add to Chrome</span>
+          </a>
           <p class="cmd-hint">
-            <b>Leave that folder where it is.</b> Chrome reads it on every launch, so moving or
-            deleting it breaks the extension. Chrome will also flag it as a developer-mode
-            extension — expected, since ChromeBoost isn't on the Web Store and runs from files you
-            can read.
+            Then pin ChromeBoost to the toolbar so the popup is one click away. Prefer to be walked
+            through it? Run <code class="i">/chromeboost-setup</code> in your CLI and it checks the
+            connection for you at the end.
+          </p>
+          <p class="cmd-hint">
+            <b>Already running the unpacked copy?</b> Remove it at
+            <code class="i">chrome://extensions</code> when you add the store build. Both talk to
+            the same local port and the server keeps only one connection, so the two evict each
+            other in a loop.
           </p>
         </div>
       </div>
@@ -1455,8 +1471,19 @@
 
         <h4>After updating the plugin</h4>
         <p>
-          Run <code class="i">/chromeboost-setup</code> again — it overwrites the Downloads folder
-          in place, so you only need to hit reload in <code class="i">chrome://extensions</code>.
+          Nothing to do for the extension: the store build updates itself. A plugin update only
+          refreshes the MCP server, so restart your CLI afterwards. On the unpacked copy, re-run
+          <code class="i">/chromeboost-setup</code> and hit reload in
+          <code class="i">chrome://extensions</code>.
+        </p>
+
+        <h4>Tool calls fail at random, or the green dot keeps dropping</h4>
+        <p>
+          Look for <strong>two</strong> ChromeBoost cards in
+          <code class="i">chrome://extensions</code>, usually the store build next to an older
+          unpacked copy. Both connect to the same local port, the server keeps only one
+          connection, and each new one evicts the other, so they trade the socket back and forth
+          on their reconnect timers. Remove whichever one you don't want.
         </p>
 
         <h4>Rather build from source?</h4>

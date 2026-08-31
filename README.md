@@ -7,7 +7,7 @@
 Not a headless clone in a data centre — *your* Chrome, already signed into your accounts,
 driven by real clicks, drags and keystrokes that modern web apps actually accept.
 
-[**chromeboost.work**](https://chromeboost.work) · [Install](#install) · [What to ask it](#things-people-actually-say-to-it) · [Tools](#tool-surface) · [☕ Buy me a coffee](https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00)
+[**chromeboost.work**](https://chromeboost.work) · [Chrome Web Store](https://chromewebstore.google.com/detail/chromeboost/alphgffnpbhpfaimmaaibbcdmpmcbndo) · [Install](#install) · [What to ask it](#things-people-actually-say-to-it) · [Tools](#tool-surface) · [☕ Buy me a coffee](https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00)
 
 MIT · no account · no telemetry
 
@@ -80,8 +80,8 @@ resize handles.
 
 ## Install
 
-You need **Chrome** and **Claude Code**. There's nothing to clone and no build step — the plugin
-ships both halves.
+You need **Chrome** and **Claude Code**. Nothing to clone, no build step: the extension is on the
+Chrome Web Store and the plugin carries the MCP server.
 
 ### 1. Add the plugin
 
@@ -97,25 +97,19 @@ In Claude Code, run these **one at a time** — not as a single paste:
 
 Then restart Claude Code so the MCP server starts.
 
-### 2. Load the extension
+### 2. Add the extension
 
-```
-/chromeboost-setup
-```
+[**Install ChromeBoost from the Chrome Web Store**](https://chromewebstore.google.com/detail/chromeboost/alphgffnpbhpfaimmaaibbcdmpmcbndo)
 
-This copies the extension to **`~/Downloads/ChromeBoost-Extension`** and opens the folder. It goes
-to Downloads on purpose — the plugin's own directory is buried under `~/.claude/plugins/cache/…`,
-which is painful to reach in Chrome's folder picker and changes on every plugin update.
+Click **Add to Chrome**, then pin ChromeBoost to the toolbar so the popup is one click away.
+That's the whole install: no developer mode, no folder to keep around, and it updates itself.
 
-Then in Chrome:
+Running `/chromeboost-setup` in Claude Code does the same walkthrough and then verifies the
+connection for you, which is worth it if anything looks off.
 
-1. Paste `chrome://extensions` into the address bar (`chrome://` links can't be clicked).
-2. Turn on **Developer mode**, top right.
-3. Click **Load unpacked** and pick `ChromeBoost-Extension` — or drag the folder onto the page.
-
-> **Leave that folder where it is.** Chrome reads it on every launch, so moving or deleting it
-> breaks the extension. Chrome will also flag it as a developer-mode extension — expected, since
-> ChromeBoost isn't on the Web Store and runs from files you can read.
+> **Already running the unpacked copy?** Remove it at `chrome://extensions` when you add the store
+> build. Both connect to the same local port and the server keeps only one connection, so the two
+> evict each other in a loop. Two ChromeBoost cards on that page is the tell.
 
 ### 3. Point it at a window
 
@@ -215,8 +209,22 @@ The extension is loaded but hasn't connected. Hit the reload arrow on the Chrome
 <details>
 <summary><b>After updating the plugin</b></summary>
 
-Run `/chromeboost-setup` again. It overwrites `~/Downloads/ChromeBoost-Extension` in place, so you
-only need to hit reload in `chrome://extensions` — no re-picking the folder.
+Nothing to do for the extension: the Chrome Web Store build updates itself. `/plugin update
+chromeboost` only refreshes the MCP server, so restart Claude Code afterwards.
+
+If you're running the unpacked copy instead, run `/chromeboost-setup` and ask for the unpacked
+path. It overwrites `~/Downloads/ChromeBoost-Extension` in place, so you only need to hit reload
+in `chrome://extensions`, with no re-picking the folder.
+
+</details>
+
+<details>
+<summary><b>Tool calls fail at random, or the green dot keeps dropping</b></summary>
+
+Check `chrome://extensions` for **two** ChromeBoost cards, usually the store build alongside an
+older unpacked copy. They both connect to the same local port, the server keeps only one
+connection, and each new one evicts the other, so they trade the socket back and forth on their
+reconnect timers. Remove whichever one you don't want.
 
 </details>
 

@@ -286,11 +286,15 @@ Two traps when adding a host:
 
 ## Distribution
 
-ChromeBoost is distributed as a Claude Code plugin marketplace from
-`github.com/lordamdal/chromeboost`. There is no npm package and no Chrome
-Web Store listing.
+ChromeBoost is distributed on two channels: the MCP server as a Claude Code
+plugin marketplace from `github.com/lordamdal/chromeboost`, and the extension
+on the Chrome Web Store (item id `alphgffnpbhpfaimmaaibbcdmpmcbndo`,
+https://chromewebstore.google.com/detail/chromeboost/alphgffnpbhpfaimmaaibbcdmpmcbndo).
+There is no npm package.
 
-The plugin carries **both halves**: the bundled MCP server at
+The store listing is the documented default for the extension, because it
+installs in one click, needs no developer mode, and auto-updates. The plugin
+still carries **both halves**: the bundled MCP server at
 `packages/plugin/server/chromeboost.mjs` and the built extension at
 `packages/plugin/extension/`. Both are committed, so a fresh
 `/plugin install chromeboost@chromeboost` works with no clone, no
@@ -299,8 +303,23 @@ The plugin carries **both halves**: the bundled MCP server at
 run `npm run build` and commit the synced payload alongside it, or users
 get a stale extension.
 
+Two channels means the extension can be at two versions at once. Store review
+takes days, so after a release the plugin's bundled copy is the newer one until
+the listing catches up. The `/chromeboost-setup` fallback path exists for
+exactly that window.
+
+**Users must not run both copies.** `ws-bridge.ts` keeps a single `client` and
+calls `terminate()` on the old one whenever a new connection arrives, so an
+unpacked copy and a store copy evict each other on their reconnect timers.
+Anything user-facing that mentions installing should say so.
+
 ### The install path a user actually walks
 
+The default is now the Web Store listing: `/chromeboost-setup` links to it,
+checks `list_tabs`, and only falls back to the unpacked copy below when asked
+or when the store version trails the plugin.
+
+The unpacked path, still live behind that fallback:
 `/chromeboost-setup` (`packages/plugin/commands/`) runs
 `packages/plugin/scripts/install-extension.mjs`, which copies
 `${CLAUDE_PLUGIN_ROOT}/extension` to `~/Downloads/ChromeBoost-Extension`
