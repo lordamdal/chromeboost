@@ -3,20 +3,20 @@
   "cleanUrls": true,
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "www.chromeboost.work" }],
-      "destination": "https://chromeboost.work/:path*",
+      "destination": "https://chromeboost.work/$1",
       "permanent": true
     },
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [
         {
           "type": "host",
           "value": "chromeboost(-lordamdal)?(-lordamdals-projects)?\\.vercel\\.app"
         }
       ],
-      "destination": "https://chromeboost.work/:path*",
+      "destination": "https://chromeboost.work/$1",
       "permanent": true
     }
   ],
