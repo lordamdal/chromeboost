@@ -4,14 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy Policy — ChromeBoost</title>
-<meta name="description" content="What ChromeBoost does and does not do with your data. No telemetry, no accounts, no analytics in the extension. Everything stays between your browser and your own machine.">
+<meta name="description" content="What ChromeBoost does and does not do with your data: the free extension and MCP server, the paid desktop app, and this website. Plain language, matched to the code.">
 <meta name="theme-color" content="#f2ece0">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='2' y='2' width='60' height='60' rx='10' fill='%23efb63d' stroke='%2314110d' stroke-width='4'/><path d='M36 11 L15 37 h14 L27 55 L49 30 H35 Z' fill='%2314110d'/></svg>">
 <link rel="stylesheet" href="/page.css">
+<style>
+  .toc { columns: 2; column-gap: 2rem; padding-left: 1.2rem; font-size: .95em; }
+  .toc li { break-inside: avoid; margin: .15rem 0; }
+  @media (max-width: 640px) { .toc { columns: 1; } }
+</style>
 </head>
 <body>
-
 <header class="top">
   <div class="wrap">
     <a class="brand" href="/">
@@ -24,167 +28,296 @@
     </a>
   </div>
 </header>
-
 <main class="wrap">
-
   <h1>Privacy Policy</h1>
-  <p class="updated">Last updated 28 August 2026</p>
+  <p class="updated">Last updated 3 September 2026</p>
 
   <div class="callout">
-    <p><strong>The short version.</strong> ChromeBoost has no servers. It has no accounts, no
-    telemetry, and no analytics inside the extension. The extension talks to exactly one thing:
-    an MCP server running on your own computer, over a WebSocket bound to
-    <code>localhost</code>. Nothing about your browsing is sent to us, because there is no
-    "us" to send it to.</p>
-    <p>The one thing you should understand before installing is in
-    <a href="#agent">section 3</a>: page content that you ask ChromeBoost to read is handed to
-    whichever AI coding agent you are running, and that agent will normally send it onward to
-    its own provider.</p>
+    <p><strong>The short version.</strong> ChromeBoost has no servers of its own and collects
+    nothing about your browsing. The free extension and MCP server talk only to your own
+    computer. The paid desktop app adds exactly three outside connections, and each one is
+    named below: Anthropic, because the app runs on your own Claude subscription; Polar, which
+    handles payment and licence keys; and GitHub, which hosts the update check. We never see
+    your prompts, the pages you automate, or the files you produce.</p>
+    <p>The one thing to understand before you start is in <a href="#agent">section 4</a>:
+    page content you ask ChromeBoost to read is sent to the AI you are using, under that
+    provider's terms and privacy policy, not ours. Treat it the way you would treat pasting a
+    page into a chat window.</p>
   </div>
 
   <h2 id="who">1. Who this covers</h2>
-  <p>ChromeBoost is a free, MIT licensed, open source project maintained by an individual
-  developer. This policy covers two things:</p>
+  <p>This policy is published by Beaverhand Inc. ("we"). It covers four things:</p>
   <ul>
     <li>The <strong>ChromeBoost Chrome extension</strong>, distributed through the Chrome Web
-    Store and through <a href="https://github.com/lordamdal/chromeboost">GitHub</a>.</li>
+    Store and through <a href="https://github.com/lordamdal/chromeboost">GitHub</a>. Free and
+    MIT licensed.</li>
+    <li>The <strong>ChromeBoost MCP server</strong>, installed as a Claude Code, Codex or
+    Gemini CLI plugin. Free and MIT licensed.</li>
+    <li>The <strong>ChromeBoost Desktop app</strong> for Mac and Windows. A paid product with a
+    free tier.</li>
     <li>The <strong>chromeboost.work website</strong>, which is the page you are reading.</li>
   </ul>
-  <p>The full source for both is public. If any statement here does not match the code, the
-  code is the truth and the discrepancy is a bug worth
-  <a href="https://github.com/lordamdal/chromeboost/issues">reporting</a>.</p>
+  <p>The extension and MCP server are open source. If any statement here about them does not
+  match the code, the code is the truth and the difference is a bug worth
+  <a href="https://github.com/lordamdal/chromeboost/issues">reporting</a>. The desktop app's
+  source is not public, so for the desktop app this policy is the description you can hold us
+  to.</p>
 
-  <h2 id="collect">2. What the extension collects</h2>
-  <p><strong>Nothing is collected by the developer.</strong> ChromeBoost operates no backend,
-  no logging service, no crash reporter, and no analytics. There is no network destination
-  that data could be collected at.</p>
+  <h2 id="contents">Contents</h2>
+  <ol class="toc">
+    <li><a href="#who">Who this covers</a></li>
+    <li><a href="#extension">The extension and MCP server</a></li>
+    <li><a href="#desktop">The desktop app</a></li>
+    <li><a href="#agent">Where page content actually goes</a></li>
+    <li><a href="#permissions">Extension permissions</a></li>
+    <li><a href="#never">What is never done</a></li>
+    <li><a href="#website">The website</a></li>
+    <li><a href="#retention">Retention and deletion</a></li>
+    <li><a href="#rights">Your rights</a></li>
+    <li><a href="#children">Children</a></li>
+    <li><a href="#changes">Changes</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ol>
+
+  <h2 id="extension">2. The extension and MCP server</h2>
+  <p><strong>Nothing is collected by us.</strong> Neither the extension nor the MCP server has
+  a backend, a logging service, a crash reporter, or analytics. There is no network destination
+  of ours that data could be collected at.</p>
   <p>The extension opens a single outbound connection, and it is a local one:</p>
   <table>
     <thead><tr><th>Destination</th><th>What travels over it</th></tr></thead>
     <tbody>
       <tr>
         <td>ws://localhost:PORT</td>
-        <td>The MCP server on your own machine. Commands from your AI agent travel in,
-        and the results of those commands travel back. This connection never leaves your
+        <td>The MCP server on your own machine. Commands from your AI agent travel in, and
+        the results of those commands travel back. This connection never leaves your
         computer.</td>
       </tr>
     </tbody>
   </table>
-  <p>The extension stores a small amount of state locally using
-  <code>chrome.storage.local</code>. It stays in your browser profile and is never
-  transmitted:</p>
-  <ul>
-    <li>The position, collapsed state, and visibility of the on-page status panel.</li>
-    <li>Which local agent sessions are connected, and on which ports.</li>
-    <li>A short random prefix used internally to tag elements during a page operation.</li>
-  </ul>
-  <p>No browsing history, no bookmarks, no form data, and no credentials are stored by the
-  extension.</p>
+  <p>The extension keeps a small amount of state in <code>chrome.storage.local</code>. It stays
+  in your browser profile and is never transmitted: the position, collapsed state and
+  visibility of the on-page status panel; which local agent sessions are connected and on
+  which ports; and a short random prefix used to tag elements during a page operation. No
+  browsing history, bookmarks, form data or credentials are stored by the extension.</p>
 
-  <h2 id="agent">3. Where page content actually goes</h2>
+  <h2 id="desktop">3. The desktop app</h2>
+  <p>The desktop app wraps the same extension and MCP server in a window so you can give
+  instructions in plain English without a terminal. It runs on your own Claude subscription
+  and adds a paid licence. Here is everything it stores and every outside connection it
+  makes.</p>
+
+  <h3>3.1 What stays on your computer</h3>
+  <table>
+    <thead><tr><th>What</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>Your jobs: the instructions you typed, the assistant's replies, and a record of
+      each browser step</td><td>The app's data folder: <code>~/Library/Application
+      Support/ChromeBoost</code> on Mac, <code>%APPDATA%\ChromeBoost</code> on Windows</td></tr>
+      <tr><td>Settings, repeat schedules, your licence key and activation id, and the count of
+      finished jobs this month</td><td>The same data folder</td></tr>
+      <tr><td>A diagnostic log written only when something goes wrong. It contains error
+      messages, not page content</td><td>The same data folder, <code>logs/</code></td></tr>
+      <tr><td>Claude's own sign-in state, kept by Anthropic's software in a folder the app
+      reserves for it, and in your operating system's keychain</td><td>The same data folder,
+      <code>engine/</code>, plus the system keychain</td></tr>
+      <tr><td>Files you attach to a job, and files a job produces for you</td>
+      <td><code>ChromeBoost Files</code> in your home folder</td></tr>
+      <tr><td>A copy of the browser extension, when you install it from the app rather than the
+      Chrome Web Store</td><td><code>ChromeBoost Extension</code> in your home folder</td></tr>
+    </tbody>
+  </table>
+  <p>None of this is uploaded to us. We have no way to read it.</p>
+
+  <h3>3.2 The three outside connections</h3>
+  <table>
+    <thead><tr><th>Who</th><th>When</th><th>What is sent</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Anthropic</strong> (Claude)</td>
+        <td>When you sign in, and during every job</td>
+        <td>Sign-in happens in your own browser on Anthropic's site. The one-time code you paste
+        into the app is passed straight through to Anthropic's own command-line software; the
+        app does not read, parse or store it. During a job, your instructions, the page content
+        the assistant asks to read, and its replies travel between Anthropic's software on your
+        computer and Anthropic's servers, under your own Claude account. See
+        <a href="#agent">section 4</a>.</td>
+      </tr>
+      <tr>
+        <td><strong>Polar</strong> (payments and licences)</td>
+        <td>When you buy, when you enter a licence key, and periodically afterwards</td>
+        <td>Buying happens on Polar's checkout page in your browser; Polar is the merchant of
+        record and handles your payment details, receipts and tax. We never see your card
+        number. When you enter a licence key, the app sends Polar the key, our organisation
+        id, and your computer's name (so you can tell your own machines apart in Polar's
+        portal), and receives an activation id. Afterwards the app re-checks the key and
+        activation id with Polar from time to time; if you are offline it keeps working for
+        14 days without a check.</td>
+      </tr>
+      <tr>
+        <td><strong>GitHub</strong> (update check)</td>
+        <td>At launch and about every six hours while the app is open</td>
+        <td>A plain request for a small text file that names the newest version. GitHub sees
+        your IP address and a standard browser-style request, as any web host does. No
+        account, identifier or usage data is included. Downloads of new versions come from the
+        same place.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>That is the complete list. The app has no telemetry, no analytics, no crash reporting to
+  us, and no account with us. Usage limits on the free tier are counted on your computer and
+  never reported anywhere.</p>
+
+  <h3>3.3 What we receive, and from whom</h3>
+  <p>The only information we hold about desktop app customers comes from Polar: the email
+  address you gave at checkout, what you bought, when, the licence keys issued to you, and the
+  names of the computers you activated them on. We use it to run your subscription, answer
+  support requests, and meet tax and accounting obligations. We do not receive anything about
+  how you use the app.</p>
+
+  <h2 id="agent">4. Where page content actually goes</h2>
   <div class="callout warn">
     <p><strong>Read this part.</strong> ChromeBoost is the hands, not the brain. When you ask
-    your agent to read a page, fill a form, or find a button, the relevant page content is
-    passed to the AI coding agent running on your machine, for example Claude Code, Codex, or
-    Gemini CLI. Those tools send what they receive to their own provider's API in order to
-    think about it.</p>
-    <p>So while ChromeBoost itself transmits nothing to anyone, the practical result of using
-    it is that pages you point it at can reach Anthropic, OpenAI, or Google, governed by
-    <em>their</em> privacy policies and your agreement with them, not this one. Treat it the
-    same way you would treat pasting a page into a chat window.</p>
+    for a page to be read, a form filled or a button found, the relevant page content is handed
+    to the AI assistant you are using. In the desktop app that is Claude, running on your own
+    Anthropic account. With the plugin it may be Claude Code, Codex or Gemini CLI. Those tools
+    send what they receive to their provider's servers in order to think about it.</p>
+    <p>So while ChromeBoost itself sends nothing to us, the practical result of using it is
+    that pages you point it at can reach Anthropic, OpenAI or Google, governed by
+    <em>their</em> privacy policies and your agreement with them, not this one.</p>
   </div>
-  <p>Two consequences worth being deliberate about:</p>
+  <p>Two things we do to keep this deliberate:</p>
   <ul>
-    <li>Content is only read when a tool call asks for it. ChromeBoost does not watch, scrape,
-    or index pages in the background, and it does not read tabs you have not directed it at.</li>
-    <li>Before page text is returned, it passes through a redaction step that strips
-    high confidence secret patterns such as API keys and JWTs, so that credentials sitting on
-    a dashboard are less likely to end up in your agent's context by accident. This is a safety
-    net and not a guarantee. Do not rely on it to protect something that genuinely matters.</li>
+    <li>Content is read only when a step asks for it. ChromeBoost does not watch, scrape or
+    index pages in the background, and it does not read tabs you have not directed it at.</li>
+    <li>Before page text is returned, it passes through a redaction step that strips high
+    confidence secret patterns such as API keys and tokens, so credentials sitting on a
+    dashboard are less likely to reach the assistant by accident. This is a safety net, not a
+    guarantee. Do not rely on it to protect something that genuinely matters.</li>
   </ul>
+  <p>The desktop app also pauses and asks you before actions that publish, pay or sign in,
+  unless you switch that off in Settings. That is a design choice for your benefit, not a
+  promise about what any site will do with the result.</p>
 
-  <h2 id="permissions">4. Permissions, and why each one exists</h2>
+  <h2 id="permissions">5. Extension permissions, and why each one exists</h2>
   <p>Chrome shows a blunt warning at install time. Here is the specific reason for each
   permission the extension requests:</p>
   <table>
     <thead><tr><th>Permission</th><th>Why it is needed</th></tr></thead>
     <tbody>
-      <tr><td>debugger</td><td>The core of the product. Clicks, drags, and keystrokes are
+      <tr><td>debugger</td><td>The core of the product. Clicks, drags and keystrokes are
       dispatched through the Chrome DevTools Protocol so they arrive as real, trusted input
       events. Ordinary synthetic events are silently ignored by many modern web apps.</td></tr>
       <tr><td>&lt;all_urls&gt;</td><td>You decide which sites to automate, so the extension
       cannot know the list in advance. It acts only on the tab you direct it to.</td></tr>
-      <tr><td>tabs</td><td>Listing, opening, switching, and closing tabs on request.</td></tr>
+      <tr><td>tabs</td><td>Listing, opening, switching and closing tabs on request.</td></tr>
       <tr><td>activeTab</td><td>Reading and screenshotting the tab currently being worked
       on.</td></tr>
       <tr><td>scripting</td><td>Injecting the content script that performs DOM work such as
-      hit testing, form filling, and shadow DOM traversal.</td></tr>
+      hit testing, form filling and shadow DOM traversal.</td></tr>
       <tr><td>offscreen</td><td>Holding the WebSocket connection open. An MV3 service worker
       is shut down when idle, which would drop the connection.</td></tr>
       <tr><td>storage</td><td>Remembering the status panel position and which local sessions
       are connected.</td></tr>
-      <tr><td>windows</td><td>Focusing and arranging browser windows during multi tab
+      <tr><td>windows</td><td>Focusing and arranging browser windows during multi-tab
       work.</td></tr>
       <tr><td>downloads</td><td>Saving a file when you explicitly ask for a download, and
-      reading back files the agent was told to fetch.</td></tr>
+      reading back files the assistant was told to fetch.</td></tr>
     </tbody>
   </table>
 
-  <h2 id="sale">5. What is never done</h2>
+  <h2 id="never">6. What is never done</h2>
   <ul>
-    <li>Your data is never sold, rented, or licensed. There is no commercial data
+    <li>Your data is never sold, rented or licensed to anyone. There is no commercial data
     relationship of any kind.</li>
-    <li>Your data is never transferred to third parties by the extension, other than the local
-    connection described above.</li>
-    <li>Your data is never used for advertising, profiling, credit scoring, or any purpose
-    unrelated to the feature you invoked.</li>
-    <li>Nothing is done with your data beyond carrying out the single tool call you asked
-    for.</li>
+    <li>Your data is never used for advertising, profiling, training AI models by us, or any
+    purpose unrelated to the feature you invoked.</li>
+    <li>No part of ChromeBoost transmits your browsing, your jobs or your files to us, and
+    nothing we operate could receive them.</li>
+    <li>We never ask for, see or store your Claude password or session token. Sign-in is
+    Anthropic's, on Anthropic's site, and stays with Anthropic's software.</li>
   </ul>
 
-  <h2 id="website">6. The website</h2>
-  <p>The site is a static page hosted on Vercel. Two things about it differ from the
-  extension, and it would be misleading not to say so:</p>
+  <h2 id="website">7. The website</h2>
+  <p>The site is static and hosted on Vercel. Three things about it differ from the software,
+  and it would be misleading not to say so:</p>
   <ul>
-    <li><strong>Google Analytics</strong> runs on this website, and only on this website. It
-    records ordinary aggregate visit data such as page views, referrer, approximate region,
-    and browser. It is not present in the extension and it has no visibility into anything
-    you automate. You can block it with any content blocker without affecting the extension
-    at all.</li>
+    <li><strong>Google Analytics</strong> runs on the landing page. It records ordinary
+    aggregate visit data such as page views, referrer, approximate region and browser. It is
+    not present in the extension or the desktop app and has no visibility into anything you
+    automate. You can block it with any content blocker without affecting the software.</li>
     <li><strong>Vercel</strong>, as the host, keeps standard server logs including IP
     addresses, as any web host does.</li>
-    <li>The "buy me a coffee" button links out to <strong>Stripe</strong>. Payments are
-    handled entirely by Stripe under its own privacy policy. No payment details ever reach
-    this site or the developer, and donating is not required to use anything.</li>
+    <li>The <strong>buy</strong> buttons link to Polar's checkout. Payments are handled
+        entirely by Polar under their own privacy policy, and no payment details reach this
+        site or us.</li>
   </ul>
 
-  <h2 id="children">7. Children</h2>
-  <p>ChromeBoost is a developer tool and is not directed at children under 13. No age
-  information is collected, because no personal information is collected.</p>
+  <h2 id="retention">8. Retention and deletion</h2>
+  <ul>
+    <li><strong>On your computer.</strong> Jobs, settings and files stay until you delete them.
+    Deleting a job in the app removes its transcript and its attachments. Uninstalling the app
+    does not remove the data folder, <code>ChromeBoost Files</code> or
+    <code>ChromeBoost Extension</code>; delete them yourself if you want a clean slate. The
+    Claude sign-in state in <code>engine/</code> and the keychain belongs to Anthropic's
+    software; signing out through the app removes what it can.</li>
+    <li><strong>At Polar.</strong> Purchase and licence records are kept by Polar for as long
+    as its own policy and tax law require. You can see and manage them in Polar's customer
+    portal, which the app links to from Settings.</li>
+    <li><strong>At Anthropic, OpenAI or Google.</strong> Whatever those providers keep of the
+    content your assistant sent them is governed by their policies. We cannot delete it for
+    you.</li>
+    <li><strong>With us.</strong> Support emails are kept for as long as needed to resolve the
+    request and for a reasonable period afterwards.</li>
+  </ul>
 
-  <h2 id="changes">8. Changes to this policy</h2>
+  <h2 id="rights">9. Your rights</h2>
+  <p>Depending on where you live, you may have rights to access, correct, delete or export
+  personal data about you, to object to or restrict its processing, and to complain to a data
+  protection authority. Because we hold so little, exercising them is simple:</p>
+  <ul>
+    <li>For purchase and licence records, use Polar's customer portal or contact us and we will
+    work with Polar on your behalf.</li>
+    <li>For anything else, email us at the address in <a href="#contact">section 12</a>. We
+    will respond within 30 days.</li>
+    <li>Everything on your computer is already in your hands: the data folder and
+    <code>ChromeBoost Files</code> are plain files you can read, copy or delete.</li>
+  </ul>
+  <p>Our lawful basis for the little processing we do is performance of the contract with you
+  (running your subscription and support) and our legitimate interest in keeping the website
+  working and understanding aggregate traffic. We do not make automated decisions about you.
+  Polar and Vercel may process data outside your country under their own safeguards.</p>
+
+  <h2 id="children">10. Children</h2>
+  <p>ChromeBoost is not directed at children. The extension and MCP server are developer
+  tools for people 13 and over. The desktop app is a paid product for people 18 and over, or
+  the age of majority where you live if that is higher. We do not knowingly collect information
+  from children; if you believe a child has given us any, contact us and we will delete it.</p>
+
+  <h2 id="changes">11. Changes to this policy</h2>
   <p>If this policy changes in a way that affects how data is handled, the date at the top
   will change and the revision will be visible in the public
   <a href="https://github.com/lordamdal/chromeboost/commits/main">commit history</a> of this
-  file. Because the project has no accounts, there is no mailing list to notify, so the git
-  history is the record.</p>
+  file. If a change materially reduces your privacy, the desktop app will also tell you in its
+  update notice before the new version applies.</p>
 
-  <h2 id="contact">9. Contact</h2>
-  <p>Questions, corrections, or a privacy concern: open an issue at
+  <h2 id="contact">12. Contact</h2>
+  <p>Privacy questions, corrections, or requests about your data:
+  <a href="mailto:me@lordamdal.com">me@lordamdal.com</a>. For the open source parts you can also
+  open an issue at
   <a href="https://github.com/lordamdal/chromeboost/issues">github.com/lordamdal/chromeboost/issues</a>.
-  For anything you would rather not discuss in public, including suspected security issues,
-  see <a href="https://github.com/lordamdal/chromeboost/blob/main/SECURITY.md">SECURITY.md</a>.</p>
-
+  For suspected security issues, see
+  <a href="https://github.com/lordamdal/chromeboost/blob/main/SECURITY.md">SECURITY.md</a>.</p>
 </main>
-
 <footer class="bot">
   <div class="wrap">
-    <p>ChromeBoost is free and MIT licensed. No account, no telemetry, no servers.</p>
+    <p>The extension and MCP server are free and MIT licensed. The desktop app is a paid
+    product from Beaverhand. Neither one sends your browsing to us.</p>
     <p><a href="/">Back to chromeboost.work</a> &nbsp;·&nbsp;
+       <a href="/download">Download</a> &nbsp;·&nbsp;
        <a href="/terms">Terms</a> &nbsp;·&nbsp;
        <a href="https://github.com/lordamdal/chromeboost">GitHub</a></p>
   </div>
 </footer>
-
 </body>
 </html>

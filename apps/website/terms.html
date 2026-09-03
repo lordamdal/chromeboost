@@ -4,14 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Terms of Use — ChromeBoost</title>
-<meta name="description" content="The terms you accept by using ChromeBoost. You direct the automation, so you are responsible for what it does and for the terms of the sites you point it at.">
+<meta name="description" content="The terms for the free ChromeBoost extension and MCP server and for the paid ChromeBoost Desktop app: your licence, subscriptions, refunds, your responsibilities, and our limits.">
 <meta name="theme-color" content="#f2ece0">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='2' y='2' width='60' height='60' rx='10' fill='%23efb63d' stroke='%2314110d' stroke-width='4'/><path d='M36 11 L15 37 h14 L27 55 L49 30 H35 Z' fill='%2314110d'/></svg>">
 <link rel="stylesheet" href="/page.css">
+<style>
+  .toc { columns: 2; column-gap: 2rem; padding-left: 1.2rem; font-size: .95em; }
+  .toc li { break-inside: avoid; margin: .15rem 0; }
+  @media (max-width: 640px) { .toc { columns: 1; } }
+</style>
 </head>
 <body>
-
 <header class="top">
   <div class="wrap">
     <a class="brand" href="/">
@@ -24,150 +28,296 @@
     </a>
   </div>
 </header>
-
 <main class="wrap">
-
   <h1>Terms of Use</h1>
-  <p class="updated">Last updated 28 August 2026</p>
+  <p class="updated">Last updated 3 September 2026</p>
 
   <div class="callout">
-    <p><strong>The short version.</strong> ChromeBoost is a free tool that does what you tell
-    it to do in your own browser. You choose the sites, you give the instructions, and you
-    are responsible for the result. It comes with no warranty of any kind, and the people who
-    wrote it are not liable for what you do with it.</p>
-    <p>The part most people miss is <a href="#third-party">section 4</a>: many sites prohibit
-    automated access in their own terms. Those are agreements between you and them.
-    ChromeBoost is not a party to any of them, and using this tool does not give you
-    permission you did not already have.</p>
+    <p><strong>The short version.</strong> ChromeBoost does what you tell it to do in your own
+    browser. You choose the sites, you give the instructions, and you are responsible for the
+    result. The extension and MCP server are free and come as is. The desktop app is a paid
+    product: you get a licence to use it on a set number of computers, you can cancel any time,
+    and if it does not work for you in the first 14 days we refund you. It runs on your own
+    Claude subscription, which is a separate agreement between you and Anthropic.</p>
+    <p>The part most people miss is <a href="#third-party">section 6</a>: many sites prohibit
+    automated access in their own terms. Those are agreements between you and them. Using
+    ChromeBoost does not give you permission you did not already have.</p>
   </div>
 
+  <h2 id="contents">Contents</h2>
+  <ol class="toc">
+    <li><a href="#accept">Accepting these terms</a></li>
+    <li><a href="#what">What ChromeBoost is</a></li>
+    <li><a href="#claude">Your Claude subscription</a></li>
+    <li><a href="#licence">Your licence to the desktop app</a></li>
+    <li><a href="#yours">You are responsible for what it does</a></li>
+    <li><a href="#third-party">Third-party sites and their terms</a></li>
+    <li><a href="#acceptable">Acceptable use</a></li>
+    <li><a href="#plans">Plans, trial and free tier</a></li>
+    <li><a href="#billing">Billing, cancellation and refunds</a></li>
+    <li><a href="#unsigned">Installing an unsigned app</a></li>
+    <li><a href="#updates">Updates and changes to the product</a></li>
+    <li><a href="#warranty">No warranty</a></li>
+    <li><a href="#liability">Limitation of liability</a></li>
+    <li><a href="#indemnity">Indemnity</a></li>
+    <li><a href="#termination">Termination</a></li>
+    <li><a href="#law">Governing law and disputes</a></li>
+    <li><a href="#changes">Changes to these terms</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ol>
+
   <h2 id="accept">1. Accepting these terms</h2>
-  <p>By installing or using the ChromeBoost extension or the ChromeBoost MCP server, you
-  accept these terms. If you do not accept them, do not install or use it. In this document,
-  "ChromeBoost" means the extension and the MCP server together, and "we" means the
-  maintainers who publish them.</p>
-  <p>ChromeBoost is also released under the MIT licence, which is included in the source
-  repository. Where these terms and the MIT licence overlap on warranty and liability, both
-  say the same thing: the software is provided as is.</p>
+  <p>By installing or using the ChromeBoost extension, the ChromeBoost MCP server, or the
+  ChromeBoost Desktop app, you accept these terms. If you do not accept them, do not install
+  or use them. In this document "ChromeBoost" means all three together unless a section names
+  one of them, and "we" means Beaverhand Inc.,
+  the publisher of the desktop app and the maintainer of the open source parts.</p>
+  <p>The extension and MCP server are also released under the MIT licence, which is included
+  in the source repository. Where these terms and the MIT licence overlap on warranty and
+  liability, both say the same thing: that software is provided as is. The desktop app is not
+  open source and is licensed to you under <a href="#licence">section 4</a>.</p>
+  <p>You must be at least 18, or the age of majority where you live if that is higher, to buy
+  a plan or use the desktop app. If you use ChromeBoost for an organisation, you confirm you
+  have authority to bind it to these terms.</p>
 
   <h2 id="what">2. What ChromeBoost is</h2>
-  <p>ChromeBoost is a tool that lets an AI coding assistant running on your own computer
-  operate your own Chrome browser. It performs the browser actions your assistant asks for:
-  opening pages, reading page content, clicking, typing, hovering and dragging.</p>
-  <p>It is not a service. There is no ChromeBoost server, no account, and nothing running on
-  our infrastructure. Everything happens on your machine, between your browser and software
-  you installed.</p>
+  <p>ChromeBoost lets an AI assistant operate your own Chrome browser: opening pages, reading
+  page content, clicking, typing, hovering, dragging and saving files you ask for.</p>
+  <ul>
+    <li>The <strong>extension</strong> and <strong>MCP server</strong> connect a coding agent
+    you already run, such as Claude Code, Codex or Gemini CLI, to your browser. They have no
+    server of ours behind them.</li>
+    <li>The <strong>desktop app</strong> wraps the same parts in a window so you can give
+    instructions in plain English without a terminal. It runs Anthropic's Claude software on
+    your computer under your own Claude account, and adds a paid licence.</li>
+  </ul>
+  <p>Nothing runs on our infrastructure. Everything happens on your machine, between your
+  browser, software you installed, and the providers named in the
+  <a href="/privacy">privacy policy</a>.</p>
 
-  <h2 id="yours">3. You are responsible for what it does</h2>
+  <h2 id="claude">3. Your Claude subscription</h2>
+  <p>The desktop app requires an active Claude subscription from Anthropic that permits use of
+  Claude Code (at the time of writing, Pro, Max or Team). You sign in to Anthropic in your own
+  browser; the app never sees or stores your Anthropic credentials. Your use of Claude, the
+  content you send it, and Anthropic's usage limits are governed by Anthropic's terms and
+  policies, not ours.</p>
+  <p>We do not sell, resell or mark up AI usage. Our price covers the app, and only the app.
+  Consequently:</p>
+  <ul>
+    <li>If Anthropic changes, limits, suspends or ends access for your account or for
+    third-party software like ours, the desktop app may stop working in whole or in part. We
+    will do what we reasonably can to adapt, but we cannot promise the app will keep working
+    against a service we do not control.</li>
+    <li>Usage limits on your Claude plan apply to work done through ChromeBoost. Running out is
+    a matter between you and Anthropic.</li>
+    <li>You must comply with Anthropic's usage policies when using Claude through
+    ChromeBoost.</li>
+  </ul>
+
+  <h2 id="licence">4. Your licence to the desktop app</h2>
+  <p>We grant you a personal, non-exclusive, non-transferable, revocable licence to install and
+  use the desktop app on the number of computers your plan allows, for your own use or your
+  organisation's internal use, subject to these terms. The app is licensed, not sold. We and
+  our licensors keep all rights not expressly granted.</p>
+  <p>You must not, except where the law expressly permits it despite this clause: copy the app
+  other than for backup; sell, rent, lend, sublicense or redistribute it; remove or defeat the
+  licence check; share a licence key beyond your own computers; reverse engineer, decompile or
+  disassemble it; or use it to build a competing product. The MIT licensed parts remain free
+  for you to use, copy and modify under the MIT licence.</p>
+  <p>Anything a job produces for you, such as a spreadsheet or a saved file, is yours. We claim
+  no rights in your instructions, your files or your results.</p>
+
+  <h2 id="yours">5. You are responsible for what it does</h2>
   <p>ChromeBoost has no independent judgement and no purpose of its own. It acts because you,
   or an assistant you are running and supervising, told it to. That makes the following your
   responsibility, entirely:</p>
   <ul>
     <li><strong>The instructions you give.</strong> You decide which sites it visits, what it
-    reads, what it fills in, and what it submits.</li>
+    reads, what it fills in and what it submits.</li>
     <li><strong>Authorisation.</strong> You may only use ChromeBoost on accounts, systems and
-    data you are authorised to access. Using it against someone else's account or a system
-    you have no right to use is your act, not ours.</li>
+    data you are authorised to access. Using it against someone else's account or a system you
+    have no right to use is your act, not ours.</li>
     <li><strong>Compliance with law.</strong> Including laws on computer access, data
-    protection, privacy, intellectual property and consumer protection in every jurisdiction
-    that applies to you.</li>
-    <li><strong>Reviewing the outcome.</strong> Automated actions can be wrong. Anything
-    consequential is yours to check.</li>
+    protection, privacy, intellectual property, consumer protection and marketing in every
+    jurisdiction that applies to you.</li>
+    <li><strong>Reviewing the outcome.</strong> AI assistants make mistakes. Anything
+    consequential, such as a purchase, a message sent, or a form submitted, is yours to check
+    before and after.</li>
   </ul>
-  <p>ChromeBoost is designed to pause and hand control back for actions that publish, pay or
-  authenticate. That is a convenience and a design preference, not a safety guarantee. Do not
-  rely on it to prevent an action you did not want, and do not treat it as a substitute for
-  supervising what you have asked for.</p>
+  <p>The desktop app pauses and asks you before actions that publish, pay or sign in. You can
+  change how often it asks, including turning approvals off entirely. That control is a
+  convenience for you, not a safety guarantee from us. If you turn approvals off, you accept
+  that the assistant will act without asking.</p>
 
-  <h2 id="third-party">4. Third-party sites and their terms</h2>
-  <p>Most websites have their own terms of service, and many of them restrict or prohibit
-  automated access, scraping, or the use of tools like this one. Those terms are an agreement
-  between you and that website. We are not a party to them.</p>
+  <h2 id="third-party">6. Third-party sites and their terms</h2>
+  <p>Most websites have their own terms of service, and many restrict or prohibit automated
+  access, scraping, or the use of tools like this one. Those terms are an agreement between you
+  and that website. We are not a party to them.</p>
   <p>It is your responsibility to know what the sites you use ChromeBoost on permit, and to
   stay within it. ChromeBoost being technically capable of an action does not mean you are
-  permitted to take it, and nothing in this tool or its documentation should be read as
-  advice that any particular use is allowed.</p>
+  permitted to take it, and nothing in this tool or its documentation is advice that any
+  particular use is allowed.</p>
 
-  <h2 id="acceptable">5. Acceptable use</h2>
+  <h2 id="acceptable">7. Acceptable use</h2>
   <p>You must not use ChromeBoost to:</p>
   <ul>
     <li>Access any account, system, network or data without authorisation.</li>
-    <li>Circumvent authentication, access controls, paywalls or licensing restrictions.</li>
+    <li>Circumvent authentication, access controls, paywalls, rate limits or licensing
+    restrictions, including ours.</li>
     <li>Collect personal data about other people without a lawful basis for doing so.</li>
-    <li>Send spam, run fraud, manipulate ratings or votes, create fake engagement, or
-    impersonate anyone.</li>
+    <li>Send spam or unsolicited messages, run fraud, manipulate ratings, reviews or votes,
+    create fake engagement, or impersonate anyone.</li>
     <li>Interfere with the normal operation of a site, including by generating load a
     reasonable operator would consider abusive.</li>
     <li>Do anything unlawful, or anything that infringes another person's rights.</li>
   </ul>
   <p>We do not monitor how you use ChromeBoost and are not able to. This section states what
-  the tool is for; enforcing it is not something we can do on your behalf.</p>
+  the tool is for. If we learn of a breach, we may suspend or end your licence under
+  <a href="#termination">section 15</a>.</p>
 
-  <h2 id="agent">6. Your AI assistant is a separate service</h2>
-  <p>ChromeBoost passes page content to whichever AI coding assistant you are running, and
-  that assistant normally sends what it receives to its own provider. Your relationship with
-  that provider, and their handling of that content, is governed by their terms and their
-  privacy policy, not ours. This is explained in more detail in the
-  <a href="/privacy#agent">privacy policy</a>.</p>
+  <h2 id="plans">8. Plans, trial and free tier</h2>
+  <p>The desktop app has three plans. Prices are shown in United States dollars on
+  <a href="/#pricing">the pricing section</a> and at checkout; taxes may be added at checkout
+  depending on where you live.</p>
+  <table>
+    <thead><tr><th>Plan</th><th>What you get</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Free</strong></td><td>Your first seven days after installing are fully
+      open with Pro features. After that, five finished jobs a month at no charge, on one
+      computer. Jobs that fail or that you stop do not count. Every file you make is yours to
+      keep.</td></tr>
+      <tr><td><strong>Pro</strong></td><td>Unlimited jobs, repeats that run daily or weekly, up
+      to three saved repeats, use on two computers, and email support.</td></tr>
+      <tr><td><strong>Business</strong></td><td>Everything in Pro, repeats that can run hourly,
+      unlimited saved repeats, use on ten computers, ready-made marketing jobs, and priority
+      support.</td></tr>
+    </tbody>
+  </table>
+  <p>"Computers" means activations of your licence key. You can free an activation in Polar's
+  customer portal, linked from Settings, when you replace a machine. Features are counted and
+  enforced on your computer; we do not receive usage data. We may change what a plan includes
+  for new purchases at any time; changes that reduce what an existing subscription includes
+  take effect at your next renewal and we will tell you first.</p>
 
-  <h2 id="warranty">7. No warranty</h2>
+  <h2 id="billing">9. Billing, cancellation and refunds</h2>
+  <p>Purchases are made through <strong>Polar</strong>, which acts as the merchant of record.
+  Polar charges your payment method, issues your receipt and licence key, handles applicable
+  tax, and provides a customer portal where you can update payment details, download invoices,
+  manage activations and cancel. Polar's own terms apply to the payment itself.</p>
+  <ul>
+    <li><strong>Subscriptions renew automatically</strong>, monthly or yearly depending on what
+    you chose, until you cancel. The price of a running subscription does not change without
+    at least 30 days' notice by email.</li>
+    <li><strong>Cancel any time</strong> in Polar's portal. You keep your plan until the end
+    of the period you have paid for, then the app drops to the free tier. Your jobs and files
+    stay on your computer.</li>
+    <li><strong>Refunds.</strong> If a first purchase of Pro or Business does not work for you,
+    email us within 14 days of that purchase and we will refund it
+    in full. After that, and for renewals, payments are non-refundable except where the law
+    where you live requires otherwise. Refunds are issued through Polar to the original
+    payment method.</li>
+    <li><strong>Failed payments.</strong> If a renewal payment fails, Polar will retry and email
+    you. If it cannot be collected, the subscription ends and the app returns to the free
+    tier.</li>
+  </ul>
+  <p>Consumers in the European Union, the United Kingdom and some other places have a statutory
+  right to cancel a digital purchase within 14 days. Our refund window above is at least as
+  generous, and nothing here reduces a statutory right.</p>
+
+  <h2 id="unsigned">10. Installing an unsigned app</h2>
+  <p>The desktop app is currently distributed without an Apple Developer ID or a Windows code
+  signing certificate. Your operating system will warn you the first time you open it, and the
+  <a href="/download">download page</a> explains the steps to proceed. Those steps tell your
+  computer to trust software Apple or Microsoft has not reviewed. Only follow them for a copy
+  you downloaded from <a href="/download">chromeboost.work/download</a> or the GitHub releases
+  page it links to. If you want to verify a download, the release manifest published alongside
+  each version lists the SHA-512 of every file. We are not responsible for copies obtained
+  elsewhere or altered in transit.</p>
+
+  <h2 id="updates">11. Updates and changes to the product</h2>
+  <p>The desktop app checks for new versions and, on unsigned builds, shows you a link to
+  download them. Installing updates is your choice, but we support only the current version
+  and the one before it. We may add, change or remove features, and may discontinue the desktop
+  app; if we discontinue it while you have a paid period remaining, we will refund the unused
+  part. Because the extension and MCP server are MIT licensed, you can always keep using or
+  forking the source you already have.</p>
+
+  <h2 id="warranty">12. No warranty</h2>
   <p>ChromeBoost is provided <strong>as is and as available, without warranty of any
-  kind</strong>, express or implied, including any implied warranty of merchantability,
-  fitness for a particular purpose, title, or non-infringement.</p>
+  kind</strong>, express or implied, including any implied warranty of merchantability, fitness
+  for a particular purpose, title or non-infringement, to the maximum extent permitted by law.</p>
   <p>We do not warrant that it will work on any given site, that it will keep working, that it
-  will be free of defects, or that it will produce correct results. Browsers change, sites
-  change, and automation breaks.</p>
+  will be free of defects, or that the assistant will produce correct results. Browsers change,
+  sites change, AI models change, and automation breaks. The refund in
+  <a href="#billing">section 9</a> exists precisely because we cannot promise it will suit
+  your task.</p>
 
-  <h2 id="liability">8. Limitation of liability</h2>
+  <h2 id="liability">13. Limitation of liability</h2>
   <p>To the maximum extent permitted by law, we are not liable for any indirect, incidental,
   special, consequential or exemplary damages, or for any loss of profits, revenue, data,
-  goodwill, or business opportunity, arising out of or connected with your use of
-  ChromeBoost, even if we have been advised that such loss was possible.</p>
+  goodwill or business opportunity, arising out of or connected with your use of ChromeBoost,
+  even if we have been advised that such loss was possible. This includes losses caused by
+  actions the assistant took on a website at your direction.</p>
   <p>To the maximum extent permitted by law, our total aggregate liability arising out of or
-  connected with ChromeBoost is limited to the amount you paid for it, which is zero.</p>
+  connected with ChromeBoost is limited to the greater of the amount you paid us in the twelve
+  months before the event giving rise to the claim, or fifty United States dollars. For the free
+  extension and MCP server, that amount is zero.</p>
   <div class="callout warn">
     <p><strong>What this section does not do.</strong> Nothing here excludes or limits
     liability that cannot lawfully be excluded or limited, including liability for death or
-    personal injury caused by negligence, or for fraud or fraudulent misrepresentation. If
-    you are using ChromeBoost as a consumer, you keep every statutory right your local law
-    gives you, and nothing in these terms affects those rights.</p>
+    personal injury caused by negligence, for fraud or fraudulent misrepresentation, or for
+    gross negligence or wilful misconduct where your law does not allow it to be excluded. If
+    you are using ChromeBoost as a consumer, you keep every statutory right your local law gives
+    you, and nothing in these terms affects those rights.</p>
   </div>
 
-  <h2 id="indemnity">9. Indemnity</h2>
-  <p>You agree to indemnify and hold harmless the maintainers of ChromeBoost from any claim,
-  demand, loss, liability or expense, including reasonable legal fees, brought by a third
-  party and arising out of your use of ChromeBoost, your breach of these terms, or your
-  violation of any law or of any third party's rights.</p>
+  <h2 id="indemnity">14. Indemnity</h2>
+  <p>If you are using ChromeBoost for a business, you agree to indemnify and hold us harmless
+  from any claim, demand, loss, liability or expense, including reasonable legal fees, brought
+  by a third party and arising out of your use of ChromeBoost, your breach of these terms, or
+  your violation of any law or of any third party's rights. This section does not apply to
+  consumers where local law prohibits it.</p>
 
-  <h2 id="support">10. No support or availability commitment</h2>
-  <p>ChromeBoost is free and maintained on a best-effort basis. There is no service level, no
-  guaranteed response to issues, and no commitment that any version will continue to be
-  published or to function. We may change, restrict or discontinue it at any time. Because it
-  is MIT licensed, you always have the option of using or forking the source you already
-  have.</p>
+  <h2 id="termination">15. Termination</h2>
+  <p>You can stop using ChromeBoost at any time by uninstalling it and, for a paid plan,
+  cancelling in Polar's portal. We may suspend or end your licence to the desktop app if you
+  materially breach these terms and, where the breach can be fixed, do not fix it within 14
+  days of our notice. If we end your licence for breach, no refund is due. If we end it for
+  any other reason, we refund the unused part of your paid period. Sections 3, 5, 6, 12, 13,
+  14 and 16 survive termination.</p>
 
-  <h2 id="changes">11. Changes to these terms</h2>
-  <p>If these terms change, the date at the top will change, and the revision is visible in
-  the public <a href="https://github.com/lordamdal/chromeboost/commits/main">commit
-  history</a>. Continuing to use ChromeBoost after a change means you accept the revised
-  terms. Since there are no accounts, the git history is the record.</p>
+  <h2 id="law">16. Governing law and disputes</h2>
+  <p>These terms are governed by the laws of the State of Delaware, United States, without regard to conflict of law rules, and
+  the courts there have exclusive jurisdiction, except that if you are a consumer you also keep
+  the protection of the mandatory consumer laws of the country where you live and may bring a
+  claim in your local courts. Before starting any formal dispute, please email us; most
+  problems are a refund or a bug fix away.</p>
 
-  <h2 id="contact">12. Contact</h2>
-  <p>Questions about these terms: open an issue at
+  <h2 id="changes">17. Changes to these terms</h2>
+  <p>If these terms change, the date at the top will change and the revision is visible in the
+  public <a href="https://github.com/lordamdal/chromeboost/commits/main">commit history</a> of
+  this file. For changes that materially affect paying customers, we will also email the
+  address on your Polar account at least 30 days before they take effect. Continuing to use
+  ChromeBoost after a change means you accept the revised terms; if you do not, cancel and
+  stop using it before the change takes effect.</p>
+
+  <h2 id="contact">18. Contact</h2>
+  <p>Questions about these terms, billing or refunds:
+  <a href="mailto:me@lordamdal.com">me@lordamdal.com</a>. For the open source parts you can also
+  open an issue at
   <a href="https://github.com/lordamdal/chromeboost/issues">github.com/lordamdal/chromeboost/issues</a>.
   For suspected security issues, see
   <a href="https://github.com/lordamdal/chromeboost/blob/main/SECURITY.md">SECURITY.md</a>.</p>
-
 </main>
-
 <footer class="bot">
   <div class="wrap">
-    <p>ChromeBoost is free and MIT licensed. No account, no telemetry, no servers.</p>
+    <p>The extension and MCP server are free and MIT licensed. The desktop app is a paid
+    product from Beaverhand. Neither one sends your browsing to us.</p>
     <p><a href="/">Back to chromeboost.work</a> &nbsp;·&nbsp;
+       <a href="/download">Download</a> &nbsp;·&nbsp;
        <a href="/privacy">Privacy</a> &nbsp;·&nbsp;
        <a href="https://github.com/lordamdal/chromeboost">GitHub</a></p>
   </div>
 </footer>
-
 </body>
 </html>

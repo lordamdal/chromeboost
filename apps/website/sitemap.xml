@@ -7,6 +7,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://chromeboost.work/download</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://chromeboost.work/privacy</loc>
     <lastmod>2026-08-28</lastmod>
     <changefreq>yearly</changefreq>
