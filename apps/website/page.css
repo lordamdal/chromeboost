@@ -91,3 +91,10 @@
     body { font-size: 16px; }
     td:first-child { white-space: normal; }
   }
+
+/* Tables must live inside the 760px measure. Left to size themselves, the data
+   folder table forced the document to 1700px and put a horizontal scrollbar
+   under every page. Fixed layout plus wrapping keeps long paths in the column. */
+table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+th, td { overflow-wrap: anywhere; word-break: break-word; vertical-align: top; }
+table code { overflow-wrap: anywhere; }
