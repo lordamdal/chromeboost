@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ChromeBoost — give Claude hands in your own browser</title>
-<meta name="description" content="ChromeBoost lets Claude Code, Gemini CLI or Codex drive your real Chrome — already logged in as you, driven by real input. Draft social replies, pull API keys into .env, fill long forms, document a flow. You approve anything that publishes.">
+<title>ChromeBoost — it does the work in your own browser</title>
+<meta name="description" content="A Mac and Windows app that does jobs in the Chrome you already use, signed in as you. Build a lead list, pull your messages into a spreadsheet, watch a competitor's pricing. It never asks for your password, and anything that sends, posts, buys or deletes waits for you. Free to try. $10 a month.">
 <meta name="theme-color" content="#f2ece0">
 <link rel="canonical" href="https://chromeboost.work/">
 
@@ -16,20 +16,20 @@
 <meta property="og:site_name" content="ChromeBoost">
 <meta property="og:locale" content="en_US">
 <meta property="og:url" content="https://chromeboost.work/">
-<meta property="og:title" content="ChromeBoost: give Claude hands in your own browser">
-<meta property="og:description" content="Claude Code, Codex or Gemini CLI drives the Chrome you already use: signed in as you, driven by real input. Pull API keys into .env, fill long forms, work dashboards. Anything that publishes waits for your approval.">
+<meta property="og:title" content="ChromeBoost: it does the work in your own browser">
+<meta property="og:description" content="It works in the Chrome you already use, signed in as you — so it never asks for your password. Build lead lists, pull messages into a spreadsheet, repeat it every Monday. Anything that sends, posts or buys waits for you.">
 <meta property="og:image" content="https://chromeboost.work/og.png">
 <meta property="og:image:secure_url" content="https://chromeboost.work/og.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="ChromeBoost card. The headline reads Give Claude hands in your own browser, beside a terminal where Claude opens the Stripe dashboard and writes STRIPE_SECRET_KEY into .env.">
+<meta property="og:image:alt" content="ChromeBoost card. The headline reads Give Claude hands in your own browser, beside a terminal where Claude reads 31 unread LinkedIn messages and saves them to a spreadsheet.">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ChromeBoost: give Claude hands in your own browser">
 <meta name="twitter:description" content="Claude Code, Codex or Gemini CLI drives the Chrome you already use: signed in as you, driven by real input. Anything that publishes waits for your approval.">
 <meta name="twitter:image" content="https://chromeboost.work/og.png">
-<meta name="twitter:image:alt" content="ChromeBoost card. The headline reads Give Claude hands in your own browser, beside a terminal where Claude opens the Stripe dashboard and writes STRIPE_SECRET_KEY into .env.">
+<meta name="twitter:image:alt" content="ChromeBoost card. The headline reads Give Claude hands in your own browser, beside a terminal where Claude reads 31 unread LinkedIn messages and saves them to a spreadsheet.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='2' y='2' width='60' height='60' rx='10' fill='%23efb63d' stroke='%2314110d' stroke-width='4'/><path d='M36 11 L15 37 h14 L27 55 L49 30 H35 Z' fill='%2314110d'/></svg>">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2HFKQHS0Q2"></script>
@@ -140,7 +140,9 @@
   }
   .nav-links a:hover { border-color: var(--ink); background: var(--naples); }
   .nav-gh { display: inline-flex; align-items: center; gap: 7px; border-color: var(--ink) !important; background: var(--paper-2); }
-  .nav-gh:hover { background: var(--ink); color: var(--naples); }
+  /* Must out-specify `.nav-links a:hover`, which is (0,2,1). Matching that
+     rule's shape rather than reaching for !important keeps the cascade legible. */
+  .nav-links a.nav-gh:hover { background: var(--ink); color: var(--naples); }
   /* The section anchors collapse on narrow screens, but GitHub and Install do
      not: they are the only two things a first-time visitor is looking for. */
   @media (max-width: 820px) { .nav-links a:not(.nav-cta):not(.nav-gh) { display: none; } }
@@ -152,7 +154,7 @@
     .brand-name { font-size: 16px; }
     .brand-mark { width: 30px; height: 30px; }
   }
-  .nav-cta { border-color: var(--ink) !important; background: var(--coral); color: #fff; box-shadow: 3px 3px 0 var(--ink); }
+  .nav-cta { border-color: var(--ink) !important; background: var(--coral); color: var(--ink); box-shadow: 3px 3px 0 var(--ink); }
   .nav-cta:hover { background: var(--ink) !important; color: var(--naples); }
 
   /* ── Painted backdrops ────────────────────────────────── */
@@ -539,6 +541,71 @@
   .trust { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 44px; }
   @media (max-width: 900px) { .trust { grid-template-columns: 1fr; } }
 
+  /* ── Two ways in ──────────────────────────────────────── */
+  .ways-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 44px; align-items: stretch; }
+  @media (max-width: 900px) { .ways-grid { grid-template-columns: 1fr; } }
+  .way {
+    padding: 28px 26px 26px; position: relative;
+    border: 2px solid var(--ink); border-radius: 14px; box-shadow: var(--hard);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .way-flag {
+    position: absolute; top: -13px; left: 24px;
+    background: var(--naples); color: var(--ink);
+    border: 2px solid var(--ink); border-radius: 999px; padding: 3px 12px;
+  }
+  .way h3 { font-size: 24px; font-weight: 900; letter-spacing: -.03em; text-transform: uppercase; line-height: 1.04; margin: 0; }
+  .way p { font-size: 15px; color: var(--ink-soft); }
+  .way-meta { font-size: 14px; color: var(--ink) !important; margin-top: auto; }
+  .way .btn { width: 100%; justify-content: center; }
+
+  /* ── Pricing ──────────────────────────────────────────── */
+  .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 44px; align-items: stretch; }
+  @media (max-width: 900px) { .price-grid { grid-template-columns: 1fr; } }
+  .price {
+    padding: 26px 24px 24px; position: relative;
+    border: 2px solid var(--ink); border-radius: 14px; box-shadow: var(--hard-sm);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  /* The middle plan is the one most people should take, so it is the one that
+     carries the weight. Everything else stays quiet rather than competing. */
+  .price.is-pick { box-shadow: var(--hard); background: var(--glass-2); }
+  .price-flag {
+    position: absolute; top: -13px; left: 22px;
+    background: var(--naples); color: var(--ink);
+    border: 2px solid var(--ink); border-radius: 999px; padding: 3px 12px;
+  }
+  .price h3 {
+    font-size: 20px; font-weight: 900; letter-spacing: -.02em;
+    text-transform: uppercase; line-height: 1.06; margin: 0;
+  }
+  .price-tag { font-size: 42px; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+  .price-tag span { display: block; font-size: 13.5px; font-weight: 600; letter-spacing: 0; color: var(--ink-soft); margin-top: 6px; }
+  .price ul { list-style: none; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+  .price li { font-size: 14.8px; color: var(--ink-soft); padding-left: 20px; position: relative; }
+  .price li::before { content: "→"; position: absolute; left: 0; color: var(--ink); font-weight: 900; }
+  .price .btn { width: 100%; justify-content: center; }
+  .cta-note { margin-top: 14px; font-size: 13.5px; color: var(--ink-soft); }
+  /* `.step-body p` outranks `.cta-note` on specificity; keep the note small there too. */
+  .step-body .cta-note { font-size: 13.5px; }
+  /* Buttons sitting on the dark footer. `.btn-out`'s pale glass panel is for
+     the paper background; here it produced naples-on-near-white at 1.79. */
+  footer .btn {
+    background: transparent;
+    color: var(--paper);
+    border-color: var(--paper);
+    box-shadow: 4px 4px 0 rgba(242, 236, 224, .28);
+  }
+  footer .btn:hover { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+
+  /* The OS panels hold prose, not just a button row, so their paragraphs need
+     the spacing the surrounding step body would otherwise give them. */
+  [data-os-panel] p + p { margin-top: 12px; }
+
+  /* An empty note (no annual line yet) must still hold one full line, or the
+     button above it sits a few px higher than its neighbours'. */
+  .price-note { font-size: 13px; color: var(--ink-soft); text-align: center; min-height: 1.2em; min-height: 1lh; }
+
   /* ── Coffee ───────────────────────────────────────────── */
   .coffee {
     margin-top: 46px; padding: 26px 28px;
@@ -781,16 +848,15 @@
       <span class="brand-name">ChromeBoost</span>
     </a>
     <div class="nav-links">
-      <a href="#prompts">Prompts</a>
-      <a href="#human">How</a>
-      <a href="#hud">HUD</a>
-      <a href="#tools">Tools</a>
-      <a href="/download">Download</a>
+      <a href="#prompts">What it does</a>
+      <a href="#accounts">Safety</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#cli">Developers</a>
       <a class="nav-gh" href="https://github.com/lordamdal/chromeboost" rel="noopener">
         <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-github"/></svg>
         <span>GitHub</span>
       </a>
-      <a class="nav-cta" href="#install">Install</a>
+      <a class="nav-cta" href="/download">Download</a>
     </div>
   </div>
 </nav>
@@ -826,43 +892,40 @@
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <span class="sticker label">⚡ Chrome extension + MCP server</span>
+        <span class="sticker label">⚡ Mac and Windows app · or your terminal</span>
         <h1>Give Claude <span class="hl">hands</span> in your own browser.</h1>
         <p class="hero-sub">
           Not a headless clone in a data centre — <strong>your Chrome</strong>, already signed into
-          your accounts, driven by real clicks, drags and keystrokes that modern web apps accept. Ask in plain
-          English; watch it happen in the window in front of you. <strong>Anything that publishes
-          stops and waits for you.</strong>
+          your accounts, driven by real clicks and keystrokes that modern web apps accept. That's
+          also why it <strong>never asks for your password</strong>: it isn't pretending to be you,
+          it <em>is</em> you. Ask in plain English, watch it happen.
+          <strong>Anything that sends, posts, buys or deletes waits for you.</strong>
         </p>
         <div class="cta">
-          <a class="btn btn-fill" href="#install">Install → 2 minutes</a>
-          <a class="btn btn-out" href="#prompts">See what to ask it</a>
+          <a class="btn btn-fill" href="#ways">Get the app</a>
+          <a class="btn btn-out" href="#cli">Or use your terminal — free</a>
         </div>
-        <a class="gh-inline" href="https://github.com/lordamdal/chromeboost" rel="noopener">
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-github"/></svg>
-          <span>github.com/lordamdal/chromeboost</span>
-          <em>MIT · free</em>
-        </a>
+        <p class="cta-note">Needs a paid Claude plan — the one you already have. Mac or Windows, with Chrome.</p>
       </div>
 
       <div class="verdict-card glass" id="verdictCard">
         <div class="vc-head">
           <span class="vc-dots"><i style="background:#e2603c"></i><i style="background:#efb63d"></i><i style="background:#2e7a58"></i></span>
-          <span class="label" style="letter-spacing:.14em">you → claude code</span>
+          <span class="label" style="letter-spacing:.14em">you → chromeboost</span>
           <span class="vc-nav" role="tablist" aria-label="Example prompts">
-            <button class="vc-pip is-on" type="button" role="tab" aria-selected="true" aria-label="Prompt 1: set up Google Analytics on the marketing site"></button>
+            <button class="vc-pip is-on" type="button" role="tab" aria-selected="true" aria-label="Prompt 1: put my unread LinkedIn messages into a spreadsheet"></button>
             <button class="vc-pip" type="button" role="tab" aria-selected="false" aria-label="Prompt 2: invite the marketers in my network to Friday's event"></button>
             <button class="vc-pip" type="button" role="tab" aria-selected="false" aria-label="Prompt 3: grab my Stripe test key into .env"></button>
-            <button class="vc-pip" type="button" role="tab" aria-selected="false" aria-label="Prompt 4: walk our signup flow and screenshot every step"></button>
+            <button class="vc-pip" type="button" role="tab" aria-selected="false" aria-label="Prompt 4: what did people say about us on Reddit and X last month"></button>
             <button class="vc-pip" type="button" role="tab" aria-selected="false" aria-label="Prompt 5: download last month's invoices from the billing portal"></button>
           </span>
         </div>
         <div class="vc-body">
           <div class="vc-scene is-on" role="tabpanel">
-            <span class="vc-line"><span class="dim">›</span> <b>set up Google Analytics on the marketing site</b></span>
-            <span class="vc-line"><span class="dim">→ created the property in analytics.google.com</span></span>
-            <span class="vc-line"><span class="dim">→ copied measurement ID G-2HFKQHS0Q2</span></span>
-            <span class="vc-line"><span class="good">→ wrote NEXT_PUBLIC_GA_ID to .env ✓</span></span>
+            <span class="vc-line"><span class="dim">›</span> <b>put my unread LinkedIn messages into a spreadsheet</b></span>
+            <span class="vc-line"><span class="dim">→ opened Messaging, read 31 unread threads</span></span>
+            <span class="vc-line"><span class="dim">→ pulled name, company, role and what they asked</span></span>
+            <span class="vc-line"><span class="good">→ saved messages.csv ✓</span></span>
           </div>
           <div class="vc-scene" role="tabpanel">
             <span class="vc-line"><span class="dim">›</span> <b>invite the marketers in my network to Friday's event</b></span>
@@ -877,16 +940,16 @@
             <span class="vc-line"><span class="good">→ wrote STRIPE_SECRET_KEY to .env ✓</span></span>
           </div>
           <div class="vc-scene" role="tabpanel">
-            <span class="vc-line"><span class="dim">›</span> <b>walk our signup flow and screenshot every step</b></span>
-            <span class="vc-line"><span class="dim">→ filled the form, submitted, waited for each screen</span></span>
-            <span class="vc-line"><span class="dim">→ captured 6 steps at 1440×900</span></span>
-            <span class="vc-line"><span class="good">→ saved to ./docs/signup/ ✓</span></span>
+            <span class="vc-line"><span class="dim">›</span> <b>what did people say about us on Reddit and X last month?</b></span>
+            <span class="vc-line"><span class="dim">→ read 214 posts and comments across both</span></span>
+            <span class="vc-line"><span class="dim">→ grouped by theme, tagged positive / negative</span></span>
+            <span class="vc-line"><span class="good">→ saved sentiment.csv — 61% positive ✓</span></span>
           </div>
           <div class="vc-scene" role="tabpanel">
             <span class="vc-line"><span class="dim">›</span> <b>download last month's invoices from the billing portal</b></span>
             <span class="vc-line"><span class="dim">→ signed in, opened Billing → Invoices</span></span>
-            <span class="vc-line"><span class="dim">→ filtered to July, found 9 PDFs</span></span>
-            <span class="vc-line"><span class="good">→ saved to ./invoices/2026-07/ ✓</span></span>
+            <span class="vc-line"><span class="dim">→ filtered to July, found 9 invoices</span></span>
+            <span class="vc-line"><span class="good">→ saved 9 PDFs to your ChromeBoost folder ✓</span></span>
           </div>
         </div>
       </div>
@@ -896,10 +959,48 @@
 
 <div class="marquee" aria-hidden="true">
   <div class="marquee-track">
-    <span>Your logins <b>✦</b> Your cookies <b>✦</b> Your profile <b>✦</b> Real pointer events <b>✦</b> Real drags <b>✦</b> isTrusted keystrokes <b>✦</b> Closed shadow DOM <b>✦</b> You approve every publish <b>✦</b></span>
-    <span>Your logins <b>✦</b> Your cookies <b>✦</b> Your profile <b>✦</b> Real pointer events <b>✦</b> Real drags <b>✦</b> isTrusted keystrokes <b>✦</b> Closed shadow DOM <b>✦</b> You approve every publish <b>✦</b></span>
+    <span>Your logins <b>✦</b> Your cookies <b>✦</b> Your profile <b>✦</b> Real clicks <b>✦</b> Real typing <b>✦</b> Not flagged as a bot <b>✦</b> Nothing copied out <b>✦</b> You approve every publish <b>✦</b></span>
+    <span>Your logins <b>✦</b> Your cookies <b>✦</b> Your profile <b>✦</b> Real clicks <b>✦</b> Real typing <b>✦</b> Not flagged as a bot <b>✦</b> Nothing copied out <b>✦</b> You approve every publish <b>✦</b></span>
   </div>
 </div>
+
+
+<section id="ways">
+  <div class="wrap">
+    <span class="sec-tag label">00 / Two ways in</span>
+    <h2>Same hands. Two ways to hold them.</h2>
+    <p class="lead">
+      Both need a <strong>paid Claude plan</strong> — the one you already have. The only real
+      question is whether you want to open a terminal. Pick the honest answer; you can use both.
+    </p>
+
+    <div class="ways-grid">
+      <div class="way glass">
+        <span class="way-flag label">For most people</span>
+        <h3>The Mac and Windows app</h3>
+        <p>
+          Download it, sign in, add the extension in one click. No terminal, no
+          config file. Type what you want and watch it work, then set it to repeat every Monday
+          when it does.
+        </p>
+        <p class="way-meta"><b>Free to try</b> · then $10 a month</p>
+        <a class="btn btn-fill" href="#pricing">See what it costs</a>
+      </div>
+
+      <div class="way glass">
+        <span class="way-flag label" style="background:var(--teal)">For developers</span>
+        <h3>The command line</h3>
+        <p>
+          A Chrome extension plus an MCP server for <strong>Claude Code, Gemini CLI and Codex</strong>.
+          Same browser control, same 35 tools, driven from the terminal you already live in.
+          Open source, MIT, and free forever.
+        </p>
+        <p class="way-meta"><b>Free</b> · MIT on GitHub</p>
+        <a class="btn btn-out" href="#cli">Install it</a>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section id="prompts">
   <div class="paint" aria-hidden="true">
@@ -933,22 +1034,22 @@
       </div>
 
       <div class="prompt glass">
-        <div class="prompt-say"><span class="caret">›</span><q>Grab my Stripe test keys and put them in .env</q></div>
+        <div class="prompt-say"><span class="caret">›</span><q>What did people say about us on Reddit and X last month?</q></div>
         <div class="prompt-does">
-          Navigates to the dashboard you're <b>already logged into</b>, opens Developers → API keys,
-          reveals the secret, and writes it straight to <code class="i">.env</code>. No copy-paste,
-          no key sitting in your clipboard.
-          <div class="prompt-tools"><span>open_page</span><span>find_text</span><span>write_to_env</span></div>
+          Reads the actual threads — not a scraper's cache — groups them by what people were
+          complaining about or praising, tags each one, and hands you a spreadsheet.
+          <b>Market research that cites its sources</b>, because it read them in your browser.
+          <div class="prompt-tools"><span>open_page</span><span>get_page_text</span><span>download_file</span></div>
         </div>
       </div>
 
       <div class="prompt glass">
-        <div class="prompt-say"><span class="caret">›</span><q>Walk through our signup flow and screenshot every step into ./docs</q></div>
+        <div class="prompt-say"><span class="caret">›</span><q>Put my unread LinkedIn messages into a spreadsheet</q></div>
         <div class="prompt-does">
-          Drives the flow like a new user would — fills the form, submits, waits for each screen —
-          and saves a numbered screenshot at every step. <b>Onboarding docs that rebuild themselves</b>
-          whenever the product changes.
-          <div class="prompt-tools"><span>fill_form</span><span>wait_for</span><span>take_screenshot</span></div>
+          Opens Messaging in the account you're <b>already signed into</b>, reads every unread
+          thread, and pulls out who they are, where they work and what they actually asked for.
+          <b>An inbox you can sort</b> instead of one you scroll.
+          <div class="prompt-tools"><span>open_page</span><span>get_page_text</span><span>download_file</span></div>
         </div>
       </div>
 
@@ -1179,9 +1280,59 @@
   </div>
 </section>
 
+
+<section id="accounts">
+  <div class="wrap">
+    <span class="sec-tag label">04 / Your accounts</span>
+    <h2>LinkedIn doesn't flag it. There's nothing to flag.</h2>
+    <p class="lead">
+      Anyone who has tried to automate a social platform knows how it ends: a restricted account,
+      a verification loop, sometimes a permanent ban. That happens because the tool is a
+      <em>stranger</em> — a fresh browser in a data centre, wearing your exported cookies, clicking
+      in ways no hand produces. Every signal says someone else is driving, because someone else is.
+    </p>
+    <p class="lead">
+      ChromeBoost isn't a stranger. It's <strong>your Chrome</strong>, your profile, your session,
+      on your machine, in the country you're actually in. Nothing is copied out and nothing logs in
+      from somewhere new. There is no mismatch to catch because nothing about it is borrowed.
+    </p>
+
+    <div class="trust">
+      <div class="slab glass">
+        <h3>Your session, not a copy</h3>
+        <p>
+          No cookie export, no headless clone signing in from a data centre, no <b>“new device”</b>
+          email to your inbox at 3am. You're already logged in; it simply uses that.
+        </p>
+      </div>
+      <div class="slab glass">
+        <h3>Real input, not synthetic events</h3>
+        <p>
+          The pointer travels, settles and clicks the way a hand does, and keystrokes arrive as
+          real keystrokes. Modern React apps that silently reject scripted input accept it,
+          because there is nothing to reject.
+        </p>
+      </div>
+      <div class="slab glass">
+        <h3>Proven where it's hardest</h3>
+        <p>
+          <b>Reddit, X, LinkedIn and Facebook</b> are where generic automation dies. They're also
+          what ChromeBoost is tested against, because they're where the work actually is.
+        </p>
+      </div>
+    </div>
+
+    <p class="lead" style="margin-top:34px">
+      One thing this is not: a licence to spam. It moves at human pace because it <em>is</em> a
+      human's browser, and everything that posts or sends still waits for your click. Use it the
+      way you'd use your own hands — that's precisely what it's replacing.
+    </p>
+  </div>
+</section>
+
 <section id="trust">
   <div class="wrap">
-    <span class="sec-tag label">04 / Where it stops</span>
+    <span class="sec-tag label">05 / Where it stops</span>
     <h2>You approve anything that matters</h2>
     <p class="lead">
       An agent with your logins should not be able to publish in your name, move your money, or pass
@@ -1215,13 +1366,120 @@
 
     <div class="coffee">
       <div>
-        <h3>☕ Free, MIT, no account</h3>
+        <h3>You can read every line of it</h3>
         <p>
-          ChromeBoost is free and open source, and there's no signup or telemetry anywhere in it.
-          If it saved you an afternoon, you can buy me a coffee.
+          The part that touches your browser is open source, MIT, on GitHub. If you are about to
+          let software drive accounts you care about, you should be able to check what it does —
+          so you can, line by line, without asking us.
         </p>
       </div>
-      <a class="btn btn-coffee" href="https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00" target="_blank" rel="noopener noreferrer">Buy me a coffee →</a>
+      <a class="btn btn-out" href="https://github.com/lordamdal/chromeboost" rel="noopener">Read the source</a>
+    </div>
+  </div>
+</section>
+
+
+<section id="repeats">
+  <div class="wrap">
+    <span class="sec-tag label">06 / Repeats</span>
+    <h2>Do it every Monday, without me</h2>
+    <p class="lead">
+      The jobs worth having are the ones you'd otherwise do again next week. When something works,
+      ChromeBoost offers to keep doing it — every day, every week, or every hour — and it runs while
+      the app is open, in your browser, with the same approvals in place.
+    </p>
+
+    <div class="trust">
+      <div class="slab glass">
+        <h3>Say it once</h3>
+        <p>
+          After a job finishes, it asks whether this should happen on its own. Pick a day and a
+          time. That's the whole setup — there's no schedule syntax to learn.
+        </p>
+      </div>
+      <div class="slab glass">
+        <h3>It tells you the truth</h3>
+        <p>
+          If your computer was asleep and a run was missed, it says so. It <b>doesn't</b> quietly fire
+          eleven overnight jobs at your accounts when you open the lid.
+        </p>
+      </div>
+      <div class="slab glass">
+        <h3>Still your call</h3>
+        <p>
+          A repeat has no extra permissions. Anything irreversible waits for you, exactly as it
+          does when you're sitting there watching.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <span class="sec-tag label">07 / Pricing</span>
+    <h2>Free to try. $10 if you keep it.</h2>
+    <p class="lead">
+      Your first week is completely open — no limits. After that you get five finished jobs a
+      month, free, for as long as you like. <strong>Jobs that fail don't count.</strong>
+      Every plan runs on <strong>your own paid Claude subscription</strong> — if you don't have
+      one, start there, not here.
+    </p>
+
+    <div class="price-grid">
+      <div class="price glass">
+        <h3>Free</h3>
+        <p class="price-tag">$0<span>forever</span></p>
+        <ul>
+          <li>First week fully open</li>
+          <li>Then 5 finished jobs a month</li>
+          <li>Every file you make is yours to keep</li>
+          <li>One computer</li>
+        </ul>
+        <a class="btn btn-out" href="/download">Download</a>
+        <p class="price-note">No card needed</p>
+      </div>
+
+      <div class="price glass is-pick">
+        <span class="price-flag label">Most people</span>
+        <h3>Pro</h3>
+        <p class="price-tag">$10<span>a month</span></p>
+        <ul>
+          <li>Unlimited jobs</li>
+          <li>Repeat them daily or weekly</li>
+          <li>Two computers</li>
+          <li>Email support</li>
+        </ul>
+        <a class="btn btn-fill" href="https://buy.polar.sh/polar_cl_pd0eH0Lhb5TTEsRuCqUtiU6TFix6OKZgYfpNa0Nd90m" rel="noopener">Get Pro</a>
+        <p class="price-note"><!-- annual: add back when Polar annual checkout links exist --></p>
+      </div>
+
+      <div class="price glass">
+        <h3>Business</h3>
+        <p class="price-tag">$24<span>a month</span></p>
+        <ul>
+          <li>Everything in Pro</li>
+          <li>Repeat hourly, not just daily</li>
+          <li>Ten computers</li>
+          <li>Ready-made marketing jobs</li>
+          <li>Priority support</li>
+        </ul>
+        <a class="btn btn-out" href="https://buy.polar.sh/polar_cl_YYwAncvQeD5M3fXBsdB8dGJkzAFnRJ97re2tu2pqxAD" rel="noopener">Get Business</a>
+        <p class="price-note"><!-- annual: add back when Polar annual checkout links exist --></p>
+      </div>
+    </div>
+
+    <div class="coffee" style="margin-top:40px">
+      <h3 style="margin:0 0 10px; font-size:19px; font-weight:900; letter-spacing:-.02em">
+        Wait — I already pay for Claude.
+      </h3>
+      <p style="font-size:15px; color:var(--ink-soft)">
+        You do, and you'll keep paying them exactly as you do now. ChromeBoost runs on
+        <strong>your</strong> Claude subscription, so <strong>we never charge you for the AI and we
+        can't mark it up</strong> — we never touch that bill. Tools that sell you credits are
+        reselling model calls, which is why their invoices surprise people. Ours can't: $10 is the
+        whole bill from us, however much work you do.
+      </p>
     </div>
   </div>
 </section>
@@ -1239,7 +1497,7 @@
   </div>
 
   <div class="wrap">
-    <span class="sec-tag label">05 / The floating window</span>
+    <span class="sec-tag label">08 / The floating window</span>
     <h2>Your page, your corner</h2>
     <p class="lead">
       While your agent drives, a small panel sits on the page so you always know a session is in
@@ -1309,13 +1567,69 @@
 
 <section id="install">
   <div class="wrap">
-    <span class="sec-tag label">06 / Install</span>
-    <h2>One CLI, one click</h2>
+    <span class="sec-tag label">09 / Install</span>
+    <h2>Download it and sign in</h2>
     <p class="lead">
-      ChromeBoost is a Chrome extension plus an MCP server, and it works with
-      <strong>Claude Code, Gemini CLI and Codex</strong>. The extension is on the Chrome Web Store
-      and your CLI installs the server, so there's nothing to clone and no build step. All you need
-      is Chrome.
+      Two steps, both of them ordinary. You need Chrome and a <strong>paid Claude plan</strong> —
+      the same one you already use. ChromeBoost never sees your password: you sign in through
+      Anthropic's own window. The app runs on Mac and Windows.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">1</div>
+        <div class="step-body glass">
+          <h3>Get the app</h3>
+          <p>
+            Whichever machine you're on, the app walks you through adding the Chrome extension —
+            <b>one click from inside it</b>, no terminal and nothing to configure. That extension is
+            what lets it reach your browser at all.
+          </p>
+          <div class="hosts" role="tablist" aria-label="Choose your computer" style="margin-top:18px">
+            <button class="host-tab is-on" role="tab" aria-selected="true" data-os="mac" type="button">macOS</button>
+            <button class="host-tab" role="tab" aria-selected="false" data-os="win" type="button">Windows</button>
+          </div>
+
+          <div class="host-panel is-on" data-os-panel="mac" role="tabpanel">
+            <p style="margin-top:16px">Download it, drag it to Applications, open it.</p>
+            <div class="cta" style="margin-top:14px">
+              <a class="btn btn-fill" href="/download">Download</a>
+            </div>
+            <p class="cta-note">Not yet signed with Apple or Microsoft, so your computer warns the first time. A few clicks, explained on the <a href="/download">download page</a>.</p>
+          </div>
+
+          <div class="host-panel" data-os-panel="win" role="tabpanel">
+            <p style="margin-top:16px">Download it, run the installer, open it.</p>
+            <div class="cta" style="margin-top:14px">
+              <a class="btn btn-fill" href="/download">Download</a>
+            </div>
+            <p class="cta-note">Not yet signed with Apple or Microsoft, so your computer warns the first time. A few clicks, explained on the <a href="/download">download page</a>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-n">2</div>
+        <div class="step-body glass">
+          <h3>Connect your Claude account</h3>
+          <p>
+            The app opens Anthropic's own sign-in page. You log in there, they hand the app a
+            token, and that's the last you'll think about it. We never see your password, never
+            store a token, and never touch your keychain — the sign-in isn't ours to run.
+          </p>
+          <p>Then type what you want in plain English. That's the whole product.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 id="cli" style="margin-top:72px; padding-top:12px; font-size:26px; font-weight:900; letter-spacing:-.03em">
+      <span class="sec-tag label" style="display:inline-block; margin-bottom:14px">ChromeBoost CLI</span><br>
+      The command-line version
+    </h3>
+    <p class="lead" style="margin-top:10px">
+      Free, MIT, and not a trial: a Chrome extension plus an MCP server for
+      <strong>Claude Code, Gemini CLI and Codex</strong>. Same browser control, same tools, no app
+      and no subscription. If you live in a terminal, start here.
     </p>
 
     <div class="steps">
@@ -1508,8 +1822,8 @@
   </div>
 
   <div class="wrap">
-    <span class="sec-tag label">07 / Tool surface</span>
-    <h2>35 tools your agent can call</h2>
+    <span class="sec-tag label">10 / Tool surface</span>
+    <h2>Everything it can do, listed</h2>
     <p class="lead">
       You won't type any of these; your agent picks them. Listed so you know exactly what it's able to
       do on your machine.
@@ -1549,20 +1863,20 @@
         <span class="brand-name" style="color:var(--paper)">ChromeBoost</span>
       </div>
       <p>
-        Free and MIT-licensed. No account, and the tool sends no telemetry — the MCP server only
-        ever talks to your own browser. Built for people who want an agent that works the web the way they do.
+        The command-line version is free and MIT-licensed. The Mac and Windows app is a paid product that runs
+        on your own Claude subscription — we never charge you for the AI. Neither one collects
+        analytics on what you browse or what your jobs do; the app talks to our licence server and
+        nothing else. Built for people who want an agent that works the web the way they do.
       </p>
-      <p style="margin-top:14px">
-        <a class="btn btn-coffee" style="box-shadow:4px 4px 0 #3a332a;border-color:#3a332a" href="https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00" target="_blank" rel="noopener noreferrer">☕ Buy me a coffee</a>
-      </p>
+      <p style="margin-top:14px"><a class="btn" href="https://github.com/lordamdal/chromeboost" rel="noopener">Read the source</a></p>
     </div>
     <div class="foot-links">
       <a href="https://github.com/lordamdal/chromeboost">GitHub</a>
-      <a href="#prompts">Prompts</a>
-      <a href="#human">How it moves</a>
+      <a href="#accounts">Your accounts</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#cli">Developers</a>
       <a href="#install">Install</a>
       <a href="/download">Download</a>
-      <a href="#tools">Tools</a>
       <a href="/privacy">Privacy</a>
       <a href="/terms">Terms</a>
     </div>
@@ -1618,8 +1932,7 @@
   var line = "font:600 13px/1.7 ui-monospace,Menlo,monospace;color:#14110d";
   var link = "font:700 13px/1.7 ui-monospace,Menlo,monospace;color:#2d49ab";
   console.log("%c⚡ ChromeBoost", big);
-  console.log("%cClaude with hands in your own browser. Free, MIT, no telemetry.", line);
-  console.log("%c☕ If it saved you an afternoon:  https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00", link);
+  console.log("%cClaude with hands in your own browser. The CLI is MIT; the Mac and Windows app is $10.", line);
   console.log("%c★ Source:  https://github.com/lordamdal/chromeboost", link);
 })();
 
@@ -1629,7 +1942,26 @@
 // Remembers the choice, so someone who lands from a Gemini link and reloads
 // does not get bounced back to the Claude tab.
 (function () {
-  var tabs = [].slice.call(document.querySelectorAll('.host-tab'));
+  // OS tabs in the download step. Same markup contract as the CLI host tabs but
+  // keyed on data-os, so the two tab groups on this page cannot select each other.
+  (function () {
+    var osTabs = [].slice.call(document.querySelectorAll('[data-os]'));
+    var osPanels = [].slice.call(document.querySelectorAll('[data-os-panel]'));
+    osTabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        osTabs.forEach(function (x) {
+          var on = x === tab;
+          x.classList.toggle('is-on', on);
+          x.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        osPanels.forEach(function (pnl) {
+          pnl.classList.toggle('is-on', pnl.dataset.osPanel === tab.dataset.os);
+        });
+      });
+    });
+  })();
+
+  var tabs = [].slice.call(document.querySelectorAll('.host-tab[data-host]'));
   var panels = [].slice.call(document.querySelectorAll('[data-host-panel]'));
   if (!tabs.length) return;
 
