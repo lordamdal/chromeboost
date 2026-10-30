@@ -10,7 +10,13 @@
 const PORT_BASE = 7970;
 const PORT_MAX = 9069;
 const RECONNECT_BASE_MS = 1000;
-const RECONNECT_MAX_MS = 5000;
+// Ports with nothing listening (the vast majority of the range, most of the
+// time) climb to this ceiling and stay there instead of retrying every 5s
+// forever. A real session's port resets to RECONNECT_BASE_MS on its very
+// next successful open, so this only slows down ports that keep failing.
+const RECONNECT_MAX_MS = 60_000;
+// Coalesces publishLivePorts() calls that land in the same tick.
+const PUBLISH_DEBOUNCE_MS = 200;
 
 // Keep in step with the same type in popup/index.ts. Neither file is a module,
 // so TypeScript treats both declarations as global and resolves them as one:
@@ -103,7 +109,11 @@ function connect(conn: Conn) {
 }
 
 function scheduleReconnect(conn: Conn) {
-  setTimeout(() => connect(conn), conn.reconnectDelay);
+  // Jitter so the range's ~1000 dead ports (nothing ever listening on most
+  // of them) desync from each other instead of retrying in lockstep forever,
+  // which is what turned every backoff cycle into a simultaneous-failure burst.
+  const jitter = conn.reconnectDelay * 0.3 * Math.random();
+  setTimeout(() => connect(conn), conn.reconnectDelay + jitter);
   conn.reconnectDelay = Math.min(conn.reconnectDelay * 2, RECONNECT_MAX_MS);
 }
 
@@ -111,16 +121,29 @@ function sendError(conn: Conn, requestId: string, message: string) {
   conn.ws?.send(JSON.stringify({ type: "error", requestId, message }));
 }
 
+let publishTimer: ReturnType<typeof setTimeout> | null = null;
+
 function publishLivePorts() {
-  // Offscreen documents cannot access chrome.storage directly — forward the
-  // live ports to the background worker via runtime messaging, and let it
-  // persist to storage and broadcast to the popup.
-  const livePorts = connections
-    .filter((c) => c.connected)
-    .map((c) => ({ port: c.port, label: c.label, host: c.host }));
-  chrome.runtime.sendMessage({ source: "chromeboost-offscreen", type: "status", livePorts }).catch(() => {
-    // Background may be starting up, ignore
-  });
+  // Debounced: at 1100 candidate ports, a reconnect burst (extension startup,
+  // or a batch of dead ports landing on the same backoff tick) can call this
+  // from dozens of connections within one event-loop turn. Each call used to
+  // be its own chrome.storage write + popup re-render, and a re-render blows
+  // away the "Unassigned"/"Other windows" group's DOM node mid-animation —
+  // that's what made the group's expand/collapse look broken. Coalesce into
+  // one publish per burst instead.
+  if (publishTimer) return;
+  publishTimer = setTimeout(() => {
+    publishTimer = null;
+    // Offscreen documents cannot access chrome.storage directly — forward the
+    // live ports to the background worker via runtime messaging, and let it
+    // persist to storage and broadcast to the popup.
+    const livePorts = connections
+      .filter((c) => c.connected)
+      .map((c) => ({ port: c.port, label: c.label, host: c.host }));
+    chrome.runtime.sendMessage({ source: "chromeboost-offscreen", type: "status", livePorts }).catch(() => {
+      // Background may be starting up, ignore
+    });
+  }, PUBLISH_DEBOUNCE_MS);
 }
 
 // Progress heartbeats: background dispatches "chromeboost-progress" messages

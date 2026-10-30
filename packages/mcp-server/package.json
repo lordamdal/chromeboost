@@ -1,6 +1,6 @@
 {
   "name": "chromeboost",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "MCP server for chromeboost — lets Claude Code or Codex CLI drive your real Chrome browser with sessions intact. Plugin install recommended; npx chromeboost for manual MCP wiring.",
   "type": "module",
   "main": "./bin/chromeboost.mjs",

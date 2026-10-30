@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChromeBoost",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "ChromeBoost — movable HUD and occlusion-aware cursor control for Claude Code and Codex CLI",
   "permissions": [
     "tabs",
