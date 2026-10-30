@@ -6,7 +6,7 @@ import type { ClientMessage, DistributiveOmit, ServerMessage } from "./types.js"
 type ServerMessagePayload = DistributiveOmit<ServerMessage, "requestId">;
 
 const WS_PORT_BASE = 7970;
-const WS_PORT_MAX = 7980;
+const WS_PORT_MAX = 9069;
 const REQUEST_TIMEOUT_MS = 30_000;
 
 type PendingRequest = {

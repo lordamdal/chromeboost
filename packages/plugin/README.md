@@ -62,7 +62,7 @@ Run `npm run build` first so `server/` and `extension/` are current.
 
 ## Ports
 
-The MCP server binds the first free port in **7970–7980** and the extension scans that
+The MCP server binds the first free port in **7970–9069** and the extension scans that
 same range, so several agent sessions can run side by side without fighting over a socket.
 
 ## Build

@@ -138,6 +138,6 @@ counts toward it even though the prompt only surfaces under Claude Code.
 
 ## Ports
 
-The MCP server binds the first free port in **7970-7980**, and the extension
+The MCP server binds the first free port in **7970-9069**, and the extension
 scans that range. Several sessions across different hosts can run side by side;
 the popup shows a badge per session so you can tell which is which.

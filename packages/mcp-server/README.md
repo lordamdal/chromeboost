@@ -33,7 +33,7 @@ agent gets no usage guidance and you'll be prompted on every tool call.
 The MCP server can't touch Chrome on its own. Load the extension unpacked from
 `packages/extension/dist` — see the [root README](../../README.md#install).
 
-The server binds the first free port in **7970–7980**; the extension scans that same
+The server binds the first free port in **7970–9069**; the extension scans that same
 range, so several sessions can run side by side.
 
 ## Tools

@@ -141,7 +141,7 @@ async function main() {
   // Watchdog: exit when the host (Claude Code / Codex) disconnects.
   // Codex does not always SIGTERM its MCP subprocesses on session end, so
   // without this the WS server keeps listening and the popup accumulates
-  // ghost instances on ports 7970-7980.
+  // ghost instances on ports 7970-9069.
   //
   // Two complementary signals:
   //   1. stdin close — fires when the host closes its end of the stdio pipe

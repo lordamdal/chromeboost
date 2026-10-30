@@ -1,6 +1,6 @@
 /**
  * Offscreen document — maintains persistent WebSocket connections to one or
- * more chromeboost MCP servers (one per port in the range 7970-7980).
+ * more chromeboost MCP servers (one per port in the range 7970-9069).
  *
  * Each connection represents a separate Claude Code instance. Messages from
  * each connection are tagged with the source port so the background script
@@ -8,7 +8,7 @@
  */
 
 const PORT_BASE = 7970;
-const PORT_MAX = 7980;
+const PORT_MAX = 9069;
 const RECONNECT_BASE_MS = 1000;
 const RECONNECT_MAX_MS = 5000;
 

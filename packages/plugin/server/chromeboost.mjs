@@ -24887,7 +24887,7 @@ function flushUsage() {
 
 // packages/mcp-server/src/ws-bridge.ts
 var WS_PORT_BASE = 7970;
-var WS_PORT_MAX = 7980;
+var WS_PORT_MAX = 9069;
 var REQUEST_TIMEOUT_MS = 3e4;
 var WsBridge = class {
   wss;
@@ -26762,7 +26762,7 @@ HUD state: ${s.hidden ? "hidden" : s.collapsed ? "collapsed" : "expanded"} at ($
 }
 
 // packages/mcp-server/src/index.ts
-var PACKAGE_VERSION = true ? "1.1.0" : "dev";
+var PACKAGE_VERSION = true ? "1.1.1" : "dev";
 var SUPPORT_URL = "https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00";
 function hostDisplayName() {
   const raw = process.env.CHROMEBOOST_HOST ?? (process.env.CLAUDE_PLUGIN_ROOT ? "claude" : void 0);

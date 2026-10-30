@@ -22,7 +22,7 @@ const OFFSCREEN_URL = chrome.runtime.getURL("offscreen.html");
 const portMeta = new Map<number, { label?: string; host?: string }>();
 
 // Each Claude Code instance is identified by the WebSocket port it connects on
-// (7970-7980). Each instance can be assigned its own Chrome window so multiple
+// (7970-9069). Each instance can be assigned its own Chrome window so multiple
 // CC instances can run automations in parallel without colliding.
 let claudeInstances: Record<string, number> = {};
 

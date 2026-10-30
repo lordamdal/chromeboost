@@ -1,6 +1,6 @@
 {
   "name": "chromeboost",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Drive your real Chrome from Claude Code — movable/hideable HUD plus occlusion-aware cursor control that clicks through JS overlays, scrims and sticky bars. Bundles the ChromeBoost MCP server, permission allowlist, and usage skill.",
   "homepage": "https://chromeboost.work",
   "repository": "https://github.com/lordamdal/chromeboost",

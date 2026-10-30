@@ -1,6 +1,6 @@
 {
   "name": "chromeboost",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Give Gemini hands in your own browser. Drives your real, logged-in Chrome with human-shaped clicks, drags and keystrokes, and hit-tests before it clicks so scrims and sticky bars cannot swallow the click.",
   "mcpServers": {
     "chromeboost": {

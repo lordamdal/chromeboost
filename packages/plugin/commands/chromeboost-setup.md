@@ -39,7 +39,7 @@ ChromeBoost cards on that page is the tell.
 ## 3. Connect a window
 
 Tell them to click the ChromeBoost toolbar icon. This session should appear
-with a green dot on a port in the 7970-7980 range. They click **Use this
+with a green dot on a port in the 7970-9069 range. They click **Use this
 window** next to it to bind the Chrome window they want driven.
 
 ## 4. Verify it actually works
