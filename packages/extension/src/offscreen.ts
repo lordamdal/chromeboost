@@ -42,7 +42,9 @@ for (let p = PORT_BASE; p <= PORT_MAX; p++) {
 
 function connect(conn: Conn) {
   try {
-    conn.ws = new WebSocket(`ws://localhost:${conn.port}`);
+    // Match the MCP bridge bind address (127.0.0.1). Using localhost can
+    // resolve to ::1 on some systems while the server only listens on IPv4.
+    conn.ws = new WebSocket(`ws://127.0.0.1:${conn.port}`);
   } catch {
     scheduleReconnect(conn);
     return;

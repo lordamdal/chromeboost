@@ -28,6 +28,7 @@ Out of scope:
 
 ## Past advisories
 
+- **2026-11-15**: The MCP ↔ extension WebSocket bridge bound on all interfaces (`0.0.0.0`) with no Origin check, so a page (or LAN peer, if the host firewall allowed it) could connect as a fake extension, kick the real one, observe agent commands, and return forged page content (prompt-injection path into an agent with shell access). Fixed by binding to `127.0.0.1` and accepting only `chrome-extension://` Origins.
 - **2026-05-12 (v0.9.4)**: `inspect_request_headers` previously returned the raw `cookie:` header — including `user_session` and other bearer tokens — to the agent context. Fixed by redacting cookie values by default. (fixed in v0.9.4)
 
 ## Acknowledgements

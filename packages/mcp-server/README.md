@@ -77,7 +77,7 @@ Output is a single bundled ESM file at `packages/plugin/server/chromeboost.mjs`
 | File | What |
 |---|---|
 | `src/index.ts` | Tool registration entry |
-| `src/ws-bridge.ts` | WebSocket server (MCP ↔ extension) |
+| `src/ws-bridge.ts` | WebSocket server (MCP ↔ extension); loopback-only + extension Origin check |
 | `src/types.ts` | Message types across the bridge |
 | `src/tools/cursor.ts` | `hover`, `drag`, `probe_point`, `hud` |
 | `src/tools/flow.ts` | `click_element`, `click_at_coordinates`, `wait_for`, handoff |
