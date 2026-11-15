@@ -8,6 +8,18 @@ type ServerMessagePayload = DistributiveOmit<ServerMessage, "requestId">;
 const WS_PORT_BASE = 7970;
 const WS_PORT_MAX = 9069;
 const REQUEST_TIMEOUT_MS = 30_000;
+/** Loopback only — never advertise the bridge on LAN/Wi-Fi interfaces. */
+const WS_HOST = "127.0.0.1";
+/**
+ * Chrome extension Origins look like `chrome-extension://<32 chars a-p>`.
+ * Accept any valid extension id so CWS + unpacked/dev installs both work;
+ * reject http(s) page Origins (CSWSH) and missing Origin (non-browser clients).
+ */
+const EXTENSION_ORIGIN_RE = /^chrome-extension:\/\/[a-p]{32}$/i;
+
+function isExtensionOrigin(origin: string | undefined): boolean {
+  return typeof origin === "string" && EXTENSION_ORIGIN_RE.test(origin);
+}
 
 type PendingRequest = {
   resolve: (value: ClientMessage) => void;
@@ -54,7 +66,18 @@ export class WsBridge {
       return;
     }
 
-    const wss = new WebSocketServer({ port: tryPort });
+    const wss = new WebSocketServer({
+      host: WS_HOST,
+      port: tryPort,
+      verifyClient: (info) => {
+        if (isExtensionOrigin(info.origin)) return true;
+        console.error(
+          `[chromeboost] Rejected WS client from origin=${info.origin ?? "(none)"} ` +
+            `(only chrome-extension:// clients are allowed)`
+        );
+        return false;
+      },
+    });
 
     wss.on("error", (err: Error & { code?: string }) => {
       if (err.code === "EADDRINUSE") {
