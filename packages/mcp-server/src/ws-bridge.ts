@@ -235,15 +235,20 @@ export class WsBridge {
       const b = this.browsers.get(idOrName)!;
       return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
     }
-    // Try matching by profile name (case-insensitive substring)
+    // Try substring match against id, profile name, then email
     const lower = idOrName.toLowerCase();
+    for (const b of this.browsers.values()) {
+      if (b.id.toLowerCase().includes(lower)) {
+        this.activeBrowserId = b.id;
+        return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
+      }
+    }
     for (const b of this.browsers.values()) {
       if (b.profileName && b.profileName.toLowerCase().includes(lower)) {
         this.activeBrowserId = b.id;
         return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
       }
     }
-    // Try matching by profile email
     for (const b of this.browsers.values()) {
       if (b.profileEmail && b.profileEmail.toLowerCase().includes(lower)) {
         this.activeBrowserId = b.id;

@@ -25054,6 +25054,12 @@ var WsBridge = class {
     }
     const lower = idOrName.toLowerCase();
     for (const b of this.browsers.values()) {
+      if (b.id.toLowerCase().includes(lower)) {
+        this.activeBrowserId = b.id;
+        return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
+      }
+    }
+    for (const b of this.browsers.values()) {
       if (b.profileName && b.profileName.toLowerCase().includes(lower)) {
         this.activeBrowserId = b.id;
         return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
