@@ -11,8 +11,7 @@
     "storage",
     "windows",
     "debugger",
-    "downloads",
-    "identity"
+    "downloads"
   ],
   "host_permissions": [
     "<all_urls>"
