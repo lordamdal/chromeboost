@@ -26958,7 +26958,7 @@ Use list_browsers first to see what is available. When only one browser is conne
 }
 
 // packages/mcp-server/src/index.ts
-var PACKAGE_VERSION = true ? "1.2.0" : "dev";
+var PACKAGE_VERSION = true ? "1.2.1" : "dev";
 var SUPPORT_URL = "https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00";
 function hostDisplayName() {
   const raw = process.env.CHROMEBOOST_HOST ?? (process.env.CLAUDE_PLUGIN_ROOT ? "claude" : void 0);
