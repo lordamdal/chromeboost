@@ -7,6 +7,7 @@ import { registerHighlightTools } from "./tools/highlight.js";
 import { registerCaptureTools } from "./tools/capture.js";
 import { registerFlowTools } from "./tools/flow.js";
 import { registerCursorTools } from "./tools/cursor.js";
+import { registerBrowserMgmtTools } from "./tools/browser-mgmt.js";
 import { flushUsage } from "./usage.js";
 
 declare const __CHROMEBOOST_VERSION__: string;
@@ -73,6 +74,7 @@ async function main() {
   registerCaptureTools(server, bridge);
   registerFlowTools(server, bridge, flowStore);
   registerCursorTools(server, bridge);
+  registerBrowserMgmtTools(server, bridge);
 
   const registered = (server as unknown as { _registeredTools?: Record<string, unknown> })._registeredTools ?? {};
   const toolNames = Object.keys(registered).sort();
@@ -95,18 +97,24 @@ async function main() {
     "chromeboost-status",
     "Check if the chromeboost Chrome extension is connected and which tab is active",
     async () => {
-      const connected = bridge.isConnected();
-      if (!connected) {
+      const browsers = bridge.listBrowsers();
+      if (browsers.length === 0) {
         return {
           messages: [{
             role: "user",
             content: {
               type: "text",
-              text: "Check chromeboost status. The Chrome extension is NOT connected. Tell the user to reload the chromeboost extension in chrome://extensions.",
+              text: "Check chromeboost status. No Chrome browsers are connected. Tell the user to reload the chromeboost extension in chrome://extensions.",
             },
           }],
         };
       }
+      const activeBrowser = bridge.getActiveBrowser();
+      const browserList = browsers.map((b) => {
+        const label = b.profileName ? `${b.profileName} (${b.id})` : b.id;
+        return `${b.active ? "[active] " : ""}${label}${b.profileEmail ? ` <${b.profileEmail}>` : ""}`;
+      }).join("\n");
+
       try {
         const response = await bridge.request({ type: "list_tabs" }, 3000);
         const tabs = (response as { tabs: Array<{ index: number; title: string; url: string; active: boolean }> }).tabs;
@@ -117,7 +125,7 @@ async function main() {
             role: "user",
             content: {
               type: "text",
-              text: `Check chromeboost status.\n\nExtension: Connected\nActive tab: ${active?.title ?? "none"} — ${active?.url ?? ""}\nAll tabs:\n${tabList}`,
+              text: `Check chromeboost status.\n\nBrowsers connected: ${browsers.length}\n${browserList}\n\nActive browser: ${activeBrowser?.profileName || activeBrowser?.id || "none"}\nActive tab: ${active?.title ?? "none"} — ${active?.url ?? ""}\nAll tabs:\n${tabList}`,
             },
           }],
         };
@@ -127,7 +135,7 @@ async function main() {
             role: "user",
             content: {
               type: "text",
-              text: "Check chromeboost status. Extension is connected but not responding. The user may need to reload it.",
+              text: `Check chromeboost status. ${browsers.length} browser(s) connected but active browser not responding.\n\nBrowsers:\n${browserList}\n\nThe user may need to reload the extension in the active profile.`,
             },
           }],
         };

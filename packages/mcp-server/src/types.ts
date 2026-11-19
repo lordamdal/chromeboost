@@ -217,7 +217,7 @@ export type PageFieldState = {
 
 // Messages sent from Extension → MCP server
 export type ClientMessage =
-  | { type: "ready" }
+  | { type: "ready"; browserId?: string; profileName?: string; profileEmail?: string }
   | { type: "progress"; requestId: string; phase?: string; detail?: string }
   | {
       type: "screenshot_response";

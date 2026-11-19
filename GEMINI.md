@@ -128,6 +128,7 @@ Use the absolute path for `envPath` (Gemini CLI working dir + `/.env`).
 | Files | `set_file_input(hint, file_path)`, `download_file`, `read_attachment` |
 | Network | `fetch_url(url, ...)` — privileged context, real cookies, no page CSP |
 | Tabs | `list_tabs`, `switch_to_tab`, `close_tab`, `close_other_tabs` |
+| **Multi-browser** | `list_browsers`, `select_browser` — manage multiple Chrome profiles |
 | Visual handoff | `highlight_region(selector, msg)`, `wait_for_click()` |
 | Cross-origin iframe | `click_at_coordinates(frame="…", x, y)`, `execute_script(frame="…")`, `fetch_url(src)` |
 | **Hover-only UI** | `hover(selector OR text OR x+y, settle_ms?)` |
@@ -271,6 +272,10 @@ References live alongside this skill at `references/<topic>.md`:
   shows `known_flow`, prefer those proven steps (still verify with `until_*`).
   When it shows `flow_capturable` and the task worked, call
   `save_flow("<label>")` so the next session skips the trial-and-error.
+- **`references/multi-browser.md`** — Managing multiple Chrome profiles.
+  `list_browsers` to see connected profiles, `select_browser` to target
+  one, patterns for cross-profile workflows (e.g. logging into separate
+  accounts, testing as different users, parallel automation across profiles).
 
 ## Flow memory (act on the hints)
 

@@ -24889,11 +24889,14 @@ function flushUsage() {
 var WS_PORT_BASE = 7970;
 var WS_PORT_MAX = 9069;
 var REQUEST_TIMEOUT_MS = 3e4;
+var nextAutoId = 1;
 var WsBridge = class {
   wss;
-  client = null;
+  browsers = /* @__PURE__ */ new Map();
+  activeBrowserId = null;
   pending = /* @__PURE__ */ new Map();
   port = WS_PORT_BASE;
+  onBrowserChangeCallbacks = [];
   /**
    * Resolves with the port actually bound. Port selection walks the range on
    * EADDRINUSE and only settles on the async "listening" event, so anything
@@ -24910,6 +24913,18 @@ var WsBridge = class {
   }
   getPort() {
     return this.port;
+  }
+  /** Register a callback fired whenever a browser connects or disconnects. */
+  onBrowserChange(cb) {
+    this.onBrowserChangeCallbacks.push(cb);
+  }
+  notifyBrowserChange() {
+    for (const cb of this.onBrowserChangeCallbacks) {
+      try {
+        cb();
+      } catch {
+      }
+    }
   }
   bind(tryPort) {
     if (tryPort > WS_PORT_MAX) {
@@ -24933,11 +24948,7 @@ var WsBridge = class {
       this.markReady(tryPort);
     });
     wss.on("connection", (ws) => {
-      if (this.client) {
-        this.client.terminate();
-      }
-      this.client = ws;
-      console.error("[chromeboost] Extension connected");
+      let assignedId = null;
       ws.on("message", (data) => {
         let msg;
         try {
@@ -24951,7 +24962,27 @@ var WsBridge = class {
           return;
         }
         if (msg.type === "ready") {
-          console.error("[chromeboost] Extension ready");
+          const browserId = msg.browserId || `browser-${nextAutoId++}`;
+          const profileName = msg.profileName;
+          const profileEmail = msg.profileEmail;
+          const existing = this.browsers.get(browserId);
+          if (existing) {
+            existing.ws.terminate();
+          }
+          assignedId = browserId;
+          const client = {
+            id: browserId,
+            ws,
+            profileName,
+            profileEmail,
+            connectedAt: Date.now()
+          };
+          this.browsers.set(browserId, client);
+          if (!this.activeBrowserId || !this.browsers.has(this.activeBrowserId)) {
+            this.activeBrowserId = browserId;
+          }
+          const label = profileName || browserId;
+          console.error(`[chromeboost] Browser connected: ${label} (${browserId}), ${this.browsers.size} browser(s) total`);
           const cwd = process.cwd();
           const host = process.env.CHROMEBOOST_HOST ?? (process.env.CLAUDE_PLUGIN_ROOT ? "claude" : void 0);
           ws.send(JSON.stringify({
@@ -24961,6 +24992,7 @@ var WsBridge = class {
             port: this.port,
             host
           }));
+          this.notifyBrowserChange();
           return;
         }
         const pending2 = this.pending.get(msg.requestId);
@@ -24975,22 +25007,94 @@ var WsBridge = class {
         }
       });
       ws.on("close", () => {
-        console.error("[chromeboost] Extension disconnected");
-        this.client = null;
-        for (const [id, pending] of this.pending) {
-          clearTimeout(pending.timer);
-          pending.reject(new Error(
-            "Chrome extension disconnected. Reload the chromeboost extension in Chrome and try again."
-          ));
-          this.pending.delete(id);
+        if (assignedId) {
+          const client = this.browsers.get(assignedId);
+          if (client && client.ws === ws) {
+            const label = client.profileName || assignedId;
+            console.error(`[chromeboost] Browser disconnected: ${label} (${assignedId}), ${this.browsers.size - 1} browser(s) remaining`);
+            this.browsers.delete(assignedId);
+            for (const [id, pending] of this.pending) {
+              clearTimeout(pending.timer);
+              pending.reject(new Error(
+                `Chrome browser "${label}" disconnected. Reload the chromeboost extension in that Chrome profile and try again.`
+              ));
+              this.pending.delete(id);
+            }
+            if (this.activeBrowserId === assignedId) {
+              const remaining = [...this.browsers.keys()];
+              this.activeBrowserId = remaining.length > 0 ? remaining[0] : null;
+              if (this.activeBrowserId) {
+                const next = this.browsers.get(this.activeBrowserId);
+                console.error(`[chromeboost] Active browser switched to: ${next.profileName || next.id}`);
+              }
+            }
+            this.notifyBrowserChange();
+          }
         }
       });
     });
   }
-  isConnected() {
-    return this.client !== null && this.client.readyState === import_websocket.default.OPEN;
+  // ─── Browser management ──────────────────────────────────────────────────
+  /** List all connected browsers. */
+  listBrowsers() {
+    return [...this.browsers.values()].map((b) => ({
+      id: b.id,
+      profileName: b.profileName,
+      profileEmail: b.profileEmail,
+      active: b.id === this.activeBrowserId,
+      connectedAt: b.connectedAt
+    }));
   }
-  /** Send a message and wait for a response from the extension. */
+  /** Select which browser receives subsequent tool calls. */
+  selectBrowser(idOrName) {
+    if (this.browsers.has(idOrName)) {
+      this.activeBrowserId = idOrName;
+      const b = this.browsers.get(idOrName);
+      return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
+    }
+    const lower = idOrName.toLowerCase();
+    for (const b of this.browsers.values()) {
+      if (b.profileName && b.profileName.toLowerCase().includes(lower)) {
+        this.activeBrowserId = b.id;
+        return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
+      }
+    }
+    for (const b of this.browsers.values()) {
+      if (b.profileEmail && b.profileEmail.toLowerCase().includes(lower)) {
+        this.activeBrowserId = b.id;
+        return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
+      }
+    }
+    return null;
+  }
+  /** Get the active browser's info, or null if none connected. */
+  getActiveBrowser() {
+    if (!this.activeBrowserId) return null;
+    const b = this.browsers.get(this.activeBrowserId);
+    if (!b) return null;
+    return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
+  }
+  /** Get the active browser's WebSocket, or null. */
+  getActiveClient() {
+    if (!this.activeBrowserId) return null;
+    const b = this.browsers.get(this.activeBrowserId);
+    if (!b || b.ws.readyState !== import_websocket.default.OPEN) return null;
+    return b.ws;
+  }
+  isConnected() {
+    return this.getActiveClient() !== null;
+  }
+  /** True if at least one browser is connected (regardless of active selection). */
+  hasAnyBrowser() {
+    for (const b of this.browsers.values()) {
+      if (b.ws.readyState === import_websocket.default.OPEN) return true;
+    }
+    return false;
+  }
+  browserCount() {
+    return this.browsers.size;
+  }
+  /** Send a message and wait for a response from the active browser. */
   async request(message, timeoutMs = REQUEST_TIMEOUT_MS) {
     recordToolCall();
     if (!this.isConnected()) {
@@ -25000,11 +25104,17 @@ var WsBridge = class {
         await new Promise((r) => setTimeout(r, 200));
       }
       if (!this.isConnected()) {
+        if (this.hasAnyBrowser()) {
+          throw new Error(
+            "No active browser selected. Use select_browser to pick one of the connected browsers."
+          );
+        }
         throw new Error(
           "ChromeBoost extension is not connected. Open Chrome and ensure the extension is installed."
         );
       }
     }
+    const client = this.getActiveClient();
     const requestId = crypto.randomUUID();
     return new Promise((resolve2, reject) => {
       let lastProgressAt = Date.now();
@@ -25024,16 +25134,20 @@ var WsBridge = class {
         timer,
         refresh
       });
-      this.client.send(JSON.stringify({ ...message, requestId }));
+      client.send(JSON.stringify({ ...message, requestId }));
     });
   }
   /** Send a fire-and-forget message (no response expected). */
   send(message) {
-    if (!this.isConnected()) {
+    const client = this.getActiveClient();
+    if (!client) {
+      if (this.hasAnyBrowser()) {
+        throw new Error("No active browser selected. Use select_browser to pick one.");
+      }
       throw new Error("ChromeBoost extension is not connected.");
     }
     const requestId = crypto.randomUUID();
-    this.client.send(JSON.stringify({ ...message, requestId }));
+    client.send(JSON.stringify({ ...message, requestId }));
   }
 };
 
@@ -26761,6 +26875,82 @@ HUD state: ${s.hidden ? "hidden" : s.collapsed ? "collapsed" : "expanded"} at ($
   );
 }
 
+// packages/mcp-server/src/tools/browser-mgmt.ts
+function registerBrowserMgmtTools(server, bridge) {
+  server.tool(
+    "list_browsers",
+    `List all Chrome browsers currently connected to this MCP server. Each browser is a separate Chrome profile with its own logins, cookies, and extensions. Use this to see which profiles are available before calling select_browser.
+
+Returns each browser's id, profile name, profile email, whether it is the active target, and when it connected.`,
+    {},
+    async () => {
+      const browsers = bridge.listBrowsers();
+      if (browsers.length === 0) {
+        return {
+          content: [{
+            type: "text",
+            text: "No Chrome browsers connected. Open Chrome with the ChromeBoost extension installed. To use multiple profiles, open each Chrome profile and ensure ChromeBoost is installed in each one."
+          }]
+        };
+      }
+      const lines = browsers.map((b) => {
+        const parts = [];
+        parts.push(`id: ${b.id}`);
+        if (b.profileName) parts.push(`profile: ${b.profileName}`);
+        if (b.profileEmail) parts.push(`email: ${b.profileEmail}`);
+        parts.push(b.active ? "active: YES" : "active: no");
+        return parts.join("  |  ");
+      });
+      return {
+        content: [{
+          type: "text",
+          text: `${browsers.length} browser(s) connected:
+${lines.join("\n")}`
+        }]
+      };
+    }
+  );
+  server.tool(
+    "select_browser",
+    `Switch which Chrome browser receives subsequent tool calls. Accepts a browser id, profile name, or profile email (case-insensitive substring match). All tools after this call target the selected browser until you call select_browser again.
+
+Use list_browsers first to see what is available. When only one browser is connected it is selected automatically.`,
+    {
+      browser: external_exports.string().describe("Browser id, profile name, or email to match")
+    },
+    async ({ browser }) => {
+      const result = bridge.selectBrowser(browser);
+      if (!result) {
+        const available = bridge.listBrowsers();
+        if (available.length === 0) {
+          return {
+            content: [{
+              type: "text",
+              text: `No browsers connected. Cannot select "${browser}".`
+            }]
+          };
+        }
+        const names = available.map(
+          (b) => b.profileName ? `"${b.profileName}" (${b.id})` : b.id
+        ).join(", ");
+        return {
+          content: [{
+            type: "text",
+            text: `No browser matching "${browser}". Connected: ${names}`
+          }]
+        };
+      }
+      const label = result.profileName ? `${result.profileName} (${result.id})` : result.id;
+      return {
+        content: [{
+          type: "text",
+          text: `Active browser set to: ${label}`
+        }]
+      };
+    }
+  );
+}
+
 // packages/mcp-server/src/index.ts
 var PACKAGE_VERSION = true ? "1.1.2" : "dev";
 var SUPPORT_URL = "https://buy.stripe.com/6oU6oHbqTcD8gSQ1rQbAs00";
@@ -26802,6 +26992,7 @@ async function main() {
   registerCaptureTools(server, bridge);
   registerFlowTools(server, bridge, flowStore);
   registerCursorTools(server, bridge);
+  registerBrowserMgmtTools(server, bridge);
   const registered = server._registeredTools ?? {};
   const toolNames = Object.keys(registered).sort();
   if (toolNames.length === 0) {
@@ -26817,18 +27008,23 @@ async function main() {
     "chromeboost-status",
     "Check if the chromeboost Chrome extension is connected and which tab is active",
     async () => {
-      const connected = bridge.isConnected();
-      if (!connected) {
+      const browsers = bridge.listBrowsers();
+      if (browsers.length === 0) {
         return {
           messages: [{
             role: "user",
             content: {
               type: "text",
-              text: "Check chromeboost status. The Chrome extension is NOT connected. Tell the user to reload the chromeboost extension in chrome://extensions."
+              text: "Check chromeboost status. No Chrome browsers are connected. Tell the user to reload the chromeboost extension in chrome://extensions."
             }
           }]
         };
       }
+      const activeBrowser = bridge.getActiveBrowser();
+      const browserList = browsers.map((b) => {
+        const label = b.profileName ? `${b.profileName} (${b.id})` : b.id;
+        return `${b.active ? "[active] " : ""}${label}${b.profileEmail ? ` <${b.profileEmail}>` : ""}`;
+      }).join("\n");
       try {
         const response = await bridge.request({ type: "list_tabs" }, 3e3);
         const tabs = response.tabs;
@@ -26841,7 +27037,10 @@ async function main() {
               type: "text",
               text: `Check chromeboost status.
 
-Extension: Connected
+Browsers connected: ${browsers.length}
+${browserList}
+
+Active browser: ${activeBrowser?.profileName || activeBrowser?.id || "none"}
 Active tab: ${active?.title ?? "none"} \u2014 ${active?.url ?? ""}
 All tabs:
 ${tabList}`
@@ -26854,7 +27053,12 @@ ${tabList}`
             role: "user",
             content: {
               type: "text",
-              text: "Check chromeboost status. Extension is connected but not responding. The user may need to reload it."
+              text: `Check chromeboost status. ${browsers.length} browser(s) connected but active browser not responding.
+
+Browsers:
+${browserList}
+
+The user may need to reload the extension in the active profile.`
             }
           }]
         };

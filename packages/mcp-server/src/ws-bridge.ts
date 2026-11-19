@@ -22,11 +22,31 @@ type PendingRequest = {
   refresh: () => void;
 };
 
+export type BrowserClient = {
+  id: string;
+  ws: WebSocket;
+  profileName?: string;
+  profileEmail?: string;
+  connectedAt: number;
+};
+
+export type BrowserInfo = {
+  id: string;
+  profileName?: string;
+  profileEmail?: string;
+  active: boolean;
+  connectedAt: number;
+};
+
+let nextAutoId = 1;
+
 export class WsBridge {
   private wss!: WebSocketServer;
-  private client: WebSocket | null = null;
+  private browsers = new Map<string, BrowserClient>();
+  private activeBrowserId: string | null = null;
   private pending = new Map<string, PendingRequest>();
   private port: number = WS_PORT_BASE;
+  private onBrowserChangeCallbacks: Array<() => void> = [];
 
   /**
    * Resolves with the port actually bound. Port selection walks the range on
@@ -44,6 +64,17 @@ export class WsBridge {
 
   public getPort(): number {
     return this.port;
+  }
+
+  /** Register a callback fired whenever a browser connects or disconnects. */
+  onBrowserChange(cb: () => void): void {
+    this.onBrowserChangeCallbacks.push(cb);
+  }
+
+  private notifyBrowserChange(): void {
+    for (const cb of this.onBrowserChangeCallbacks) {
+      try { cb(); } catch { /* ignore */ }
+    }
   }
 
   private bind(tryPort: number) {
@@ -72,11 +103,10 @@ export class WsBridge {
     });
 
     wss.on("connection", (ws) => {
-      if (this.client) {
-        this.client.terminate();
-      }
-      this.client = ws;
-      console.error("[chromeboost] Extension connected");
+      // Don't assign a browser ID yet — wait for the "ready" message which
+      // carries the browserId from the extension. Store on the socket so we
+      // can look it up once "ready" arrives.
+      let assignedId: string | null = null;
 
       ws.on("message", (data) => {
         let msg: ClientMessage;
@@ -86,21 +116,42 @@ export class WsBridge {
           return;
         }
         if (msg.type === "progress") {
-          // Heartbeat from a long-running handler. Reset the request's
-          // timeout so the next-progress-or-completion gap is what counts.
           const pending = this.pending.get(msg.requestId);
           if (pending) pending.refresh();
           return;
         }
         if (msg.type === "ready") {
-          console.error("[chromeboost] Extension ready");
+          const browserId = (msg as { browserId?: string }).browserId
+            || `browser-${nextAutoId++}`;
+          const profileName = (msg as { profileName?: string }).profileName;
+          const profileEmail = (msg as { profileEmail?: string }).profileEmail;
+
+          // If this browserId is already connected (reconnect from same
+          // profile), terminate the old socket and replace it.
+          const existing = this.browsers.get(browserId);
+          if (existing) {
+            existing.ws.terminate();
+          }
+
+          assignedId = browserId;
+          const client: BrowserClient = {
+            id: browserId,
+            ws,
+            profileName,
+            profileEmail,
+            connectedAt: Date.now(),
+          };
+          this.browsers.set(browserId, client);
+
+          // Auto-select the first browser that connects
+          if (!this.activeBrowserId || !this.browsers.has(this.activeBrowserId)) {
+            this.activeBrowserId = browserId;
+          }
+
+          const label = profileName || browserId;
+          console.error(`[chromeboost] Browser connected: ${label} (${browserId}), ${this.browsers.size} browser(s) total`);
+
           // Send identity so the extension knows which project this server belongs to.
-          // `host` tells the popup whether this MCP server was spawned by Claude Code
-          // or Codex CLI:
-          //   - Claude Code sets CLAUDE_PLUGIN_ROOT on the spawned process.
-          //   - Codex doesn't forward any plugin env, so its launcher script in
-          //     `.mcp.codex.json` sets CHROMEBOOST_HOST=codex before importing.
-          // When neither is present (legacy npx flow, ad-hoc invocation) it stays unset.
           const cwd = process.cwd();
           const host = process.env.CHROMEBOOST_HOST
             ?? (process.env.CLAUDE_PLUGIN_ROOT ? "claude" : undefined);
@@ -111,6 +162,8 @@ export class WsBridge {
             port: this.port,
             host,
           }));
+
+          this.notifyBrowserChange();
           return;
         }
         const pending2 = this.pending.get(msg.requestId);
@@ -126,43 +179,134 @@ export class WsBridge {
       });
 
       ws.on("close", () => {
-        console.error("[chromeboost] Extension disconnected");
-        this.client = null;
-        for (const [id, pending] of this.pending) {
-          clearTimeout(pending.timer);
-          pending.reject(new Error(
-            "Chrome extension disconnected. Reload the chromeboost extension in Chrome and try again."
-          ));
-          this.pending.delete(id);
+        if (assignedId) {
+          const client = this.browsers.get(assignedId);
+          // Only delete if this socket is still the one registered for this id
+          // (a reconnect may have already replaced it).
+          if (client && client.ws === ws) {
+            const label = client.profileName || assignedId;
+            console.error(`[chromeboost] Browser disconnected: ${label} (${assignedId}), ${this.browsers.size - 1} browser(s) remaining`);
+            this.browsers.delete(assignedId);
+
+            // Reject pending requests that were routed to this browser
+            for (const [id, pending] of this.pending) {
+              clearTimeout(pending.timer);
+              pending.reject(new Error(
+                `Chrome browser "${label}" disconnected. Reload the chromeboost extension in that Chrome profile and try again.`
+              ));
+              this.pending.delete(id);
+            }
+
+            // If the active browser disconnected, switch to another if available
+            if (this.activeBrowserId === assignedId) {
+              const remaining = [...this.browsers.keys()];
+              this.activeBrowserId = remaining.length > 0 ? remaining[0] : null;
+              if (this.activeBrowserId) {
+                const next = this.browsers.get(this.activeBrowserId)!;
+                console.error(`[chromeboost] Active browser switched to: ${next.profileName || next.id}`);
+              }
+            }
+
+            this.notifyBrowserChange();
+          }
         }
       });
     });
   }
 
-  isConnected(): boolean {
-    return this.client !== null && this.client.readyState === WebSocket.OPEN;
+  // ─── Browser management ──────────────────────────────────────────────────
+
+  /** List all connected browsers. */
+  listBrowsers(): BrowserInfo[] {
+    return [...this.browsers.values()].map((b) => ({
+      id: b.id,
+      profileName: b.profileName,
+      profileEmail: b.profileEmail,
+      active: b.id === this.activeBrowserId,
+      connectedAt: b.connectedAt,
+    }));
   }
 
-  /** Send a message and wait for a response from the extension. */
+  /** Select which browser receives subsequent tool calls. */
+  selectBrowser(idOrName: string): BrowserInfo | null {
+    // Try exact id match first
+    if (this.browsers.has(idOrName)) {
+      this.activeBrowserId = idOrName;
+      const b = this.browsers.get(idOrName)!;
+      return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
+    }
+    // Try matching by profile name (case-insensitive substring)
+    const lower = idOrName.toLowerCase();
+    for (const b of this.browsers.values()) {
+      if (b.profileName && b.profileName.toLowerCase().includes(lower)) {
+        this.activeBrowserId = b.id;
+        return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
+      }
+    }
+    // Try matching by profile email
+    for (const b of this.browsers.values()) {
+      if (b.profileEmail && b.profileEmail.toLowerCase().includes(lower)) {
+        this.activeBrowserId = b.id;
+        return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
+      }
+    }
+    return null;
+  }
+
+  /** Get the active browser's info, or null if none connected. */
+  getActiveBrowser(): BrowserInfo | null {
+    if (!this.activeBrowserId) return null;
+    const b = this.browsers.get(this.activeBrowserId);
+    if (!b) return null;
+    return { id: b.id, profileName: b.profileName, profileEmail: b.profileEmail, active: true, connectedAt: b.connectedAt };
+  }
+
+  /** Get the active browser's WebSocket, or null. */
+  private getActiveClient(): WebSocket | null {
+    if (!this.activeBrowserId) return null;
+    const b = this.browsers.get(this.activeBrowserId);
+    if (!b || b.ws.readyState !== WebSocket.OPEN) return null;
+    return b.ws;
+  }
+
+  isConnected(): boolean {
+    return this.getActiveClient() !== null;
+  }
+
+  /** True if at least one browser is connected (regardless of active selection). */
+  hasAnyBrowser(): boolean {
+    for (const b of this.browsers.values()) {
+      if (b.ws.readyState === WebSocket.OPEN) return true;
+    }
+    return false;
+  }
+
+  browserCount(): number {
+    return this.browsers.size;
+  }
+
+  /** Send a message and wait for a response from the active browser. */
   async request(message: ServerMessagePayload, timeoutMs = REQUEST_TIMEOUT_MS): Promise<ClientMessage> {
-    // Counted here rather than per-tool so every path through the bridge is
-    // included exactly once. Debounced inside; never awaited.
     recordToolCall();
     if (!this.isConnected()) {
-      // Grace window for the multi-instance startup race: a freshly spawned
-      // MCP on a non-default port may arrive before the extension's WS to
-      // that port has cleared its exponential-backoff timer.
+      // Grace window for the multi-instance startup race
       const grace = Math.min(10_000, timeoutMs);
       const start = Date.now();
       while (!this.isConnected() && Date.now() - start < grace) {
         await new Promise((r) => setTimeout(r, 200));
       }
       if (!this.isConnected()) {
+        if (this.hasAnyBrowser()) {
+          throw new Error(
+            "No active browser selected. Use select_browser to pick one of the connected browsers."
+          );
+        }
         throw new Error(
           "ChromeBoost extension is not connected. Open Chrome and ensure the extension is installed."
         );
       }
     }
+    const client = this.getActiveClient()!;
     const requestId = crypto.randomUUID();
     return new Promise<ClientMessage>((resolve, reject) => {
       let lastProgressAt = Date.now();
@@ -183,16 +327,20 @@ export class WsBridge {
         timer,
         refresh,
       });
-      this.client!.send(JSON.stringify({ ...message, requestId }));
+      client.send(JSON.stringify({ ...message, requestId }));
     });
   }
 
   /** Send a fire-and-forget message (no response expected). */
   send(message: ServerMessagePayload): void {
-    if (!this.isConnected()) {
+    const client = this.getActiveClient();
+    if (!client) {
+      if (this.hasAnyBrowser()) {
+        throw new Error("No active browser selected. Use select_browser to pick one.");
+      }
       throw new Error("ChromeBoost extension is not connected.");
     }
     const requestId = crypto.randomUUID();
-    this.client!.send(JSON.stringify({ ...message, requestId }));
+    client.send(JSON.stringify({ ...message, requestId }));
   }
 }

@@ -32,13 +32,51 @@ type Conn = {
   host?: Host;
 };
 
+// ─── Browser identity cache ────────────────────────────────────────────────
+// Fetched once from the background service worker at startup. Included in
+// every WS "ready" message so the MCP server can distinguish Chrome profiles.
+let cachedBrowserId: string | undefined;
+let cachedProfileName: string | undefined;
+let cachedProfileEmail: string | undefined;
+let identityReady: Promise<void>;
+
+function fetchBrowserIdentity(): Promise<void> {
+  return new Promise<void>((resolve) => {
+    try {
+      chrome.runtime.sendMessage(
+        { source: "chromeboost-offscreen", type: "get_browser_identity" },
+        (response: { ok: boolean; browserId?: string; profileName?: string; profileEmail?: string }) => {
+          if (chrome.runtime.lastError || !response?.ok) {
+            resolve();
+            return;
+          }
+          cachedBrowserId = response.browserId;
+          cachedProfileName = response.profileName;
+          cachedProfileEmail = response.profileEmail;
+          resolve();
+        }
+      );
+    } catch {
+      resolve();
+    }
+  });
+}
+
+identityReady = fetchBrowserIdentity();
+
 const connections: Conn[] = [];
 
-for (let p = PORT_BASE; p <= PORT_MAX; p++) {
-  const conn: Conn = { port: p, ws: null, reconnectDelay: RECONNECT_BASE_MS, connected: false };
-  connections.push(conn);
-  connect(conn);
-}
+// Start connections after identity is fetched so the first "ready" messages
+// carry the browserId. The identity fetch is fast (local storage read), and
+// the WS connect to dead ports will fail and retry anyway, so this adds no
+// meaningful latency.
+identityReady.then(() => {
+  for (let p = PORT_BASE; p <= PORT_MAX; p++) {
+    const conn: Conn = { port: p, ws: null, reconnectDelay: RECONNECT_BASE_MS, connected: false };
+    connections.push(conn);
+    connect(conn);
+  }
+});
 
 function connect(conn: Conn) {
   try {
@@ -52,7 +90,11 @@ function connect(conn: Conn) {
     // Connected to MCP server on this port
     conn.reconnectDelay = RECONNECT_BASE_MS;
     conn.connected = true;
-    conn.ws!.send(JSON.stringify({ type: "ready" }));
+    const readyMsg: Record<string, unknown> = { type: "ready" };
+    if (cachedBrowserId) readyMsg.browserId = cachedBrowserId;
+    if (cachedProfileName) readyMsg.profileName = cachedProfileName;
+    if (cachedProfileEmail) readyMsg.profileEmail = cachedProfileEmail;
+    conn.ws!.send(JSON.stringify(readyMsg));
     publishLivePorts();
   };
 
@@ -117,7 +159,7 @@ function scheduleReconnect(conn: Conn) {
   conn.reconnectDelay = Math.min(conn.reconnectDelay * 2, RECONNECT_MAX_MS);
 }
 
-function sendError(conn: Conn, requestId: string, message: string) {
+function sendError(conn: Conn, requestId: string | undefined, message: string) {
   conn.ws?.send(JSON.stringify({ type: "error", requestId, message }));
 }
 

@@ -99,6 +99,22 @@ chrome.runtime.onStartup.addListener(ensureMarkerPrefix);
 // Also kick once on service-worker boot, in case neither event fires soon.
 ensureMarkerPrefix();
 
+// ─── Persistent browser identity ──────────────────────────────────────────
+// Generated once per Chrome profile (stored in profile-scoped
+// chrome.storage.local), sent to the MCP server so it can distinguish
+// connections from different Chrome profiles.
+async function ensureBrowserId() {
+  try {
+    const { cbBrowserId } = await chrome.storage.local.get("cbBrowserId");
+    if (typeof cbBrowserId === "string" && cbBrowserId.length >= 8) return;
+    const id = crypto.randomUUID();
+    await chrome.storage.local.set({ cbBrowserId: id });
+  } catch { /* non-fatal */ }
+}
+chrome.runtime.onInstalled.addListener(ensureBrowserId);
+chrome.runtime.onStartup.addListener(ensureBrowserId);
+ensureBrowserId();
+
 chrome.runtime.onInstalled.addListener(async () => { await ensureOffscreen(); });
 chrome.runtime.onStartup.addListener(async () => { await ensureOffscreen(); });
 
@@ -115,6 +131,37 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
         portMeta.set(lp.port, { label: lp.label, host: lp.host });
       }
       sendResponse({ ok: true });
+      return true;
+    }
+    // Browser identity request from offscreen — returns the persistent
+    // browserId and profile info so the offscreen can include them in the
+    // WS "ready" message, letting the MCP server distinguish Chrome profiles.
+    if (msg.type === "get_browser_identity") {
+      (async () => {
+        try {
+          const { cbBrowserId } = await chrome.storage.local.get("cbBrowserId");
+          let profileName: string | undefined;
+          let profileEmail: string | undefined;
+          try {
+            const info = await chrome.identity.getProfileUserInfo({ accountStatus: "ANY" as chrome.identity.AccountStatus });
+            if (info.email) profileEmail = info.email;
+          } catch { /* identity API unavailable or no signed-in user */ }
+          // Chrome profile display name from the management API is unavailable
+          // in MV3 service workers, so we fall back to the email local part or
+          // leave it unset (the MCP server will assign a fallback label).
+          if (profileEmail) {
+            profileName = profileEmail.split("@")[0];
+          }
+          sendResponse({
+            ok: true,
+            browserId: typeof cbBrowserId === "string" ? cbBrowserId : undefined,
+            profileName,
+            profileEmail,
+          });
+        } catch (err) {
+          sendResponse({ ok: false, error: String(err) });
+        }
+      })();
       return true;
     }
     const port: number = typeof msg.port === "number" ? msg.port : 7970;
